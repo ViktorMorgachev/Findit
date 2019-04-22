@@ -43,6 +43,7 @@ import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.profile.ProfileActivity;
+import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 
 import static findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity.KEY_PLACE_ID;
 
@@ -307,6 +308,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         } else if (id == R.id.nav_send) {
 
         }*/
+
+        if (id == R.id.nav_scan_code) {
+            startActivity(new Intent(this, QRCodeCameraActivity.class));
+            // Handle the camera action
+        }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

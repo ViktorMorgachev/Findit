@@ -35,4 +35,5 @@
     <string name="password">Пароль</string>
     <string name="bonus">Бонусы</string>
     <string name="exit_from_account">Выйти из аккаунта</string>
+    <string name="scan_qr_code">QR Сканер</string>
 </resources>
