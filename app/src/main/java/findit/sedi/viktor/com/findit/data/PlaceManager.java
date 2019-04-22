@@ -63,7 +63,9 @@ public class PlaceManager {
     public long getIDsPlaceIfValid(LatLng latLng) {
 
         // Получить список мест с Мапы
-        ArrayList<Place> places = (ArrayList<Place>) mPlaces.values();
+
+        // Print values
+        ArrayList<Place> places = new ArrayList<>(mPlaces.values());
 
         for (int i = 0; i < places.size(); i++) {
             // Если тут не были и растоянеи до места не больше 300м

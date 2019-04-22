@@ -17,7 +17,7 @@ public class App extends Application {
     private AppDatabase sUser_database;
 
     public App() {
-        sUser_database = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "user_database").build();
+//        sUser_database = Room.databaseBuilder(getApplicationContext(),
+             //   AppDatabase.class, "user_database").build();
     }
 }

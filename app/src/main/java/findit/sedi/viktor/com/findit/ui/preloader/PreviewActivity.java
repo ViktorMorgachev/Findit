@@ -28,7 +28,7 @@ public class PreviewActivity extends Activity {
 
     private Handler mDataLoader = new Handler();
     private Thread mThread;
-    private PlaceManager mPlaceManager = ManagersFactory.getInstance().getPlaceManager();
+    private PlaceManager mPlaceManager;
 
     private GifImageView mGifImageView;
     private ProgressLoder mProgressLoder;
@@ -42,6 +42,10 @@ public class PreviewActivity extends Activity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        ManagersFactory.getInstance().setContext(this);
+
+        mPlaceManager = ManagersFactory.getInstance().getPlaceManager();
 
         setContentView(R.layout.preview_layout);
 
@@ -90,7 +94,7 @@ public class PreviewActivity extends Activity {
 
                     mPlaceManager.savePlaces(placeHashMap);
 
-                            mDataLoader.post(new Runnable() {
+                    mDataLoader.post(new Runnable() {
                         @Override
                         public void run() {
                             Toast.makeText(PreviewActivity.this, "Данные загруженны, " + placeHashMap.size() + "\n" + "Открытие карты", Toast.LENGTH_LONG).show();
