@@ -2,6 +2,8 @@ package findit.sedi.viktor.com.findit;
 
 import android.app.Application;
 import android.arch.persistence.room.Room;
+import android.content.Context;
+import android.support.multidex.MultiDex;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -19,5 +21,10 @@ public class App extends Application {
     public App() {
 //        sUser_database = Room.databaseBuilder(getApplicationContext(),
              //   AppDatabase.class, "user_database").build();
+    }
+    @Override
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
     }
 }
