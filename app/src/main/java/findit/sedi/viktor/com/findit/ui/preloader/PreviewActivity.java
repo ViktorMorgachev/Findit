@@ -21,7 +21,6 @@ import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.data.PlaceManager;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
-import pl.droidsonroids.gif.GifImageView;
 
 public class PreviewActivity extends Activity {
 
@@ -30,7 +29,7 @@ public class PreviewActivity extends Activity {
     private Thread mThread;
     private PlaceManager mPlaceManager;
 
-    private GifImageView mGifImageView;
+   // private GifImageView mGifImageView;
     private ProgressLoder mProgressLoder;
 
     // View
@@ -49,8 +48,8 @@ public class PreviewActivity extends Activity {
 
         setContentView(R.layout.preview_layout);
 
-        mGifImageView = findViewById(R.id.gif_image);
-        mGifImageView.setImageResource(R.drawable.loader_spinner_1s_200px);
+    //    mGifImageView = findViewById(R.id.gif_image);
+      //  mGifImageView.setImageResource(R.drawable.loader_spinner_1s_200px);
 
         loadDataFromServer();
 

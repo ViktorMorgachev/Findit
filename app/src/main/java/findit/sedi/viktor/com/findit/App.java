@@ -1,9 +1,7 @@
 package findit.sedi.viktor.com.findit;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
 import android.content.Context;
-import android.support.multidex.MultiDex;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -25,6 +23,5 @@ public class App extends Application {
     @Override
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
-        MultiDex.install(this);
     }
 }

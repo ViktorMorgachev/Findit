@@ -1,7 +1,6 @@
 package findit.sedi.viktor.com.findit.ui.profile;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import androidx.appcompat.app.AppCompatActivity;
 import findit.sedi.viktor.com.findit.R;
 
 public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {

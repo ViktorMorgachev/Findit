@@ -1,16 +1,17 @@
 package findit.sedi.viktor.com.findit.data;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
+
+import androidx.annotation.NonNull;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 @Entity
 public class User {
     private String phone;
     private String name;
 
-    @PrimaryKey
     @NonNull
+    @PrimaryKey
     private String email;
     private int bonus;
     private String photoUrl;

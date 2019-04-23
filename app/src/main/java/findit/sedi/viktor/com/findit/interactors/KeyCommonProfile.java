@@ -1,9 +1,10 @@
 package findit.sedi.viktor.com.findit.interactors;
 
-import android.support.annotation.StringDef;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+
+import androidx.annotation.StringDef;
 
 /**
  * Created by Developer on 14.04.2018.

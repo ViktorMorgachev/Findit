@@ -3,10 +3,10 @@ package findit.sedi.viktor.com.findit.presenter;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
-import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 
+import androidx.core.app.NotificationCompat;
 import findit.sedi.viktor.com.findit.R;
 
 import static android.content.Context.NOTIFICATION_SERVICE;

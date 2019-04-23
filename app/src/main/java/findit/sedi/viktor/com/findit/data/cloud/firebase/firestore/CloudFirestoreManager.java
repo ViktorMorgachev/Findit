@@ -1,7 +1,6 @@
 package findit.sedi.viktor.com.findit.data.cloud.firebase.firestore;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -12,6 +11,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import androidx.annotation.NonNull;
 
 
 public class CloudFirestoreManager {

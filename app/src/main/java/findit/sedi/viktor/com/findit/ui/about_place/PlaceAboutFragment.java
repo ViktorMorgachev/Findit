@@ -1,15 +1,14 @@
 package findit.sedi.viktor.com.findit.ui.about_place;
 
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 
+import androidx.fragment.app.Fragment;
 import findit.sedi.viktor.com.findit.R;
 
 public class PlaceAboutFragment extends Fragment {
@@ -34,7 +33,7 @@ public class PlaceAboutFragment extends Fragment {
         mTextView = rootView.findViewById(R.id.tv_place_info);
         mTextView.setText(getArguments().getString(KEY_PLACE_INFO));
 
-        Glide.with(this).load(getArguments().getString(KEY_URL)).into(mImageView);
+      //  Glide.with(this).load(getArguments().getString(KEY_URL)).into(mImageView);
 
     }
 

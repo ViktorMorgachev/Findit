@@ -2,7 +2,6 @@ package findit.sedi.viktor.com.findit.ui.main.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.fragment.app.Fragment;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;

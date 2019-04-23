@@ -5,13 +5,13 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
-import android.support.annotation.DrawableRes;
-import android.support.v4.content.ContextCompat;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 
+import androidx.annotation.DrawableRes;
+import androidx.core.content.ContextCompat;
 import findit.sedi.viktor.com.findit.R;
 
 public class Util {

@@ -1,14 +1,13 @@
 package findit.sedi.viktor.com.findit.ui.about_place;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 
+import androidx.appcompat.app.AppCompatActivity;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.data.Place;
 
