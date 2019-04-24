@@ -1,11 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
-    <color name="colorAccent">#FF4081</color>
     <color name="button_enter_color">#30a7f5</color>
-    <color name="button_send_color">#30a7f5</color>
-    <color name="blue">#10eefd</color>
-    <color name="color_green">#159c36</color>
-    <color name="error_text_colour">#159c36</color>
 </resources>
