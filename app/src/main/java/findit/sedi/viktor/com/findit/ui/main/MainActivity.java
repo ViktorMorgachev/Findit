@@ -29,6 +29,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -116,6 +117,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.activity_main);
+
+
+
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -223,7 +227,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void updateMap(float zoom, String tittle) {
         mCommonMapManager.zoomTo(sLatLng, DEFAULT_ZOOM);
         mCommonMapManager.addPoint(sLatLng, R.drawable.ic_location_24dp, null);
-
     }
 
 

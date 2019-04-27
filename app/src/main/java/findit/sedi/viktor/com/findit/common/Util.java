@@ -8,6 +8,7 @@ import android.location.Location;
 import android.support.annotation.DrawableRes;
 import android.support.v4.content.ContextCompat;
 
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -33,6 +34,7 @@ public class Util {
         Canvas canvas = new Canvas(bitmap);
         background.draw(canvas);
         vectorDrawable.draw(canvas);
+        MapsInitializer.initialize(context);
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 

@@ -45,12 +45,11 @@ import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class QRCodeCameraActivity extends AppCompatActivity {
-
     // Views
-    SurfaceView surfaceView;
+    private CameraSource mCameraSource;
+    private BarcodeDetector mBarcodeDetector;
+    private SurfaceView surfaceView;
     TextView txtBarcodeValue;
-    private BarcodeDetector barcodeDetector;
-    private CameraSource cameraSource;
     private static final int REQUEST_CAMERA_PERMISSION = 201;
     Button btnAction;
     String code = "";
@@ -82,10 +81,12 @@ public class QRCodeCameraActivity extends AppCompatActivity {
         btnAction = findViewById(R.id.btnAction);
         btnAction.setEnabled(false);
 
+        surfaceView.setZOrderMediaOverlay(true);
+
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(QRCodeCameraActivity.this, "Code was send on server", Toast.LENGTH_LONG).show();
+                Toast.makeText(QRCodeCameraActivity.this, "Отправленно", Toast.LENGTH_LONG).show();
                 ServerManager.getInstance().sendCode(code);
                 QRCodeCameraActivity.this.onBackPressed();
             }
@@ -95,14 +96,24 @@ public class QRCodeCameraActivity extends AppCompatActivity {
 
     private void initialiseDetectorsAndSources() {
 
-        Toast.makeText(getApplicationContext(), "Barcode scanner started", Toast.LENGTH_SHORT).show();
-        barcodeDetector = new BarcodeDetector.Builder(this)
-                .setBarcodeFormats(Barcode.ALL_FORMATS)
+        mBarcodeDetector = new BarcodeDetector.Builder(this)
+                .setBarcodeFormats(Barcode.QR_CODE)
                 .build();
 
-        cameraSource = new CameraSource.Builder(this, barcodeDetector)
+
+        try {
+            if (!mBarcodeDetector.isOperational()) {
+                Toast.makeText(getApplicationContext(), "Не найдён детектор", Toast.LENGTH_LONG).show();
+                return;
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "Обновите Google Play Services!", Toast.LENGTH_LONG).show();
+        }
+
+        mCameraSource = new CameraSource.Builder(this, mBarcodeDetector)
                 .setRequestedPreviewSize(1920, 1080)
                 .setAutoFocusEnabled(true)
+                .setRequestedFps(24)
                 .build();
 
         surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
@@ -110,7 +121,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
             public void surfaceCreated(SurfaceHolder holder) {
                 try {
                     if (ActivityCompat.checkSelfPermission(QRCodeCameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        cameraSource.start(surfaceView.getHolder());
+                        mCameraSource.start(holder);
                     } else {
                         ActivityCompat.requestPermissions(QRCodeCameraActivity.this, new
                                 String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
@@ -128,11 +139,13 @@ public class QRCodeCameraActivity extends AppCompatActivity {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-                cameraSource.stop();
+                if (mCameraSource != null) {
+                    mCameraSource.release();
+                }
             }
         });
 
-        barcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+        mBarcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
                 Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
@@ -148,18 +161,16 @@ public class QRCodeCameraActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            intentData = barcodes.valueAt(0).url.title;
-
-                            if (intentData != null || !intentData.equalsIgnoreCase("")) {
-
+                            if (barcodes.valueAt(0).url != null) {
                                 txtBarcodeValue.removeCallbacks(null);
+                                intentData = barcodes.valueAt(0).url.url;
                                 txtBarcodeValue.setText(intentData);
                                 btnAction.setEnabled(true);
                             } else {
-
                                 btnAction.setEnabled(false);
                                 intentData = barcodes.valueAt(0).displayValue;
                                 txtBarcodeValue.setText(intentData);
+
                             }
                         }
                     });
@@ -172,11 +183,6 @@ public class QRCodeCameraActivity extends AppCompatActivity {
 
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        cameraSource.release();
-    }
 
     @Override
     protected void onResume() {
@@ -184,6 +190,25 @@ public class QRCodeCameraActivity extends AppCompatActivity {
         initialiseDetectorsAndSources();
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mCameraSource != null) {
+            mCameraSource.stop();
+            mCameraSource.release();
+        }
+
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mCameraSource != null) {
+            mCameraSource.stop();
+            mCameraSource.release();
+        }
+    }
 }
 
 

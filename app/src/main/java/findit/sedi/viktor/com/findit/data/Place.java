@@ -8,6 +8,7 @@ public class Place {
     private long IDs; // Идентификатор бутылочки 98797089687
     private LatLng mLatLng;
     private String about;
+    private int distance = 500; // Дистанция в метрах до точки
     // Перед тем как пользователь нашёл на место
     private String tips;
     // Думаю показывать позже когда пользователь найдёт и просканирует штрих код
@@ -17,7 +18,7 @@ public class Place {
     // Mark - три состояния, 0 - нету информации, 1 - набрели на место, но бутылочку не нашли, 2 - нашли бутылочку
     private int mark;
 
-    public Place(LatLng latLng, String about, String tips, String imageUrl, long ID, int mark, int bonus) {
+    public Place(LatLng latLng, String about, String tips, String imageUrl, long ID, int mark, int bonus, int distance) {
         mLatLng = latLng;
         this.about = about;
         this.imageUrl = imageUrl;
@@ -25,6 +26,7 @@ public class Place {
         this.mark = mark;
         this.tips = tips;
         this.bonus = bonus;
+        this.distance = distance;
     }
 
     public Place() {

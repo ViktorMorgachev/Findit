@@ -61,6 +61,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMapView = (MapView) rootView.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
 
+        MapsInitializer.initialize(getContext());
 
         if (mMapView != null) {
 
@@ -71,13 +72,12 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
+
                     mCallBackListener.mapReady();
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationService.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
                 }
             });
 
-            MapsInitializer.initialize(getContext());
-        } else {
 
         }
 
@@ -176,6 +176,8 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mIAction = action;
 
         mMarkerPoints.clear();
+
+
 
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
