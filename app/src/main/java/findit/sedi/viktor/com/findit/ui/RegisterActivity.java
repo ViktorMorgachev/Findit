@@ -15,6 +15,8 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
@@ -28,6 +30,7 @@ import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 201;
     private FirebaseAuth mAuth;
 
     // View
@@ -57,6 +60,22 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    private boolean checkPlayServices() {
+        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
+        int resultCode = gApi.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (gApi.isUserResolvableError(resultCode)) {
+                gApi.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
+            } else {
+                Toast.makeText(this, getResources().getString(R.string.update_google_play_services), Toast.LENGTH_LONG).show();
+                finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+
     @Override
     public void onStart() {
         super.onStart();
@@ -64,6 +83,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
         updateUI(currentUser);
+
     }
 
     private void updateUI(FirebaseUser currentUser) {
@@ -99,6 +119,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void startNextActivity() {
+
+        checkPlayServices();
+
         startActivity(new Intent(this, PreviewActivity.class));
     }
 

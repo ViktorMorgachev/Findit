@@ -33,6 +33,7 @@ import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
 import com.google.android.gms.vision.barcode.zzb;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -96,91 +97,114 @@ public class QRCodeCameraActivity extends AppCompatActivity {
 
     private void initialiseDetectorsAndSources() {
 
-        mBarcodeDetector = new BarcodeDetector.Builder(this)
-                .setBarcodeFormats(Barcode.QR_CODE)
-                .build();
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
 
 
-        try {
-            if (!mBarcodeDetector.isOperational()) {
-                Toast.makeText(getApplicationContext(), "Не найдён детектор", Toast.LENGTH_LONG).show();
-                return;
+            mBarcodeDetector = new BarcodeDetector.Builder(this)
+                    .setBarcodeFormats(Barcode.ALL_FORMATS)
+                    .build();
+
+
+            try {
+                if (!mBarcodeDetector.isOperational()) {
+                    Toast.makeText(getApplicationContext(), "Не найдён детектор", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            } catch (Exception e) {
+                Toast.makeText(this, "Обновите Google Play Services!", Toast.LENGTH_LONG).show();
             }
-        } catch (Exception e) {
-            Toast.makeText(this, "Обновите Google Play Services!", Toast.LENGTH_LONG).show();
-        }
 
-        mCameraSource = new CameraSource.Builder(this, mBarcodeDetector)
-                .setRequestedPreviewSize(1920, 1080)
-                .setAutoFocusEnabled(true)
-                .setRequestedFps(24)
-                .build();
+            mCameraSource = new CameraSource.Builder(this, mBarcodeDetector)
+                    .setRequestedPreviewSize(1920, 1080)
+                    .setAutoFocusEnabled(true)
+                    .setRequestedFps(24)
+                    .build();
 
-        surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
-            @Override
-            public void surfaceCreated(SurfaceHolder holder) {
-                try {
-                    if (ActivityCompat.checkSelfPermission(QRCodeCameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
-                        mCameraSource.start(holder);
-                    } else {
-                        ActivityCompat.requestPermissions(QRCodeCameraActivity.this, new
-                                String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+            surfaceView.getHolder().addCallback(new SurfaceHolder.Callback() {
+                @Override
+                public void surfaceCreated(SurfaceHolder holder) {
+                    try {
+                        if (ActivityCompat.checkSelfPermission(QRCodeCameraActivity.this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                            mCameraSource.start(holder);
+                        } else {
+                            ActivityCompat.requestPermissions(QRCodeCameraActivity.this, new
+                                    String[]{Manifest.permission.CAMERA}, REQUEST_CAMERA_PERMISSION);
+                        }
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
 
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
 
-            }
-
-            @Override
-            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-            }
-
-            @Override
-            public void surfaceDestroyed(SurfaceHolder holder) {
-                if (mCameraSource != null) {
-                    mCameraSource.release();
+                @Override
+                public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
                 }
-            }
-        });
 
-        mBarcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
-            @Override
-            public void release() {
-                Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
-            }
+                @Override
+                public void surfaceDestroyed(SurfaceHolder holder) {
+                    mCameraSource.stop();
+                /*if (mBarcodeDetector != null) {
+                    if (mCameraSource != null)
+                        mCameraSource.release();
+                }*/
+           /*     if (mBarcodeDetector != null) {
+                    mBarcodeDetector.release();
+                }*/
+                }
+            });
 
-            @Override
-            public void receiveDetections(Detector.Detections<Barcode> detections) {
-                final SparseArray<Barcode> barcodes = detections.getDetectedItems();
-                if (barcodes.size() != 0) {
 
-                    txtBarcodeValue.post(new Runnable() {
-
-                        @Override
-                        public void run() {
-
-                            if (barcodes.valueAt(0).url != null) {
-                                txtBarcodeValue.removeCallbacks(null);
-                                intentData = barcodes.valueAt(0).url.url;
-                                txtBarcodeValue.setText(intentData);
-                                btnAction.setEnabled(true);
-                            } else {
-                                btnAction.setEnabled(false);
-                                intentData = barcodes.valueAt(0).displayValue;
-                                txtBarcodeValue.setText(intentData);
-
+            mBarcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
+                @Override
+                public void release() {
+                    Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
+                    if (mCameraSource != null) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                mCameraSource.release();
                             }
-                        }
-                    });
+                        });
 
-
+                    }
                 }
 
-            }
-        });
+                // Code working from other thread
+                @Override
+                public void receiveDetections(Detector.Detections<Barcode> detections) {
+                    final SparseArray<Barcode> barcodes = detections.getDetectedItems();
+                    if (barcodes.size() != 0) {
 
+                        txtBarcodeValue.post(new Runnable() {
+
+                            @Override
+                            public void run() {
+
+                                txtBarcodeValue.setText(intentData);
+
+                                if (barcodes.valueAt(0).url != null) {
+                                    txtBarcodeValue.removeCallbacks(null);
+                                    intentData = barcodes.valueAt(0).url.url;
+                                    txtBarcodeValue.setText(intentData);
+                                    btnAction.setEnabled(true);
+                                } else {
+                                    btnAction.setEnabled(true);
+                                    intentData = barcodes.valueAt(0).displayValue;
+                                    txtBarcodeValue.setText(intentData);
+
+                                }
+                            }
+                        });
+
+
+                    }
+
+                }
+            });
+        }
     }
 
 
@@ -193,22 +217,18 @@ public class QRCodeCameraActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mCameraSource != null) {
-            mCameraSource.stop();
-            mCameraSource.release();
-        }
+        if (LeakCanary.isInAnalyzerProcess(this)) {
+            // This process is dedicated to LeakCanary for heap analysis.
+            // You should not init your app in this process.
 
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mCameraSource != null) {
-            mCameraSource.stop();
-            mCameraSource.release();
+            if (mBarcodeDetector != null) {
+                mBarcodeDetector.release();
+                mCameraSource.release();
+            }
         }
     }
+
+
 }
 
 
