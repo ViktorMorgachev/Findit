@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import com.google.android.gms.maps.model.LatLng;
+
 @Entity
 public class User {
     private String phone;
@@ -11,6 +13,8 @@ public class User {
 
     @PrimaryKey
     @NonNull
+    private int ID;
+
     private String email;
     private int bonus;
     private String photoUrl;

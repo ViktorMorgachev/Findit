@@ -360,6 +360,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onStop() {
         super.onStop();
+        WorkManager.getInstance().cancelAllWork();
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 }

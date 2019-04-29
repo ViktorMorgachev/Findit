@@ -7,9 +7,9 @@ import findit.sedi.viktor.com.findit.data.PlaceManager;
 public class ManagersFactory {
 
     private PlaceManager mPlaceManager;
-    private UserManager mUserManager;
+    private UsersManager mUsersManager;
+    private PlayerManager mPlayerManager;
     private Context mContext;
-
 
 
     private static final ManagersFactory ourInstance = new ManagersFactory();
@@ -25,13 +25,13 @@ public class ManagersFactory {
         mContext = context;
     }
 
-    public UserManager getUserManager() {
+    public UsersManager getUsersManager() {
         if (mContext != null) {
-            if (mUserManager != null)
-                return mUserManager;
+            if (mUsersManager != null)
+                return mUsersManager;
             else {
-                mUserManager = new UserManager();
-                return mUserManager;
+                mUsersManager = new UsersManager();
+                return mUsersManager;
             }
         } else return null;
 
@@ -46,6 +46,17 @@ public class ManagersFactory {
             else {
                 mPlaceManager = new PlaceManager();
                 return mPlaceManager;
+            }
+        } else return null;
+    }
+
+    public PlayerManager getPlayerManager() {
+        if (mContext != null) {
+            if (mPlayerManager != null)
+                return mPlayerManager;
+            else {
+                mPlayerManager = new PlayerManager();
+                return mPlayerManager;
             }
         } else return null;
     }
