@@ -17,5 +17,7 @@ public interface KeyCommonSettings {
         String USER_PASSWORD = "USER_PASSWORD";
         String USER_EMAIL = "USER_EMAIL";
         String LOG_TAG = "FINDIT_LOG";
+        String KEY_ACTYIVE_GAME = "GAME_IS_ACTIVE";
+
     }
 }

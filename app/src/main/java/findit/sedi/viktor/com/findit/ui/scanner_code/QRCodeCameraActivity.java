@@ -145,7 +145,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
 
             @Override
             public void surfaceDestroyed(SurfaceHolder holder) {
-                Toast.makeText(getApplicationContext(), "Surface was destroed", Toast.LENGTH_SHORT).show();
+             //   Toast.makeText(getApplicationContext(), "Surface was destroed", Toast.LENGTH_SHORT).show();
 
                 if (mBarcodeDetector != null) {
                     mBarcodeDetector.release();
@@ -159,7 +159,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
         mBarcodeDetector.setProcessor(new Detector.Processor<Barcode>() {
             @Override
             public void release() {
-                Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
+               // Toast.makeText(getApplicationContext(), "To prevent memory leaks barcode scanner has been stopped", Toast.LENGTH_SHORT).show();
 
                 mBarcodeDetector = null;
                 mCameraSource = null;

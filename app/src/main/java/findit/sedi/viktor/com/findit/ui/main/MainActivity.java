@@ -36,9 +36,13 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.data.PlaceManager;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
@@ -48,6 +52,10 @@ import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 
 import static findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity.KEY_PLACE_ID;
 
+/**
+ * Главная активность которая будет управлять другими активностями возможно с помощью Cicerone
+ */
+
 public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener {
 
 
@@ -55,6 +63,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private GoogleMap mMap;
     private Fragment mFragment;
     private FloatingActionButton mFloatingActionButton;
+    // TODO снова запускаем лишь тогда когда игра активна
+    private PeriodicWorkRequest mPeriodicWorkRequest;
 
     //Values
     private FusedLocationProviderClient mFusedLocationClient;
@@ -64,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private final double fixedDistance = 1000;
     private final int REQUEST_LOCATION_PERMISSION = 134;
     private static final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-    private static LatLng sLatLng;
+    public static LatLng sLatLng;
     private List<MarkerOptions> mMarkerOptions = new ArrayList<>();
     private GoogleMapFragment mGoogleMapFragment;
     private CommonMapManager mCommonMapManager;
@@ -118,8 +128,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         setContentView(R.layout.activity_main);
 
-
-
+        mPeriodicWorkRequest =
+                new PeriodicWorkRequest.Builder(MyWorker.class, 5000, TimeUnit.SECONDS)
+                        .addTag("periodic_work").build();
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -160,12 +171,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
+        // Тут получаем значение из процесса используя LiveData, и обновляем точки
+        //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
+
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
         getLocation();
     }
 
@@ -215,8 +230,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             public void onMapLongClick(LatLng latLng) {
                 // Сначала при каждом удалении удаляем предыдущую, метку
                 // Ставим точку на карту
-
-
                 updateMap(DEFAULT_ZOOM, "");
             }
         });
@@ -312,6 +325,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }*/
 
+        // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
+        //  уведомление, что активных игр нет пока и не запускать
         if (id == R.id.nav_scan_code) {
             startActivity(new Intent(this, QRCodeCameraActivity.class));
             // Handle the camera action
