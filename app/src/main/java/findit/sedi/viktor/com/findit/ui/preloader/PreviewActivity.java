@@ -99,6 +99,7 @@ public class PreviewActivity extends Activity {
                         public void run() {
                             Toast.makeText(PreviewActivity.this, "Данные загруженны, " + placeHashMap.size() + "\n" + "Открытие карты", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(PreviewActivity.this, MainActivity.class));
+
                         }
                     });
 
