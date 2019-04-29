@@ -2,8 +2,6 @@ package findit.sedi.viktor.com.findit.common;
 
 import android.content.Context;
 
-import findit.sedi.viktor.com.findit.data.PlaceManager;
-
 public class ManagersFactory {
 
     private PlaceManager mPlaceManager;

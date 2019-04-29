@@ -1,13 +1,12 @@
-package findit.sedi.viktor.com.findit.data;
+package findit.sedi.viktor.com.findit.common;
 
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import findit.sedi.viktor.com.findit.common.Util;
+import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.data.cloud.firebase.database.FirebasePlacesStorage;
 
 public class PlaceManager {
@@ -35,7 +34,7 @@ public class PlaceManager {
         mFirebasePlacesStorage.savеPlacesToDatabase(places);
     }
 
-    public void markPlace(int id, int mark) {
+    public void markPlace(long id, int mark) {
         if (mPlaces.get(id) != null)
             mPlaces.get(id).setMark(mark);
     }
@@ -50,7 +49,7 @@ public class PlaceManager {
 
 
     // Получить id
-    public Place getPlaceByID(int id) {
+    public Place getPlaceByID(long id) {
         return mPlaces.get(id);
     }
 

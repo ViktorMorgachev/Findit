@@ -2,8 +2,12 @@ package findit.sedi.viktor.com.findit.data;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import findit.sedi.viktor.com.findit.exceptions.UncopatibleValue;
+
 
 public class Place {
+
+
     private int bonus; // Сколько бонусов у этой бутылочки
     private long IDs; // Идентификатор бутылочки 98797089687
     private LatLng mLatLng;
@@ -29,7 +33,9 @@ public class Place {
         this.distance = distance;
     }
 
-    public Place() {
+
+    public int getBonus() {
+        return bonus;
     }
 
     public LatLng getLatLng() {
@@ -70,6 +76,14 @@ public class Place {
     }
 
     public void setMark(int mark) {
+        if (mark >= 3 || mark < 0) {
+            try {
+                throw new UncopatibleValue();
+            } catch (UncopatibleValue e) {
+                e.printStackTrace();
+                e.getMessage();
+            }
+        }
         this.mark = mark;
     }
 

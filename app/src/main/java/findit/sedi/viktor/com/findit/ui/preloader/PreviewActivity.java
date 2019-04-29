@@ -6,19 +6,16 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data.Place;
-import findit.sedi.viktor.com.findit.data.PlaceManager;
+import findit.sedi.viktor.com.findit.common.PlaceManager;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 import pl.droidsonroids.gif.GifImageView;

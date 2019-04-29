@@ -9,8 +9,16 @@ import findit.sedi.viktor.com.findit.data.cloud.firebase.database.FirebasePlayer
 //
 public class PlayerManager {
 
-    private Map<Integer, Player> mPlayerMap = new HashMap<>();
+    private Map<Long, Player> mPlayerMap = new HashMap<>();
     private FirebasePlayerStorage mFirebasePlayerStorage = FirebasePlayerStorage.getInstance();
+
+    public PlayerManager() {
+        // Инициализируем с БД
+        init();
+    }
+
+    private void init() {
+    }
 
 
     public void addPlayer(Player player) {
