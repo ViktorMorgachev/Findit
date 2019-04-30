@@ -4,6 +4,10 @@ import android.content.Context;
 
 import com.google.android.gms.maps.model.LatLng;
 
+import java.util.List;
+import java.util.Map;
+
+import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
 
@@ -90,6 +94,7 @@ public class CommonMapManager {
 
     }
 
+
     public void clearMap() {
 
         if (mServiceType == ServiceType.GOOGLE) {
@@ -114,6 +119,30 @@ public class CommonMapManager {
             mGoogleMapFragment.deletePoints();
         }
 
+
+    }
+
+    public void updateMe(LatLng latLng, int ic_location_24dp) {
+
+        if (mServiceType == ServiceType.GOOGLE) {
+            mGoogleMapFragment.updateLocation(latLng, ic_location_24dp);
+        }
+
+    }
+
+    public void initPoints(List<Place> places) {
+
+        if (mServiceType == ServiceType.GOOGLE) {
+            mGoogleMapFragment.initPoints(places);
+        }
+
+    }
+
+    public void updatePoint(long id, long mark) {
+
+        if (mServiceType == ServiceType.GOOGLE) {
+            mGoogleMapFragment.updatePoint(id, mark);
+        }
 
     }
 

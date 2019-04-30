@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -43,6 +44,7 @@ import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
+import findit.sedi.viktor.com.findit.data.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
@@ -70,7 +72,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private final int DEFAULT_ZOOM = 15;
     private LocationResult mLocationResult;
     private LocationCallback mLocationCallback;
-    private final double fixedDistance = 1000;
     private final int REQUEST_LOCATION_PERMISSION = 134;
     private static final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     public static LatLng sLatLng;
@@ -110,6 +111,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         public void mapReady() {
             if (sLatLng != null)
                 updateMap(DEFAULT_ZOOM, "");
+            // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
+            CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
         }
     };
 
@@ -208,14 +211,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     // Этот метод вытаскивает ID если место на карте существует, по которому запустим активность для показа подсказки о месте
+    // Иначе обновим карту поставим дополнительные точки, (соответствующие метки)
     private void checkMapForPlaces() {
-        long id = mPlaceManager.getIDsPlaceIfValid(sLatLng);
 
-        if (id != 0) {
+
+        String id = mPlaceManager.getValidIDsOfPlaced(sLatLng);
+
+        if (id != null && !id.equalsIgnoreCase("")) {
             // Запускаем активность и отправляем ID в неё
+            // Одновременно меняем статус на сервере что на это место набрели
             Intent intent = new Intent(this, PlaceAboutActivity.class);
             intent.putExtra(KEY_PLACE_ID, id);
             startActivity(intent);
+
+            ServerManager.getInstance().sendCode(id, "detected");
         }
 
 
@@ -237,8 +246,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
     private void updateMap(float zoom, String tittle) {
+
         mCommonMapManager.zoomTo(sLatLng, DEFAULT_ZOOM);
-        mCommonMapManager.addPoint(sLatLng, R.drawable.ic_location_24dp, null);
+        mCommonMapManager.updateMe(sLatLng, R.drawable.ic_location_24dp);
     }
 
 
@@ -361,5 +371,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onStop();
         WorkManager.getInstance().cancelAllWork();
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+    }
+
+    // Будем обновлять по ID только не обходимую точку
+    private void updatePoint(long ID, long mark) {
+
+        CommonMapManager.getInstance().updatePoint(ID, mark);
+
     }
 }

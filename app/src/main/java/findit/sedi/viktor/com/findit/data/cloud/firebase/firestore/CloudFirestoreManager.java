@@ -17,7 +17,9 @@ import java.util.Map;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data.Gender;
+import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.data.Player;
+import findit.sedi.viktor.com.findit.data.User;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
@@ -26,10 +28,11 @@ public class CloudFirestoreManager {
     private static final CloudFirestoreManager ourInstance = new CloudFirestoreManager();
     private static final String KEY_POINTS_PATH = "points";
     private static final String KEY_USERS_INFO = "users";
-
+    private static final String KEY_PLAYER_PATH = "players";
     // Придётся ставить хак для работы с Enum
     private int genderType;
     private Gender mGender;
+    private DocumentReference document;
     private FirebaseFirestore mFirebaseFirestore;
     private Map<String, Object> point = new HashMap<>();
 
@@ -41,41 +44,34 @@ public class CloudFirestoreManager {
         mFirebaseFirestore = FirebaseFirestore.getInstance();
     }
 
-    public void addPoint(LatLng latLng, String icon, long ID) {
+    public void updatePoint(String icon, String ID) {
 
         point.clear();
-        point.put("Point", latLng);
         point.put("Icon", icon);
         point.put("ID", ID);
 
-        mFirebaseFirestore.collection(KEY_POINTS_PATH)
-                .add(point)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Toast.makeText(App.instance, "Point was added", Toast.LENGTH_LONG).show();
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(App.instance, "Point was not added", Toast.LENGTH_LONG).show();
-                    }
-                });
+        document = mFirebaseFirestore.collection(KEY_POINTS_PATH).document(String.valueOf(ID));
+
+        document.update("Icon", icon)
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(App.instance, "Обновленно успешно", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e ->
+                        Toast.makeText(App.instance, "Ошибка обновления", Toast.LENGTH_SHORT).show());
 
 
     }
 
     public void getPoint() {
 
-        mFirebaseFirestore.collection(KEY_USERS_INFO).get()
+        mFirebaseFirestore.collection(KEY_POINTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-                            ManagersFactory.getInstance().getPlaceManager().markPlace(267354, 2);
+
+                            ManagersFactory.getInstance().getPlaceManager().markPlace(document.getLong("ID"), document.getLong("Icon"));
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
                     } else {
@@ -87,7 +83,7 @@ public class CloudFirestoreManager {
 
     public void getPlayers() {
 
-        mFirebaseFirestore.collection(KEY_POINTS_PATH).get()
+        mFirebaseFirestore.collection(KEY_PLAYER_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
@@ -125,5 +121,23 @@ public class CloudFirestoreManager {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
                     }
                 });
+    }
+
+    public void updateUser(User user) {
+
+        mFirebaseFirestore.collection(KEY_USERS_INFO).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            // Обновляем значение по ID что эти точки уже нашли другие пользователи
+
+                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                        }
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
     }
 }

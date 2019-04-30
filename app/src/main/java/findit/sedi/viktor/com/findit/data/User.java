@@ -10,15 +10,23 @@ import com.google.android.gms.maps.model.LatLng;
 public class User {
     private String phone;
     private String name;
-
     @PrimaryKey
     @NonNull
-    private int ID;
-
+    private String ID;
     private String email;
-    private int bonus;
+    private long bonus;
     private String photoUrl;
     private String password;
+
+    public boolean isOffline() {
+        return isOffline;
+    }
+
+    public void setOffline(boolean offline) {
+        isOffline = offline;
+    }
+
+    private boolean isOffline = true;
 
     public String getPhone() {
         return phone;
@@ -45,11 +53,11 @@ public class User {
         this.email = email;
     }
 
-    public int getBonus() {
+    public long getBonus() {
         return bonus;
     }
 
-    public void setBonus(int bonus) {
+    public void setBonus(long bonus) {
         this.bonus = bonus;
     }
 

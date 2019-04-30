@@ -1,81 +1,44 @@
 package findit.sedi.viktor.com.findit.data;
 
+import android.support.annotation.NonNull;
+
 import com.google.android.gms.maps.model.LatLng;
+
+import java.util.List;
 
 import findit.sedi.viktor.com.findit.exceptions.UncopatibleValue;
 
 
 public class Place {
 
-
-    private int bonus; // Сколько бонусов у этой бутылочки
-    private long IDs; // Идентификатор бутылочки 98797089687
+    @NonNull
+    private long bonus; // Сколько бонусов у этой бутылочки
+    @NonNull
+    private String IDs; // Идентификатор бутылочки 98797089687
+    @NonNull
     private LatLng mLatLng;
+    @NonNull
     private String about;
-    private int distance = 500; // Дистанция в метрах до точки
-    // Перед тем как пользователь нашёл на место
-    private String tips;
-    // Думаю показывать позже когда пользователь найдёт и просканирует штрих код
-    private String imageUrl;
-
+    private long distance = 500; // Дистанция в метрах до точки
+    private List<String> tips;  // Перед тем как пользователь нашёл на место
+    private String imageUrl; // Думаю показывать позже когда пользователь найдёт и просканирует штрих код
 
     // Mark - три состояния, 0 - нету информации, 1 - набрели на место, но бутылочку не нашли, 2 - нашли бутылочку
-    private int mark;
+    private long mark;
 
-    public Place(LatLng latLng, String about, String tips, String imageUrl, long ID, int mark, int bonus, int distance) {
+    public Place(LatLng latLng, String about, String imageUrl, String ID, int mark, int bonus, int distance, List<String> tips) {
         mLatLng = latLng;
         this.about = about;
         this.imageUrl = imageUrl;
         this.IDs = ID;
         this.mark = mark;
-        this.tips = tips;
         this.bonus = bonus;
         this.distance = distance;
+        this.tips = tips;
     }
 
 
-    public int getBonus() {
-        return bonus;
-    }
-
-    public LatLng getLatLng() {
-        return mLatLng;
-    }
-
-    public void setLatLng(LatLng latLng) {
-        mLatLng = latLng;
-    }
-
-    public String getAbout() {
-        return about;
-    }
-
-    public void setAbout(String about) {
-        this.about = about;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public long getID() {
-        return IDs;
-    }
-
-    public void setID(int ID) {
-        this.IDs = ID;
-    }
-
-
-    public int getMark() {
-        return mark;
-    }
-
-    public void setMark(int mark) {
+    public void setMark(long mark) {
         if (mark >= 3 || mark < 0) {
             try {
                 throw new UncopatibleValue();
@@ -87,4 +50,26 @@ public class Place {
         this.mark = mark;
     }
 
+    @NonNull
+    public long getBonus() {
+        return bonus;
+    }
+
+    public long getMark() {
+        return mark;
+    }
+
+    @NonNull
+    public String getIDs() {
+        return IDs;
+    }
+
+    @NonNull
+    public LatLng getLatLng() {
+        return mLatLng;
+    }
+
+    public long getDistance() {
+        return distance;
+    }
 }

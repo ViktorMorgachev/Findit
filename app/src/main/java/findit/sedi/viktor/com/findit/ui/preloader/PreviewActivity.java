@@ -16,6 +16,7 @@ import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
+import findit.sedi.viktor.com.findit.data.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 import pl.droidsonroids.gif.GifImageView;
@@ -73,21 +74,23 @@ public class PreviewActivity extends Activity {
                     HashMap<Long, Place> placeHashMap = new HashMap<>();
                     Place place;
 
-                    place = new Place(new LatLng(42.87592405329111, 74.61399380117655),
+                    ServerManager.getInstance().getPlaces();
+
+                   /* place = new Place(new LatLng(42.87592405329111, 74.61399380117655),
                             "История ЦУМа насчитывает вот уже более сорока лет. Это футуристической формы магазин разместил в себе магазинчики с разнообразным товаром от сотовых телефонов, одежды, обуви и косметики до крупной бытовой техники и сувениров.\n" +
                                     "ЦУМ окружен прекрасным архитектурным ансамблем, состоящим из прекрасно ухоженных аллей над которыми свисают старые плакучие ивы с одной стороны, а с другой стороны&nbsp; словно охраняют воды фонтанов брызги которых переливаются в радуге и охлаждают отдыхающих в знойный день.\n" +
                                     "Там же можно найти и кафешки, где можно насладиться чашечкой ароматного кофе или бодрящего чая. Вокруг ЦУМа находится очень много и других достопримечательностей столицы",
                             "Универмаг, располагающийся на бульваре Дзержинского и именуемый местными жителями «Люкс» в 1956 году",
-                            getResources().getString(R.string.url_1), 267354, 0, 120, 500);
+                            getResources().getString(R.string.url_1), 267354, 0, 120, 500);*/
 
 
-                    placeHashMap.put(place.getID(), place);
+                    // placeHashMap.put(place.getID(), place);
 
 
-                    place = new Place(new LatLng(42.87936940858719, 74.61610838770866), "Это Вечный огонь, бла, бла, бла...", "Вечный огонь",
-                            getResources().getString(R.string.url_4), 826442, 0, 56, 1000);
+                /*    place = new Place(new LatLng(42.87936940858719, 74.61610838770866), "Это Вечный огонь, бла, бла, бла...", "Вечный огонь",
+                            getResources().getString(R.string.url_4), 826442, 0, 56, 1000);*/
 
-                    placeHashMap.put(place.getID(), place);
+                    //    placeHashMap.put(place.getID(), place);
 
                     mPlaceManager.savePlaces(placeHashMap);
 

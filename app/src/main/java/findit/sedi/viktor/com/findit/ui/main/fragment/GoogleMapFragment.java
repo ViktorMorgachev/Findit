@@ -19,9 +19,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.Util;
+import findit.sedi.viktor.com.findit.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 
@@ -37,8 +39,10 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     private IAction mIAction;
 
     // Logic
+    private MarkerOptions mMarkerOptionsMe = new MarkerOptions();
     private List<MarkerOptions> mMarkerPoints = new ArrayList<>();
 
+    private MarkerOptions mMarkerOptions;
 
     private static GoogleMapFragment instance = null;
 
@@ -137,10 +141,12 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         if (mMap != null) {
             mMap.clear();
 
-            // Рисуем точки
+            // Рисуем точки только
             for (int i = 0; i < mMarkerPoints.size(); i++) {
                 mMap.addMarker(mMarkerPoints.get(i));
             }
+
+            mMap.addMarker(mMarkerOptionsMe);
 
         }
     }
@@ -171,18 +177,21 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         return mMap;
     }
 
+    public void updateLocation(LatLng latLng, int drawable) {
+
+        mMarkerOptionsMe.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
+        mMarkerOptionsMe.position(latLng);
+
+    }
+
     public void addPoint(LatLng latLng, int drawable, IAction action) {
 
         mIAction = action;
 
-        mMarkerPoints.clear();
-
-
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
-        markerOptions.position(latLng);
-        mMarkerPoints.add(markerOptions);
+        mMarkerOptions = new MarkerOptions();
+        mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
+        mMarkerOptions.position(latLng);
+        mMarkerPoints.add(mMarkerOptions);
 
 
         updateMap();
@@ -226,4 +235,48 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         updateMap();
     }
 
+    public void initPoints(List<Place> places) {
+
+
+        mMarkerOptions = new MarkerOptions();
+
+        for (int i = 0; i < places.size(); i++) {
+            if (places.get(i).getMark() == 2) {
+                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
+            } else if (places.get(i).getMark() == 1) {
+
+            } else {
+
+            }
+            mMarkerOptions.position(places.get(i).getLatLng());
+            mMarkerOptions.title(String.valueOf(places.get(i).getIDs()));
+            mMarkerPoints.add(mMarkerOptions);
+        }
+
+
+        updateMap();
+
+
+    }
+
+    // В надежде что  пустые icon можно инициализировать
+    public void updatePoint(long id, long mark) {
+
+        // Ищем точку у которой идентификатор необходимый
+        for (int i = 0; i < mMarkerPoints.size(); i++) {
+            if (mMarkerPoints.get(i).getTitle().equalsIgnoreCase(String.valueOf(id))) {
+                if (mark == 2) {
+                    mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
+                } else if (mark == 1) {
+
+                } else {
+
+                }
+                return;
+            }
+        }
+
+        updateMap();
+
+    }
 }

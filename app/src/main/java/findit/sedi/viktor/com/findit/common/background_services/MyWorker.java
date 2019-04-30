@@ -9,6 +9,7 @@ import androidx.work.WorkerParameters;
 import findit.sedi.viktor.com.findit.data.cloud.firebase.firestore.CloudFirestoreManager;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 
+// Он будет в фоне работать с TimerTaskами обновлять информацию с сервера в фоне постояянно, если это необходимо
 public class MyWorker extends Worker {
 
 
