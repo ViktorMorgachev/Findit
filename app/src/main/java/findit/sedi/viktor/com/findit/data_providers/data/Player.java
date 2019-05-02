@@ -1,7 +1,9 @@
-package findit.sedi.viktor.com.findit.data;
+package findit.sedi.viktor.com.findit.data_providers.data;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.firebase.firestore.GeoPoint;
+
+import findit.sedi.viktor.com.findit.data_providers.Gender;
 
 public class Player {
 

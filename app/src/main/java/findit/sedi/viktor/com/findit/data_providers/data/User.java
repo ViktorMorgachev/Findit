@@ -1,10 +1,8 @@
-package findit.sedi.viktor.com.findit.data;
+package findit.sedi.viktor.com.findit.data_providers.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
-
-import com.google.android.gms.maps.model.LatLng;
 
 @Entity
 public class User {

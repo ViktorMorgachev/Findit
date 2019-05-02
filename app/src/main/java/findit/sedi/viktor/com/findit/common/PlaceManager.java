@@ -6,8 +6,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import findit.sedi.viktor.com.findit.data.Place;
-import findit.sedi.viktor.com.findit.data.cloud.firebase.database.FirebasePlacesStorage;
+import findit.sedi.viktor.com.findit.data_providers.data.Place;
+import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlacesStorage;
 
 public class PlaceManager {
 

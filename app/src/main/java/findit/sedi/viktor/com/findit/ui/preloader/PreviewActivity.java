@@ -8,15 +8,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.HashMap;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data.Place;
+import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
-import findit.sedi.viktor.com.findit.data.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 import pl.droidsonroids.gif.GifImageView;

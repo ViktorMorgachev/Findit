@@ -1,15 +1,13 @@
 package findit.sedi.viktor.com.findit;
 
 import android.app.Application;
-import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.support.multidex.MultiDex;
 
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-import findit.sedi.viktor.com.findit.data.room.AppDatabase;
+import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 
 public class App extends Application {
 

@@ -1,7 +1,6 @@
 package findit.sedi.viktor.com.findit.common;
 
-import findit.sedi.viktor.com.findit.data.User;
-import findit.sedi.viktor.com.findit.data.cloud.firebase.database.FirebaseUserStorage;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 
 public class UsersManager {
 

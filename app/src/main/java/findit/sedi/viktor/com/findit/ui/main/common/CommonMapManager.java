@@ -5,9 +5,8 @@ import android.content.Context;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
-import java.util.Map;
 
-import findit.sedi.viktor.com.findit.data.Place;
+import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
 

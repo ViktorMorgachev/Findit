@@ -19,11 +19,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.Util;
-import findit.sedi.viktor.com.findit.data.Place;
+import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 

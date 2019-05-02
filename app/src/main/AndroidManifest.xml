@@ -59,6 +59,7 @@
         <activity android:name=".ui.preloader.PreviewActivity"></activity>
         <activity
             android:name=".ui.scanner_code.QRCodeCameraActivity" />
+        <activity android:name=".ui.tournament.TounamentActivity" />
 
 
     </application>

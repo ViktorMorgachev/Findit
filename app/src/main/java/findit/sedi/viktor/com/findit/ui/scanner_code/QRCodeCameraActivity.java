@@ -1,20 +1,9 @@
 package findit.sedi.viktor.com.findit.ui.scanner_code;
 
 import android.Manifest;
-import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.BuildConfig;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.util.SparseArray;
@@ -29,22 +18,14 @@ import android.widget.Toast;
 
 import com.google.android.gms.vision.CameraSource;
 import com.google.android.gms.vision.Detector;
-import com.google.android.gms.vision.Frame;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.google.android.gms.vision.barcode.BarcodeDetector;
-import com.google.android.gms.vision.barcode.zzb;
-import com.squareup.leakcanary.LeakCanary;
 
-import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.data.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
-
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class QRCodeCameraActivity extends AppCompatActivity {
     // Views
@@ -88,7 +69,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(QRCodeCameraActivity.this, "Отправленно", Toast.LENGTH_LONG).show();
-                ServerManager.getInstance().sendCode((long) 267354);
+                ServerManager.getInstance().sendCode(code, "fond");
                 QRCodeCameraActivity.this.onBackPressed();
             }
         });
@@ -188,8 +169,10 @@ public class QRCodeCameraActivity extends AppCompatActivity {
                                 btnAction.setEnabled(true);
                                 intentData = barcodes.valueAt(0).displayValue;
                                 txtBarcodeValue.setText(intentData);
+
                             }
 
+                            code = barcodes.valueAt(0).displayValue;
 
                         }
                     });

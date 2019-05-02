@@ -1,4 +1,4 @@
-package findit.sedi.viktor.com.findit.data.room;
+package findit.sedi.viktor.com.findit.data_providers.room;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
@@ -7,7 +7,7 @@ import android.arch.persistence.room.Query;
 
 import java.util.List;
 
-import findit.sedi.viktor.com.findit.data.User;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 
 @Dao
 public interface UserDao {

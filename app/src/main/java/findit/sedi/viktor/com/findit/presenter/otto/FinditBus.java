@@ -3,15 +3,17 @@ package findit.sedi.viktor.com.findit.presenter.otto;
 import android.os.Handler;
 import android.os.Looper;
 
+import com.squareup.otto.Bus;
+
 
 public class FinditBus {
     private static FinditBus mThis;
     private Bus mBus = new Bus();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
 
-    public static SediBus getInstance() {
+    public static FinditBus getInstance() {
         if (mThis == null)
-            mThis = new SediBus();
+            mThis = new FinditBus();
         return mThis;
     }
 

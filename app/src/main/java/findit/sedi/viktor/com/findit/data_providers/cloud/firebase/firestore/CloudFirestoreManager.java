@@ -1,12 +1,8 @@
-package findit.sedi.viktor.com.findit.data.cloud.firebase.firestore;
+package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -16,10 +12,9 @@ import java.util.Map;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data.Gender;
-import findit.sedi.viktor.com.findit.data.Place;
-import findit.sedi.viktor.com.findit.data.Player;
-import findit.sedi.viktor.com.findit.data.User;
+import findit.sedi.viktor.com.findit.data_providers.Gender;
+import findit.sedi.viktor.com.findit.data_providers.data.Player;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 

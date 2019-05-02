@@ -1,4 +1,4 @@
-package findit.sedi.viktor.com.findit.data;
+package findit.sedi.viktor.com.findit.data_providers;
 
 public class Prefs {
     private static final Prefs ourInstance = new Prefs();

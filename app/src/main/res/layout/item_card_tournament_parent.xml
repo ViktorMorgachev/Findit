@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <TextView
+                android:id="@+id/tv_id_rournament"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:text="@string/tounament_id"
+                android:textColor="@android:color/black" />
+
+            <TextView
+
+                android:id="@+id/tv_date_from"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start_date"
+                android:textColor="@android:color/black" />
+
+            <TextView
+
+                android:id="@+id/tv_date_to"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/end_date"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tv_tounament_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/tounament_name"
+                android:textColor="@android:color/black" />
+
+            <TextView
+
+                android:id="@+id/tv_tournament_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/tounament_type"
+                android:textColor="@android:color/black" />
+            <TextView
+
+                android:id="@+id/tv_total_players"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_players"
+                android:textColor="@android:color/black" />
+
+            <TextView
+
+                android:id="@+id/tv_count_of_teams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/count_of_commands"
+                android:textColor="@android:color/black" />
+
+
+
+            <TextView
+
+                android:id="@+id/tv_difficulty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/difficulty"
+                android:textColor="@android:color/black" />
+
+            <RatingBar
+                android:id="@+id/rt_dificulty"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:rating="0" />
+
+
+
+
+        </LinearLayout>
+
+
+    </android.support.v7.widget.CardView>
+
+</android.support.constraint.ConstraintLayout>

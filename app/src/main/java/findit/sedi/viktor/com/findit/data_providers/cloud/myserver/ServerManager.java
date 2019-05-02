@@ -1,8 +1,8 @@
-package findit.sedi.viktor.com.findit.data.cloud.myserver;
+package findit.sedi.viktor.com.findit.data_providers.cloud.myserver;
 
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data.User;
-import findit.sedi.viktor.com.findit.data.cloud.firebase.firestore.CloudFirestoreManager;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
 
 public class ServerManager {
     private static final ServerManager ourInstance = new ServerManager();

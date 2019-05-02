@@ -3,8 +3,8 @@ package findit.sedi.viktor.com.findit.common;
 import java.util.HashMap;
 import java.util.Map;
 
-import findit.sedi.viktor.com.findit.data.Player;
-import findit.sedi.viktor.com.findit.data.cloud.firebase.database.FirebasePlayerStorage;
+import findit.sedi.viktor.com.findit.data_providers.data.Player;
+import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlayerStorage;
 
 //
 public class PlayerManager {
