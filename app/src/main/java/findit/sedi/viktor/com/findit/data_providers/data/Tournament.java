@@ -1,5 +1,7 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
+import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
+
 import java.util.List;
 
 public class Tournament {
