@@ -1,40 +1,130 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
+import com.google.firebase.Timestamp;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 
 import java.util.List;
 
 public class Tournament {
 
-    private String DateFrom;
-    private String DateTo;
+    private Timestamp DateFrom;
+    private Timestamp DateTo;
     private String Describe;
     private List<String> tips;
     private long totalBonuses;
     private TournamentType mTournamentType;
     private long difficulty;
-    private long players;
+    private List<String> playersIDs;
     private String ID;
     // Количество команд
-    private long teams;
-    private List<Team> namesOfTeams;
+    private List<String> mTeamsIDs;
 
-    public Tournament(String dateFrom, String dateTo, String describe, List<String> tips, long totalBonuses,
-                      long tournamentType, long difficulty, long players, String ID, long teams, List<Team> namesOfTeams) {
+    public Timestamp getDateFrom() {
+        return DateFrom;
+    }
+
+    public void setDateFrom(Timestamp dateFrom) {
+        DateFrom = dateFrom;
+    }
+
+    public Timestamp getDateTo() {
+        return DateTo;
+    }
+
+    public void setDateTo(Timestamp dateTo) {
+        DateTo = dateTo;
+    }
+
+    public String getDescribe() {
+        return Describe;
+    }
+
+    public void setDescribe(String describe) {
+        Describe = describe;
+    }
+
+    public List<String> getTips() {
+        return tips;
+    }
+
+    public void setTips(List<String> tips) {
+        this.tips = tips;
+    }
+
+    public long getTotalBonuses() {
+        return totalBonuses;
+    }
+
+    public void setTotalBonuses(long totalBonuses) {
+        this.totalBonuses = totalBonuses;
+    }
+
+    public TournamentType getTournamentType() {
+        return mTournamentType;
+    }
+
+    public void setTournamentType(TournamentType tournamentType) {
+        mTournamentType = tournamentType;
+    }
+
+    public long getDifficulty() {
+        return difficulty;
+    }
+
+    public void setDifficulty(long difficulty) {
+        this.difficulty = difficulty;
+    }
+
+
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(String ID) {
+        this.ID = ID;
+    }
+
+    public List<String> getTeams() {
+        return mTeamsIDs;
+    }
+
+    public void setTeams(List<String> teams) {
+        mTeamsIDs = teams;
+    }
+
+
+    public Tournament(Timestamp dateFrom, Timestamp dateTo, String describe, List<String> tips, long totalBonuses,
+                      TournamentType tournamentType, long difficulty, List<String> playersIDs, String ID, List<String> teamsIDs) {
         DateFrom = dateFrom;
         DateTo = dateTo;
         Describe = describe;
         this.tips = tips;
         this.totalBonuses = totalBonuses;
-        mTournamentType = convertIntToTournamentType(tournamentType);
+        mTournamentType = tournamentType;
         this.difficulty = difficulty;
-        this.players = players;
+        this.playersIDs = playersIDs;
         this.ID = ID;
-        this.teams = teams;
-        this.namesOfTeams = namesOfTeams;
+        mTeamsIDs = teamsIDs;
     }
 
-    public TournamentType convertIntToTournamentType(long value) {
+
+    public List<String> getPlayersIDs() {
+        return playersIDs;
+    }
+
+    public void setPlayersIDs(List<String> playersIDs) {
+        this.playersIDs = playersIDs;
+    }
+
+    public List<String> getTeamsIDs() {
+        return mTeamsIDs;
+    }
+
+    public void setTeamsIDs(List<String> teamsIDs) {
+        mTeamsIDs = teamsIDs;
+    }
+
+    public static TournamentType convertIntToTournamentType(long value) {
 
         if (value == 0)
             return TournamentType.One_By_One;

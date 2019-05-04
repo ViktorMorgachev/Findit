@@ -7,13 +7,17 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.Gender;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
+import findit.sedi.viktor.com.findit.data_providers.data.Team;
+import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
@@ -24,9 +28,15 @@ public class CloudFirestoreManager {
     private static final String KEY_POINTS_PATH = "points";
     private static final String KEY_USERS_INFO = "users";
     private static final String KEY_PLAYER_PATH = "players";
+    private static final String KEY_TOURNAMENTS_PATH = "tournamentTeams";
+    private static final String KEY_TEAMS_PATH = "teams";
+
+    // Вынесем его так же как сделали в Tournament
     // Придётся ставить хак для работы с Enum
     private int genderType;
     private Gender mGender;
+
+
     private DocumentReference document;
     private FirebaseFirestore mFirebaseFirestore;
     private Map<String, Object> point = new HashMap<>();
@@ -120,13 +130,15 @@ public class CloudFirestoreManager {
 
     public void updateUser(User user) {
 
-        mFirebaseFirestore.collection(KEY_USERS_INFO).get()
+        mFirebaseFirestore.collection(KEY_POINTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
+                            // Карта при обновлени автоматически подхватит измененения
 
+                            ManagersFactory.getInstance().getPlaceManager().markPlace(document.getLong("ID"), document.getLong("Icon"));
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
                     } else {
@@ -135,4 +147,70 @@ public class CloudFirestoreManager {
                 });
 
     }
+
+
+    // Вытаскиваем все команды для начала
+    // После уже просто будем инициализировать по идентификаторам списко в обьект Tournament
+    private void getAllTeams() {
+
+        FirebaseFirestore.getInstance().collection(KEY_TEAMS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                            if (document.exists()) {
+
+                                ManagersFactory.getInstance().getTeamManager().addTeam(
+                                        new Team(document.getString("TournamentID"),
+                                                (List<String>) document.get("PlayersIDs"),
+                                                document.getId(),
+                                                document.getString("Name")));
+                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            }
+                        }
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+    }
+
+
+    private void getTournaments() {
+
+        mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                            if (document.exists()) {
+
+                                ManagersFactory.getInstance().getTournamentManager().addTournament(
+                                        new Tournament(document.getTimestamp("DateFrom"),
+                                                document.getTimestamp("DateTo"),
+                                                document.getString("Describe"),
+                                                (ArrayList<String>) document.get("Tips"),
+                                                document.getLong("TotalBonuses"),
+                                                Tournament.convertIntToTournamentType(document.getLong("Type")),
+                                                document.getLong("Difficulty"),
+                                                (ArrayList<String>) document.get("PlayersIDs"),
+                                                document.getId(),
+                                                (ArrayList<String>) document.get("TeamsIds")
+                                        )
+                                );
+
+                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            }
+                        }
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+    }
+
+
 }

@@ -6,6 +6,8 @@ public class ManagersFactory {
 
     private PlaceManager mPlaceManager;
     private UsersManager mUsersManager;
+    private TeamManager mTeamManager;
+    private TournamentManager mTournamentManager;
     private PlayerManager mPlayerManager;
     private Context mContext;
 
@@ -55,6 +57,28 @@ public class ManagersFactory {
             else {
                 mPlayerManager = new PlayerManager();
                 return mPlayerManager;
+            }
+        } else return null;
+    }
+
+    public TournamentManager getTournamentManager() {
+        if (mContext != null) {
+            if (mTournamentManager != null)
+                return mTournamentManager;
+            else {
+                mTournamentManager = new TournamentManager();
+                return mTournamentManager;
+            }
+        } else return null;
+    }
+
+    public TeamManager getTeamManager() {
+        if (mContext != null) {
+            if (mTeamManager != null)
+                return mTeamManager;
+            else {
+                mTeamManager = new TeamManager();
+                return mTeamManager;
             }
         } else return null;
     }

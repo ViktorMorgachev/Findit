@@ -75,4 +75,12 @@ public class User {
         this.password = password;
     }
 
+    @NonNull
+    public String getID() {
+        return ID;
+    }
+
+    public void setID(@NonNull String ID) {
+        this.ID = ID;
+    }
 }

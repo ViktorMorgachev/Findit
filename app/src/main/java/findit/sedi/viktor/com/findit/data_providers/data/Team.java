@@ -1,17 +1,53 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
+import java.util.List;
+
 public class Team {
 
     private String TournamentID;
-    private long players;
+    private List<String> playersIds;
+    private String TeamID;
+    private String name;
 
 
-    public Team(String tournamentID, long players, String name) {
+    public Team(String tournamentID, List<String> playersIds, String teamID, String name) {
         TournamentID = tournamentID;
-        this.players = players;
+        this.playersIds = playersIds;
+        TeamID = teamID;
         this.name = name;
     }
 
-    private String name;
 
+    public List<String> getPlayersIds() {
+        return playersIds;
+    }
+
+    public void setPlayersIds(List<String> playersIds) {
+        this.playersIds = playersIds;
+    }
+
+    public String getTournamentID() {
+        return TournamentID;
+    }
+
+    public void setTournamentID(String tournamentID) {
+        TournamentID = tournamentID;
+    }
+
+
+    public String getTeamID() {
+        return TeamID;
+    }
+
+    public void setTeamID(String teamID) {
+        TeamID = teamID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 }

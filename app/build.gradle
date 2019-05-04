@@ -1,5 +1,4 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.jakewharton.butterknife'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 
@@ -22,19 +21,14 @@ android {
         }
     }
     compileOptions {
-
-
         targetCompatibility JavaVersion.VERSION_1_8
         sourceCompatibility JavaVersion.VERSION_1_8
-
-
-        sourceCompatibility = '1.8'
-        targetCompatibility = '1.8'
     }
 
     dataBinding {
         enabled = true
     }
+
 
 }
 
@@ -96,11 +90,8 @@ dependencies {
     implementation 'android.arch.lifecycle:extensions:1.1.1'
     annotationProcessor 'android.arch.lifecycle:compiler:1.1.1'
 
-
-  /*  // Epoxy
-    implementation 'com.airbnb.android:epoxy:3.4.2'
-    // Add the annotation processor if you are using Epoxy's annotations (recommended)
-    annotationProcessor 'com.airbnb.android:epoxy-processor:3.4.2'*/
+    // Groupie
+    implementation 'com.genius:groupie:0.4.0'
 
     def work_version = "1.0.1"
     // (Java only)
