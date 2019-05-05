@@ -84,13 +84,6 @@ public class Tournament {
         this.ID = ID;
     }
 
-    public List<String> getTeams() {
-        return mTeamsIDs;
-    }
-
-    public void setTeams(List<String> teams) {
-        mTeamsIDs = teams;
-    }
 
 
     public Tournament(Timestamp dateFrom, Timestamp dateTo, String describe, List<String> tips, long totalBonuses,

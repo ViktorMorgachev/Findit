@@ -44,11 +44,13 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.profile.ProfileActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
+import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
 import static findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity.KEY_PLACE_ID;
 
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (sLatLng != null)
                 updateMap(DEFAULT_ZOOM, "");
             // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
+            if(!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
             CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
         }
     };
@@ -198,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
                     sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    checkMapForPlaces();
+                   // checkMapForPlaces();
 
                     updateMap(DEFAULT_ZOOM, "");
                     break;
@@ -321,7 +324,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (id == R.id.nav_profile) {
             startActivity(new Intent(this, ProfileActivity.class));
             // Handle the camera action
-        } /*else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_tournaments) {
+            startActivity(new Intent(this, TounamentActivity.class));
+        }
+            /*else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
 
@@ -332,6 +338,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         } else if (id == R.id.nav_send) {
 
         }*/
+
 
         // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
         //  уведомление, что активных игр нет пока и не запускать

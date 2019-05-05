@@ -131,6 +131,7 @@ public class CommonMapManager {
 
     public void initPoints(List<Place> places) {
 
+
         if (mServiceType == ServiceType.GOOGLE) {
             mGoogleMapFragment.initPoints(places);
         }

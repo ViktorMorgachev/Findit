@@ -1,6 +1,7 @@
 package findit.sedi.viktor.com.findit.ui.tournament.data_provider;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,12 +21,12 @@ import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
-    private List<Tournament> mTournaments;
+    private ArrayList<Tournament> mTournaments;
 
 
-    public MyAdapter(Context context, List<Tournament> data) {
+    public MyAdapter(Context context, ArrayList<Tournament> data) {
         mTournaments = data;
-        this.inflater = inflater.from(context);
+        this.inflater = LayoutInflater.from(context);
     }
 
     // Create new views (invoked by the layout manager)
@@ -39,9 +40,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.tournamentID.setText(mTournaments.get(position).getID());
-        holder.countOfTeams.setVisibility(mTournaments.get(position).getTeams().size() > 0 ? View.VISIBLE : View.GONE);
+        holder.countOfTeams.setVisibility(mTournaments.get(position).getTeamsIDs().size() > 0 ? View.VISIBLE : View.GONE);
         holder.dataStart.setText(mTournaments.get(position).getDateFrom().toString());
         holder.dataFinish.setText(mTournaments.get(position).getDateTo().toString());
         holder.difficultyValue.setRating(mTournaments.get(position).getDifficulty());
@@ -53,7 +54,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         if (mTournaments.get(position).getTournamentType() == Tournament.TournamentType.Teams) {
             holder.typeOfTournament.setText("Командная");
-            holder.countOfTeams.setText(String.valueOf(mTournaments.get(position).getTeams()));
+            holder.countOfTeams.setText(String.valueOf(mTournaments.get(position).getTeamsIDs()));
             holder.countOfTeams.setVisibility(View.VISIBLE);
         }
 
@@ -65,7 +66,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        //  return mDataset.length;
         return mTournaments.size();
     }
 
@@ -92,9 +92,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             mLinearLayout = v.findViewById(R.id.layout_item_parent);
             typeOfTournament = v.findViewById(R.id.tv_tournament_type);
             tournamentID = v.findViewById(R.id.tv_id_rournament);
-
             mLinearLayout.setOnClickListener(this);
-
 
         }
 
@@ -121,7 +119,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         // попасть участник
                         String TournamentID = teamsIDs.get(finalI);
                         String teamID = tournamentID.getText().toString();
-
                     }
                 });
 
@@ -133,7 +130,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         @Override
         public void onClick(View v) {
             // Добавляем или удаляем детей и сначала скрываем
-            if (!isExpand && ManagersFactory.getInstance().getTournamentManager().getTournament(tournamentID.getText().toString()).getTeams().size() > 0)
+            if (!isExpand && ManagersFactory.getInstance().getTournamentManager().getTournament(tournamentID.getText().toString()).getTeamsIDs().size() > 0)
                 showChilds();
             else if (isExpand) {
                 hideChilds();

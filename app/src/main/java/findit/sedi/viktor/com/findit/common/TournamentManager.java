@@ -12,7 +12,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 //
 public class TournamentManager {
 
-    private List<Tournament> mTournaments = new ArrayList<>();
+    private ArrayList<Tournament> mTournaments = new ArrayList<>();
     private FirebasePlayerStorage mFirebasePlayerStorage = FirebasePlayerStorage.getInstance();
 
     public TournamentManager() {
@@ -76,5 +76,9 @@ public class TournamentManager {
 
         return null;
 
+    }
+
+    public ArrayList<Tournament> getTournaments() {
+        return mTournaments;
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.telephony.SmsManager;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -72,7 +73,10 @@ public class PreviewActivity extends Activity {
                     HashMap<Long, Place> placeHashMap = new HashMap<>();
                     Place place;
 
-                    ServerManager.getInstance().getPlaces();
+                   // ServerManager.getInstance().getPlaces();
+                    // Очередь нам не важна, просто получаем значения и инициализируем пока в наши менеджеры
+                    ServerManager.getInstance().getTeams();
+                    ServerManager.getInstance().getTournaments();
 
                    /* place = new Place(new LatLng(42.87592405329111, 74.61399380117655),
                             "История ЦУМа насчитывает вот уже более сорока лет. Это футуристической формы магазин разместил в себе магазинчики с разнообразным товаром от сотовых телефонов, одежды, обуви и косметики до крупной бытовой техники и сувениров.\n" +

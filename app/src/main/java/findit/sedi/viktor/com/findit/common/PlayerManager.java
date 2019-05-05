@@ -1,6 +1,8 @@
 package findit.sedi.viktor.com.findit.common;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
@@ -9,7 +11,7 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.Fire
 //
 public class PlayerManager {
 
-    private Map<Long, Player> mPlayerMap = new HashMap<>();
+    private List<Player> mPlayers = new ArrayList<>();
     private FirebasePlayerStorage mFirebasePlayerStorage = FirebasePlayerStorage.getInstance();
 
     public PlayerManager() {
@@ -22,31 +24,40 @@ public class PlayerManager {
 
 
     public void addPlayer(Player player) {
-        mPlayerMap.put(player.getID(), player);
+
+        // Проверяем содержит ли этот список элемент с таким же айдишником?
+        for (int i = 0; i < mPlayers.size(); i++) {
+            if (mPlayers.get(i).getID().equalsIgnoreCase(player.getID()))
+                return;
+        }
+
+        mPlayers.add(player);
     }
 
     // При удалении пользователя из программы (Удаления аккаунта в будущем, удалить его из списка
     public void deletePlayer(Player player) {
 
-        mPlayerMap.remove(player.getID());
+        // Проверяем содержит ли этот список элемент с таким же айдишником?
+        for (int i = 0; i < mPlayers.size(); i++) {
+            if (mPlayers.get(i).getID().equalsIgnoreCase(player.getID())) {
+                mPlayers.remove(player);
+                return;
+            }
 
+        }
         //  mFirebasePlayerStorage.removePlayer(player);
 
     }
 
-
-    // Обновление пользователя по его ID
-    public void updateOrAddUser(Player player) {
-
-        if (mPlayerMap.containsKey(player.getID())) {
-            mPlayerMap.remove(player.getID());
-            mPlayerMap.put(player.getID(), player);
-            //  mFirebasePlayerStorage.updatePlayer(player);
-        } else {
-            //  mFirebasePlayerStorage.addPlayer(player);
-            mPlayerMap.put(player.getID(), player);
+    public Player getPlayer(String playerID) {
+        // Проверяем содержит ли этот список элемент с таким же айдишником?
+        for (int i = 0; i < mPlayers.size(); i++) {
+            if (mPlayers.get(i).getID().equalsIgnoreCase(playerID)) {
+                return mPlayers.get(i);
+            }
         }
 
+        return null;
     }
 
 

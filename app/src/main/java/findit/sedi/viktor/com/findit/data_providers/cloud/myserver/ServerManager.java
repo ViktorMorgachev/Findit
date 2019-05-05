@@ -42,6 +42,16 @@ public class ServerManager {
     public void getPlaces() {
 
 
+    }
 
+    public void getTeams() {
+
+        CloudFirestoreManager.getInstance().getTeams();
+
+    }
+
+    public void getTournaments() {
+
+        CloudFirestoreManager.getInstance().getTournaments();
     }
 }

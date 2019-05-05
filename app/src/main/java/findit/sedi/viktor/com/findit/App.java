@@ -7,6 +7,7 @@ import android.support.multidex.MultiDex;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 
 public class App extends Application {
@@ -14,6 +15,7 @@ public class App extends Application {
     public AppDatabase getsUser_database() {
         return sUser_database;
     }
+
     private RefWatcher refWatcher;
     public static App instance;
 
@@ -30,7 +32,7 @@ public class App extends Application {
     protected void attachBaseContext(Context base) {
         super.attachBaseContext(base);
 
-        MultiDex.install(this);
+        MultiDex.install(base);
     }
 
     @Override
@@ -43,8 +45,10 @@ public class App extends Application {
             // You should not init your app in this process.
             return;
         }
-       // LeakCanary.install(this);
+        // LeakCanary.install(this);
         refWatcher = LeakCanary.install(this);
+
+        ManagersFactory.getInstance().setContext(this);
 
     }
 

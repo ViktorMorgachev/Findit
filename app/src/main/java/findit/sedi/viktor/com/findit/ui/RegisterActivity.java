@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
@@ -112,6 +113,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
 
         if (currentUser != null) {
+
+            ManagersFactory.getInstance().getUsersManager().updateUserByEmail();
+
             startNextActivity();
         }
 

@@ -35,7 +35,7 @@ public class TounamentActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-     //   mAdapter = new MyAdapter(myDataset);
+        mAdapter = new MyAdapter(this, ManagersFactory.getInstance().getTournamentManager().getTournaments());
         recyclerView.setAdapter(mAdapter);
 
 

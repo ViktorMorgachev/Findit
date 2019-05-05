@@ -1,12 +1,15 @@
 package findit.sedi.viktor.com.findit.ui.main.fragment;
 
 import android.content.Context;
+import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -16,12 +19,14 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.common.util.concurrent.ServiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.Util;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
@@ -77,7 +82,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                     mMap = googleMap;
 
                     mCallBackListener.mapReady();
-                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationService.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
+                    // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationServices.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
                 }
             });
 
@@ -145,6 +150,8 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 mMap.addMarker(mMarkerPoints.get(i));
             }
 
+            // Рисуем своё местоположени
+            // if (mMarkerOptionsMe.getPosition() != null)
             mMap.addMarker(mMarkerOptionsMe);
 
         }
@@ -180,6 +187,8 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
         mMarkerOptionsMe.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
         mMarkerOptionsMe.position(latLng);
+
+        updateMap();
 
     }
 

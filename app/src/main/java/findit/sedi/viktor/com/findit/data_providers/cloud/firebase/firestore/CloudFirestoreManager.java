@@ -28,8 +28,8 @@ public class CloudFirestoreManager {
     private static final String KEY_POINTS_PATH = "points";
     private static final String KEY_USERS_INFO = "users";
     private static final String KEY_PLAYER_PATH = "players";
-    private static final String KEY_TOURNAMENTS_PATH = "tournamentTeams";
-    private static final String KEY_TEAMS_PATH = "teams";
+    private static final String KEY_TOURNAMENTS_PATH = "tournament";
+    private static final String KEY_TEAMS_PATH = "tournamentTeams";
 
     // Вынесем его так же как сделали в Tournament
     // Придётся ставить хак для работы с Enum
@@ -115,7 +115,7 @@ public class CloudFirestoreManager {
                                         document.getString("name"),
                                         mGender,
                                         document.getString("photoUrl"),
-                                        document.getLong("ID")));
+                                        document.getString("ID")));
                             } else {
                                 Log.e(LOG_TAG, "Field was empty " + document.getId() + " => " + document.getData());
                             }
@@ -151,7 +151,7 @@ public class CloudFirestoreManager {
 
     // Вытаскиваем все команды для начала
     // После уже просто будем инициализировать по идентификаторам списко в обьект Tournament
-    private void getAllTeams() {
+    public void getTeams() {
 
         FirebaseFirestore.getInstance().collection(KEY_TEAMS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
@@ -178,7 +178,7 @@ public class CloudFirestoreManager {
     }
 
 
-    private void getTournaments() {
+    public void getTournaments() {
 
         mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
@@ -188,6 +188,7 @@ public class CloudFirestoreManager {
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
                             if (document.exists()) {
+
 
                                 ManagersFactory.getInstance().getTournamentManager().addTournament(
                                         new Tournament(document.getTimestamp("DateFrom"),
@@ -199,7 +200,7 @@ public class CloudFirestoreManager {
                                                 document.getLong("Difficulty"),
                                                 (ArrayList<String>) document.get("PlayersIDs"),
                                                 document.getId(),
-                                                (ArrayList<String>) document.get("TeamsIds")
+                                                (ArrayList<String>) document.get("TeamsIDs")
                                         )
                                 );
 

@@ -36,4 +36,11 @@ public class UsersManager {
     public User getUser() {
         return mUser;
     }
+
+    public void updateUserByEmail() {
+
+        // Запрос на сервер пойдёт и информация соответсвенно сохранится в нашем менеджере пользователя
+        // И возможно эта информация сохранится в БД
+
+    }
 }

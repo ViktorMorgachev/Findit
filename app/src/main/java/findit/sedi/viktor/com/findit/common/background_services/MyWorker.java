@@ -28,8 +28,8 @@ public class MyWorker extends Worker {
         // Кто в онлайн, офлайн, их местоположение и рейтинги, но это подгружаем при
         // Условии что игра имеет место
         if (true) {
-            CloudFirestoreManager.getInstance().getPoint();
-            CloudFirestoreManager.getInstance().getPlayers();
+          //  CloudFirestoreManager.getInstance().getPoint();
+          //  CloudFirestoreManager.getInstance().getPlayers();
         }
         // Нужно будет обновлять с помощью Bus заставить обновится Активности RatingActivity
 
