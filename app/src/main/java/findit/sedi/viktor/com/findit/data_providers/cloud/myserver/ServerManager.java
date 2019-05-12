@@ -1,8 +1,11 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.myserver;
 
+import com.google.firebase.auth.FirebaseAuth;
+
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 
 public class ServerManager {
     private static final ServerManager ourInstance = new ServerManager();
@@ -33,9 +36,9 @@ public class ServerManager {
 
     }
 
-    public void updateUserOnServer(User user) {
+    public void updateUserOnServer(String tag) {
 
-        CloudFirestoreManager.getInstance().updateUser(user);
+        CloudFirestoreManager.getInstance().updateUser(tag);
 
     }
 
@@ -55,14 +58,14 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().getTournaments();
     }
 
-    public void createNewUser(String name, String password) {
+    public void createNewUser(String name, String password, IAction IAction) {
 
-        CloudFirestoreManager.getInstance().createUser(name, password);
+        CloudFirestoreManager.getInstance().createUser(name, password, IAction);
 
     }
 
-    public void initUser(String email) {
-        CloudFirestoreManager.getInstance().initUser(email);
+    public void initUser(String email, IAction IAction) {
+        CloudFirestoreManager.getInstance().initUser(email, IAction);
     }
 
     public void changeUserNetStatus(boolean status) {

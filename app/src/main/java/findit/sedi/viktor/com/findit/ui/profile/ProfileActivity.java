@@ -129,13 +129,13 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (v.getId() == R.id.btn_save) {
 
             // Получаем изменененияе полей которые нужно изменить на сервере
-            User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-            user.setPhone(mEditTextPhone.getText().toString());
-            user.setGender(mSpinnerGender.getSelectedItemPosition());
-            user.setName(mEditTextName.getText().toString());
 
-            ServerManager.getInstance().updateUserOnServer(user);
+            ManagersFactory.getInstance().getAccountManager().getUser().setPhone(mEditTextPhone.getText().toString());
+            ManagersFactory.getInstance().getAccountManager().getUser().setGender(mSpinnerGender.getSelectedItemPosition());
+            ManagersFactory.getInstance().getAccountManager().getUser().setName(mEditTextName.getText().toString());
+
+            ServerManager.getInstance().updateUserOnServer("profile");
 
 
         }

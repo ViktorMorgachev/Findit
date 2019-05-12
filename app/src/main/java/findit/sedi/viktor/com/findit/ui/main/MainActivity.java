@@ -111,8 +111,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         @Override
         public void mapReady() {
-            if (sLatLng != null)
+            if (sLatLng != null) {
                 updateMap(DEFAULT_ZOOM, "");
+
+                // Изменяем координаты пользователя
+                ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                // Отправляем на сервер
+                ServerManager.getInstance().updateUserOnServer("location");
+            }
+
             // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
             if (!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
                 CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
@@ -128,10 +135,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onCreate(savedInstanceState);
 
         // Востановить необходимые данные с сервера
-        restoreDataFromServer();
+        if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
+            //  restoreDataFromServer();
 
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+            requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -191,9 +199,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void restoreDataFromServer() {
 
         // Небольшой Хак, при востановлении работы, нужно проинициализировать пользователя, если он null
-        if (ManagersFactory.getInstance().getAccountManager().getUser() == null) {
-            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
-        }
+
+        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail(), null);
 
 
     }
@@ -219,9 +226,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
                     sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
+                    updateMap(DEFAULT_ZOOM, "");
+
+                    // Изменяем координаты пользователя
+
+                    if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
+                        restoreDataFromServer();
+                    else {
+
+                        ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                        // Отправляем на сервер
+                        ServerManager.getInstance().updateUserOnServer("location");
+
+                    }
+
                     // checkMapForPlaces();
 
-                    updateMap(DEFAULT_ZOOM, "");
+
                     break;
                 }
 
@@ -309,8 +330,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     public void onSuccess(Location location) {
                         // Got last known location. In some rare situations this can be null.
                         if (location != null) {
+
                             sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+
                             updateMap(DEFAULT_ZOOM, "");
+                            // Изменяем координаты пользователя
+                            if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
+                                restoreDataFromServer();
+                            else {
+                                ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                                // Отправляем на сервер
+                                ServerManager.getInstance().updateUserOnServer("location");
+                            }
+
+
                         }
                     }
                 });

@@ -4,6 +4,7 @@ import android.util.Log;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
@@ -42,9 +43,9 @@ public class AccountManager {
         return mUser;
     }
 
-    public void updateUserByEmail(String email) {
+    public void updateUserByEmail(String email, IAction IAction) {
 
-        ServerManager.getInstance().initUser(email);
+        ServerManager.getInstance().initUser(email, IAction);
 
     }
 

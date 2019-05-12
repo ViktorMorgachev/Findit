@@ -26,6 +26,7 @@ import com.google.firebase.auth.FirebaseUser;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -38,6 +39,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat;
     private TextInputEditText mEditEmail;
     private TextInputEditText mEditPassword;
+    private IAction mIAction;
     private TextInputEditText mEditPasswordRepeat;
     private SwitchCompat mSwitchCompat;
 
@@ -56,6 +58,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        initActionCallBack();
 
 
     }
@@ -86,6 +90,15 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
+    private void initActionCallBack() {
+        mIAction = new IAction() {
+            @Override
+            public void action() {
+                startNextActivity();
+            }
+        };
+    }
+
     private void updateUI(FirebaseUser currentUser) {
 
 
@@ -113,9 +126,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         if (currentUser != null) {
 
-            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(currentUser.getEmail());
-
-            startNextActivity();
+            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(currentUser.getEmail(), mIAction);
         }
 
 
@@ -177,9 +188,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             // Создаеём пользователя получив информармацию из БД Firebase чтобы проинициализировать пользователя
                             // Для этого придётся перебрать список всех пользователей в БД Firestore для того чтобы проинициализировать и дать необходимый айдишник
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().initUser(user.getEmail());
+                            ServerManager.getInstance().initUser(user.getEmail(), mIAction);
 
-                            startNextActivity();
                         } else {
                             // If sign in fails, display a message to the user.
                             Toast.makeText(RegisterActivity.this, "Ошибка аутентификации",
@@ -209,9 +219,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                             // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString());
+                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString(), mIAction);
 
-                            startNextActivity();
                         }
 
                     }

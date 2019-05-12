@@ -2,10 +2,8 @@ package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
 import android.content.Context;
 import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -14,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
@@ -21,9 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
@@ -33,18 +29,19 @@ import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_EMAIL;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_GENDER;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_LOCATION;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_NAME;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_NET_STATUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PASSWORD;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PHONE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PHOTO;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_PLAYER_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_POINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
@@ -62,6 +59,8 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFiel
 
 
 public class CloudFirestoreManager {
+
+
     private static final CloudFirestoreManager ourInstance = new CloudFirestoreManager();
 
 
@@ -85,81 +84,103 @@ public class CloudFirestoreManager {
     }
 
 
-    public void updateUser(User user) {
+    // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
+    public void updateUser(String tag) {
 
 
         // Логика такова, работа во втором потоке, он запускает другие потоки,
         // Сам засыпает на 1 секунду, если обновления успешны у всех трёх потоков, то останавливаем сами себя и отплавляем событие на обновление
         // Данных
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
+        if (tag.equalsIgnoreCase("profile")) {
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
 
 
-                final int[] succesResult = {0};
+                    final int[] succesResult = {0};
 
-                document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(user.getID());
+                    document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
-                document.update(USER_NAME, user.getName())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                succesResult[0]++;
-                                Log.d(LOG_TAG, task + " => " + task.getResult());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
+                    document.update(USER_NAME, ManagersFactory.getInstance().getAccountManager().getUser().getName())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    succesResult[0]++;
+                                    Log.d(LOG_TAG, task + " => " + task.getResult());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
 
-                document.update(USER_PHONE, user.getPhone())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                succesResult[0]++;
-                                Log.d(LOG_TAG, task + " => " + task.getResult());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
+                    document.update(USER_PHONE, ManagersFactory.getInstance().getAccountManager().getUser().getPhone())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    succesResult[0]++;
+                                    Log.d(LOG_TAG, task + " => " + task.getResult());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
 
-                document.update(USER_GENDER, user.getGender())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                succesResult[0]++;
-                                Log.d(LOG_TAG, task + " => " + task.getResult());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                e.printStackTrace();
-                            }
-                        });
+                    document.update(USER_GENDER, ManagersFactory.getInstance().getAccountManager().getUser().getGender())
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    succesResult[0]++;
+                                    Log.d(LOG_TAG, task + " => " + task.getResult());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    e.printStackTrace();
+                                }
+                            });
 
-                // Пока значение не увеличили на 3 и поток не прерван
-                while (succesResult[0] < 3 && !Thread.currentThread().isInterrupted()) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    // Пока значение не увеличили на 3 и поток не прерван
+                    while (succesResult[0] < 3 && !Thread.currentThread().isInterrupted()) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
+
+                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+
                 }
+            });
+            thread.start();
+        }
 
-                ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+        if (tag.equalsIgnoreCase("location")) {
 
-            }
-        });
 
-        thread.start();
+            document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+
+            document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
 
 
     }
@@ -238,14 +259,19 @@ public class CloudFirestoreManager {
     }
 
 
-    public void createUser(String email, String password) {
+    public void createUser(String email, String password, IAction IAction) {
 
 
         // Create a new user with a first and last name
+        // Инициализируем остальные значения по умолчанию
         Map<String, Object> user = new HashMap<>();
         user.put(USER_EMAIL, email);
         user.put(USER_PASSWORD, password);
         user.put(USER_NET_STATUS, true);
+        user.put(USER_GENDER, 0);
+        user.put(USER_BONUS, 0);
+        user.put(USER_PHOTO, "");
+        user.put(USER_LOCATION, new GeoPoint(0, 0));
 
         // Add a new document with a generated ID
         mFirebaseFirestore.collection(KEY_USERS_PATH)
@@ -253,7 +279,10 @@ public class CloudFirestoreManager {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
+                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email, null);
+                        if (IAction != null) {
+                            IAction.action();
+                        }
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -268,7 +297,7 @@ public class CloudFirestoreManager {
     }
 
 
-    public void initUser(String email) {
+    public void initUser(String email, IAction IAction) {
 
 
         // В этом  методе получаем список элементов, и инициализируем только тот, который на м нужен
@@ -302,6 +331,9 @@ public class CloudFirestoreManager {
                                 // По логике в этом методе пользователь запускает устройсво
                                 changeUserNetStatus(true);
 
+                                if (IAction != null)
+                                    IAction.action();
+
                                 FinditBus.getInstance().post(new UpdateUsersEvent());
 
                                 break;
@@ -320,7 +352,7 @@ public class CloudFirestoreManager {
 
     public void getPlayers() {
 
-        mFirebaseFirestore.collection(KEY_PLAYER_PATH).get()
+        mFirebaseFirestore.collection(KEY_USERS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
