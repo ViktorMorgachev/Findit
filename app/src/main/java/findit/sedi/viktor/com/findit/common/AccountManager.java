@@ -1,8 +1,13 @@
 package findit.sedi.viktor.com.findit.common;
 
+import android.util.Log;
+
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 
-public class UsersManager {
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+
+public class AccountManager {
 
     private User mUser;
 
@@ -12,7 +17,7 @@ public class UsersManager {
 
     }
 
-    public UsersManager() {
+    public AccountManager() {
         // Вытаскиваем из БД
         init();
     }
@@ -29,7 +34,7 @@ public class UsersManager {
     // Только когда пользователь удаляет аккаунт
     public void deleteUser() {
         mUser = null;
-       // FirebaseUserStorage.getInstance().deleteUserInDatabase(mUser);
+        // FirebaseUserStorage.getInstance().deleteUserInDatabase(mUser);
     }
 
 
@@ -37,10 +42,20 @@ public class UsersManager {
         return mUser;
     }
 
-    public void updateUserByEmail() {
+    public void updateUserByEmail(String email) {
 
-        // Запрос на сервер пойдёт и информация соответсвенно сохранится в нашем менеджере пользователя
-        // И возможно эта информация сохранится в БД
+        ServerManager.getInstance().initUser(email);
 
+    }
+
+    public void createUser(User user) {
+
+        this.mUser = user;
+
+    }
+
+    public void initUser(User user) {
+        Log.d(LOG_TAG, "Init User "  + " => " + user.getID());
+        this.mUser = user;
     }
 }

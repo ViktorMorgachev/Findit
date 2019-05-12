@@ -11,10 +11,10 @@ public class Team {
 
 
     public Team(String tournamentID, List<String> playersIds, String teamID, String name) {
-        TournamentID = tournamentID;
+        TournamentID = tournamentID.trim();
         this.playersIds = playersIds;
-        TeamID = teamID;
-        this.name = name;
+        TeamID = teamID.trim();
+        this.name = name.trim();
     }
 
 

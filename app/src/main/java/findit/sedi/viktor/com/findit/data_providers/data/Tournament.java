@@ -3,6 +3,7 @@ package findit.sedi.viktor.com.findit.data_providers.data;
 import com.google.firebase.Timestamp;
 import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Tournament {
@@ -10,14 +11,15 @@ public class Tournament {
     private Timestamp DateFrom;
     private Timestamp DateTo;
     private String Describe;
-    private List<String> tips;
+    private List<String> tips = new ArrayList<>();
     private long totalBonuses;
     private TournamentType mTournamentType;
     private long difficulty;
-    private List<String> playersIDs;
+    private List<String> playersIDs = new ArrayList<>();
     private String ID;
     // Количество команд
-    private List<String> mTeamsIDs;
+    private List<String> mTeamsIDs = new ArrayList<>();
+
 
     public Timestamp getDateFrom() {
         return DateFrom;
@@ -85,19 +87,27 @@ public class Tournament {
     }
 
 
-
     public Tournament(Timestamp dateFrom, Timestamp dateTo, String describe, List<String> tips, long totalBonuses,
                       TournamentType tournamentType, long difficulty, List<String> playersIDs, String ID, List<String> teamsIDs) {
         DateFrom = dateFrom;
         DateTo = dateTo;
-        Describe = describe;
+        Describe = describe.trim();
         this.tips = tips;
         this.totalBonuses = totalBonuses;
         mTournamentType = tournamentType;
         this.difficulty = difficulty;
-        this.playersIDs = playersIDs;
+
+        if (playersIDs == null) {
+            this.playersIDs = new ArrayList<>();
+        } else
+            this.playersIDs = playersIDs;
+
         this.ID = ID;
-        mTeamsIDs = teamsIDs;
+
+        if (teamsIDs == null) {
+            this.mTeamsIDs = new ArrayList<>();
+        } else
+            mTeamsIDs = teamsIDs;
     }
 
 

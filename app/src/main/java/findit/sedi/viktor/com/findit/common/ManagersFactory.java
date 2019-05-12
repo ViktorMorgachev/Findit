@@ -5,7 +5,7 @@ import android.content.Context;
 public class ManagersFactory {
 
     private PlaceManager mPlaceManager;
-    private UsersManager mUsersManager;
+    private AccountManager mAccountManager;
     private TeamManager mTeamManager;
     private TournamentManager mTournamentManager;
     private PlayerManager mPlayerManager;
@@ -25,13 +25,13 @@ public class ManagersFactory {
         mContext = context;
     }
 
-    public UsersManager getUsersManager() {
+    public AccountManager getAccountManager() {
         if (mContext != null) {
-            if (mUsersManager != null)
-                return mUsersManager;
+            if (mAccountManager != null)
+                return mAccountManager;
             else {
-                mUsersManager = new UsersManager();
-                return mUsersManager;
+                mAccountManager = new AccountManager();
+                return mAccountManager;
             }
         } else return null;
 

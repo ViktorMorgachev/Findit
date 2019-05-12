@@ -4,6 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import findit.sedi.viktor.com.findit.data_providers.Gender;
+
 @Entity
 public class User {
     private String phone;
@@ -15,6 +17,29 @@ public class User {
     private long bonus;
     private String photoUrl;
     private String password;
+    private long mGender;
+
+
+    public User(String phone, String name, @NonNull String ID, String email, long bonus, String photoUrl, String password, boolean isOffline, long gender) {
+        this.phone = phone;
+        this.name = name;
+        this.ID = ID;
+        this.email = email;
+        this.bonus = bonus;
+        this.photoUrl = photoUrl;
+        this.password = password;
+        this.isOffline = isOffline;
+        mGender = gender;
+    }
+
+
+    public void setGender(long gender) {
+        mGender = gender;
+    }
+
+    public long getGender() {
+        return mGender;
+    }
 
     public boolean isOffline() {
         return isOffline;

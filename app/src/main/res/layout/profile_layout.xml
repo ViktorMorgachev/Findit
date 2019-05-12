@@ -18,12 +18,27 @@
             android:layout_height="wrap_content"
             app:srcCompat="@drawable/ic_account_circle_24dp" />
 
-        <TextView
-            android:id="@+id/tv_bonus_info"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_vertical"
-            android:text="@string/bonus" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="5dp">
+
+            <TextView
+                android:id="@+id/tv_bonus_info"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:text="@string/bonus" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rating"/>
+
+        </LinearLayout>
+
+
 
     </LinearLayout>
 
@@ -54,14 +69,57 @@
         android:hint="@string/password"
         android:inputType="textPassword" />
 
+    <EditText
+        android:id="@+id/et_phone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/phone"
+        android:inputType="phone" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:orientation="horizontal"
+        android:padding="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+
+            android:text="@string/gender"
+            android:textSize="20dp" />
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/sp_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/Gender"
+            android:gravity="center_horizontal">
+
+        </android.support.v7.widget.AppCompatSpinner>
+
+
+    </LinearLayout>
+
+
     <TextView
+        android:id="@+id/tv_sign_out"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:drawableLeft="@drawable/ic_exit_to_app_24dp"
         android:drawablePadding="10dp"
-        android:id="@+id/tv_sign_out"
         android:text="@string/exit_from_account"
         android:textSize="15dp" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:id="@+id/btn_save"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/save"/>
 
 
 </LinearLayout>

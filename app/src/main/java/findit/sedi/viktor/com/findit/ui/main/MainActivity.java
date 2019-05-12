@@ -32,6 +32,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private FloatingActionButton mFloatingActionButton;
     // TODO снова запускаем лишь тогда когда игра активна
     private PeriodicWorkRequest mPeriodicWorkRequest;
+
 
     //Values
     private FusedLocationProviderClient mFusedLocationClient;
@@ -113,8 +115,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (sLatLng != null)
                 updateMap(DEFAULT_ZOOM, "");
             // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
-            if(!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
-            CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
+            if (!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
+                CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
         }
     };
 
@@ -125,6 +127,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Востановить необходимые данные с сервера
+        restoreDataFromServer();
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -160,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
-
         if (mCommonMapManager.getServiceType().equals(CommonMapManager.ServiceType.GOOGLE)) {
 
             mGoogleMapFragment = GoogleMapFragment.getInstance();
@@ -171,9 +176,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     .replace(R.id.map_fragment, mGoogleMapFragment)
                     .addToBackStack("null")
                     .commit();
-            mGoogleMapFragment.setEventsListener(mEventsListener);
 
+            mGoogleMapFragment.setEventsListener(mEventsListener);
         }
+
+
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
@@ -181,10 +189,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+    private void restoreDataFromServer() {
+
+        // Небольшой Хак, при востановлении работы, нужно проинициализировать пользователя, если он null
+        if (ManagersFactory.getInstance().getAccountManager().getUser() == null) {
+            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail());
+        }
+
+
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
+
         getLocation();
     }
 
@@ -201,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
                     sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                   // checkMapForPlaces();
+                    // checkMapForPlaces();
 
                     updateMap(DEFAULT_ZOOM, "");
                     break;

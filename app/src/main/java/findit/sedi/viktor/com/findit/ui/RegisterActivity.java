@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,7 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -114,7 +113,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         if (currentUser != null) {
 
-            ManagersFactory.getInstance().getUsersManager().updateUserByEmail();
+            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(currentUser.getEmail());
 
             startNextActivity();
         }
@@ -171,9 +170,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
-                            FirebaseUser user = mAuth.getCurrentUser();
+
                             Toast.makeText(RegisterActivity.this, "Аутентификация успешно пройдена.",
                                     Toast.LENGTH_SHORT).show();
+
+                            // Создаеём пользователя получив информармацию из БД Firebase чтобы проинициализировать пользователя
+                            // Для этого придётся перебрать список всех пользователей в БД Firestore для того чтобы проинициализировать и дать необходимый айдишник
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            ServerManager.getInstance().initUser(user.getEmail());
 
                             startNextActivity();
                         } else {
@@ -202,6 +206,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Регистрация пройденна успешно", Toast.LENGTH_LONG).show();
+
+                            // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString());
+
                             startNextActivity();
                         }
 

@@ -24,12 +24,12 @@ public class ServerManager {
         ManagersFactory.getInstance().getPlaceManager().getPlaceByID(id).setMark(2);
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
-        User user = ManagersFactory.getInstance().getUsersManager().getUser();
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         user.setBonus(ManagersFactory.getInstance().getPlaceManager().getPlaceByID(id).getBonus());
 
 
-        ManagersFactory.getInstance().getUsersManager().updateUser(user);
+        ManagersFactory.getInstance().getAccountManager().updateUser(user);
 
     }
 
@@ -53,5 +53,17 @@ public class ServerManager {
     public void getTournaments() {
 
         CloudFirestoreManager.getInstance().getTournaments();
+    }
+
+    public void createNewUser(String name, String password){
+
+        CloudFirestoreManager.getInstance().createUser(name, password);
+
+    }
+
+    public void initUser(String email) {
+
+        CloudFirestoreManager.getInstance().initUser(email);
+
     }
 }
