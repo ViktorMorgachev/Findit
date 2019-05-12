@@ -55,15 +55,19 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().getTournaments();
     }
 
-    public void createNewUser(String name, String password){
+    public void createNewUser(String name, String password) {
 
         CloudFirestoreManager.getInstance().createUser(name, password);
 
     }
 
     public void initUser(String email) {
-
         CloudFirestoreManager.getInstance().initUser(email);
+    }
+
+    public void changeUserNetStatus(boolean status) {
+
+        CloudFirestoreManager.getInstance().changeUserNetStatus(status);
 
     }
 }

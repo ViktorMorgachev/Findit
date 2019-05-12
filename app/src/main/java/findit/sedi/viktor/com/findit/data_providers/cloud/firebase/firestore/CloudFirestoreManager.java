@@ -165,6 +165,14 @@ public class CloudFirestoreManager {
     }
 
 
+    public void changeUserNetStatus(boolean status) {
+
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        document.update(USER_NET_STATUS, status);
+
+    }
+
+
     // Вытаскиваем все команды для начала
     // После уже просто будем инициализировать по идентификаторам списко в обьект Tournament
     public void getTeams() {
@@ -235,8 +243,9 @@ public class CloudFirestoreManager {
 
         // Create a new user with a first and last name
         Map<String, Object> user = new HashMap<>();
-        user.put("Email", email);
-        user.put("Password", password);
+        user.put(USER_EMAIL, email);
+        user.put(USER_PASSWORD, password);
+        user.put(USER_NET_STATUS, true);
 
         // Add a new document with a generated ID
         mFirebaseFirestore.collection(KEY_USERS_PATH)
@@ -244,24 +253,25 @@ public class CloudFirestoreManager {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        ManagersFactory.getInstance().getAccountManager().createUser(new User(documentReference.getId(), null, null, email, 0, null, password, false, 0));
+                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Log.w(KeyCommonSettings.KeysField.LOG_TAG, "Error adding document", e);
+                        // Тут нужно будет удалить пользователя с БД и перезарегестрировать
                     }
                 });
 
 
     }
 
+
     public void initUser(String email) {
 
 
         // В этом  методе получаем список элементов, и инициализируем только тот, который на м нужен
-
         FirebaseFirestore.getInstance().collection(KEY_USERS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
@@ -283,11 +293,14 @@ public class CloudFirestoreManager {
                                         document.getString(USER_NAME),
                                         document.getId(),
                                         document.getString(USER_EMAIL),
-                                        document.getLong(USER_BONUS),
+                                        document.getLong(USER_BONUS) == null ? 0 : document.getLong(USER_BONUS),
                                         document.getString(USER_PHOTO),
                                         document.getString(USER_PASSWORD),
-                                        document.getBoolean(USER_NET_STATUS),
-                                        document.getLong(USER_GENDER)));
+                                        document.getBoolean(USER_NET_STATUS) == null ? true : document.getBoolean(USER_NET_STATUS),
+                                        document.getLong(USER_GENDER) == null ? 0 : document.getLong(USER_GENDER)));
+
+                                // По логике в этом методе пользователь запускает устройсво
+                                changeUserNetStatus(true);
 
                                 FinditBus.getInstance().post(new UpdateUsersEvent());
 

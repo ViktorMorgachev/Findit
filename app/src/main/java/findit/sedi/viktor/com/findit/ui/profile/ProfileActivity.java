@@ -3,7 +3,6 @@ package findit.sedi.viktor.com.findit.ui.profile;
 import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.button.MaterialButton;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
@@ -86,14 +85,12 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
         mEditTextEmail.setText(mFirebaseUser.getEmail());
         mEditTextPassword.setText(user.getPassword());
-        mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + (int) user.getBonus());
+        mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
         mEditTextName.setText(user.getName());
         mEditTextPhone.setText(user.getPhone());
 
 
-
         mSpinnerGender.setSelection((int) user.getGender());
-
 
 
     }
@@ -125,7 +122,8 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
         if (v.getId() == R.id.tv_sign_out) {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
-            // После нужно выйти в главное окно регистрации
+
+            ServerManager.getInstance().changeUserNetStatus(false);
         }
 
         if (v.getId() == R.id.btn_save) {
@@ -138,7 +136,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
             user.setName(mEditTextName.getText().toString());
 
             ServerManager.getInstance().updateUserOnServer(user);
-
 
 
         }

@@ -45,7 +45,6 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
-import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
@@ -395,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onStop() {
         super.onStop();
         WorkManager.getInstance().cancelAllWork();
+        ServerManager.getInstance().changeUserNetStatus(false);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 
