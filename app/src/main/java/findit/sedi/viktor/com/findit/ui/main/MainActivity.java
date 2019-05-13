@@ -20,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -67,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private FloatingActionButton mFloatingActionButton;
     // TODO снова запускаем лишь тогда когда игра активна
     private PeriodicWorkRequest mPeriodicWorkRequest;
+    private TextView mNavTextViewName;
 
 
     //Values
@@ -136,10 +138,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         // Востановить необходимые данные с сервера
         if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
-            //  restoreDataFromServer();
+            restoreDataFromServer();
 
 
-            requestWindowFeature(Window.FEATURE_NO_TITLE);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
@@ -160,6 +162,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
+            mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
+            mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
+        }
+
 
         mCommonMapManager = CommonMapManager.getInstance();
         mCommonMapManager.setServiceType(CommonMapManager.ServiceType.GOOGLE);
@@ -426,6 +435,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onStop() {
         super.onStop();
+        Toast.makeText(this, "Activity was stoped", Toast.LENGTH_LONG).show();
         WorkManager.getInstance().cancelAllWork();
         ServerManager.getInstance().changeUserNetStatus(false);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);

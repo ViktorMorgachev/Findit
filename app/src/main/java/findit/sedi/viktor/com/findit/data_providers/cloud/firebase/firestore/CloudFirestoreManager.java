@@ -318,6 +318,8 @@ public class CloudFirestoreManager {
                                 continue;
                             } else {
 
+
+
                                 ManagersFactory.getInstance().getAccountManager().initUser(new User(document.getString(USER_PHONE),
                                         document.getString(USER_NAME),
                                         document.getId(),
@@ -328,11 +330,12 @@ public class CloudFirestoreManager {
                                         document.getBoolean(USER_NET_STATUS) == null ? true : document.getBoolean(USER_NET_STATUS),
                                         document.getLong(USER_GENDER) == null ? 0 : document.getLong(USER_GENDER)));
 
-                                // По логике в этом методе пользователь запускает устройсво
-                                changeUserNetStatus(true);
 
                                 if (IAction != null)
                                     IAction.action();
+
+                                // По логике в этом методе пользователь запускает устройсво
+                                changeUserNetStatus(true);
 
                                 FinditBus.getInstance().post(new UpdateUsersEvent());
 
