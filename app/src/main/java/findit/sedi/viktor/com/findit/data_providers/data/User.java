@@ -20,11 +20,14 @@ public class User {
     private String photoUrl;
     private String password;
     private long mGender;
+    private String TournamentsID;
+    private String TeamID;
+    private long totalBonus;
     private double Latitude;
     private double Longtude;
 
 
-    public User(String phone, String name, @NonNull String ID, String email, long bonus, String photoUrl, String password, boolean isOffline, long gender) {
+    public User(String phone, String name, @NonNull String ID, String email, long bonus, String photoUrl, String password, long gender, String tournamentsID, String teamID, long totalBonus) {
         this.phone = phone;
         this.name = name;
         this.ID = ID;
@@ -32,10 +35,36 @@ public class User {
         this.bonus = bonus;
         this.photoUrl = photoUrl;
         this.password = password;
-        this.isOffline = isOffline;
         mGender = gender;
+        TournamentsID = tournamentsID;
+        TeamID = teamID;
+        this.totalBonus = totalBonus;
     }
 
+
+    public String getTournamentsID() {
+        return TournamentsID;
+    }
+
+    public void setTournamentsID(String tournamentsID) {
+        TournamentsID = tournamentsID;
+    }
+
+    public String getTeamID() {
+        return TeamID;
+    }
+
+    public void setTeamID(String teamID) {
+        TeamID = teamID;
+    }
+
+    public long getTotalBonus() {
+        return totalBonus;
+    }
+
+    public void setTotalBonus(long totalBonus) {
+        this.totalBonus = totalBonus;
+    }
 
     public double getLatitude() {
         return Latitude;

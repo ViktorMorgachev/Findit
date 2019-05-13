@@ -55,4 +55,6 @@
     <string name="phone">Номер телефона</string>
     <string name="rating">Рейтинг</string>
     <string name="save">Сохранить</string>
+    <string name="profile_name">Имя</string>
+    <string name="team">Команда</string>
 </resources>

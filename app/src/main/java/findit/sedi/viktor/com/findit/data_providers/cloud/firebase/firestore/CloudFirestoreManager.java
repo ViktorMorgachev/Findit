@@ -33,15 +33,19 @@ import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_BONUS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_EMAIL;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_GENDER;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_LOCATION;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_NAME;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_NET_STATUS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PASSWORD;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PHONE;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonAccountFields.KeysField.USER_PHOTO;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_EMAIL;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_GENDER;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_LOCATION;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_NAME;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_NET_STATUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PASSWORD;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PHONE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PHOTO;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TEAM_ID;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOTAL_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOURNAMENT_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_POINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
@@ -160,6 +164,7 @@ public class CloudFirestoreManager {
                 }
             });
             thread.start();
+
         }
 
         if (tag.equalsIgnoreCase("location")) {
@@ -168,6 +173,26 @@ public class CloudFirestoreManager {
             document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
             document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        }
+
+        if (tag.equalsIgnoreCase("net_status")) {
+
+
+            document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+
+            document.update(USER_NET_STATUS, true)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -272,6 +297,13 @@ public class CloudFirestoreManager {
         user.put(USER_BONUS, 0);
         user.put(USER_PHOTO, "");
         user.put(USER_LOCATION, new GeoPoint(0, 0));
+        user.put(USER_ACCOUNT_TYPE, "Free");
+        user.put(USER_NAME, "");
+        user.put(USER_PHONE, "");
+        user.put(USER_TEAM_ID, "");
+        user.put(USER_TOTAL_BONUS, 0);
+        user.put(USER_TOURNAMENT_ID, "");
+
 
         // Add a new document with a generated ID
         mFirebaseFirestore.collection(KEY_USERS_PATH)
@@ -319,7 +351,6 @@ public class CloudFirestoreManager {
                             } else {
 
 
-
                                 ManagersFactory.getInstance().getAccountManager().initUser(new User(document.getString(USER_PHONE),
                                         document.getString(USER_NAME),
                                         document.getId(),
@@ -327,8 +358,11 @@ public class CloudFirestoreManager {
                                         document.getLong(USER_BONUS) == null ? 0 : document.getLong(USER_BONUS),
                                         document.getString(USER_PHOTO),
                                         document.getString(USER_PASSWORD),
-                                        document.getBoolean(USER_NET_STATUS) == null ? true : document.getBoolean(USER_NET_STATUS),
-                                        document.getLong(USER_GENDER) == null ? 0 : document.getLong(USER_GENDER)));
+                                        document.getLong(USER_GENDER) == null ? 0 : document.getLong(USER_GENDER),
+                                        document.getString(USER_TOURNAMENT_ID),
+                                        document.getString(USER_TEAM_ID),
+                                        document.getLong(USER_TOTAL_BONUS) == null ? 0 : document.getLong(USER_TOTAL_BONUS)
+                                ));
 
 
                                 if (IAction != null)
@@ -360,32 +394,28 @@ public class CloudFirestoreManager {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
-                            if (document.getLong("gender") != null) {
-                                long gender = document.getLong("gender");
-                                if (gender == 1) {
-                                    mGender = Gender.Male;
-                                } else if (gender == 2) {
-                                    mGender = Gender.Female;
-                                } else mGender = Gender.None;
-                            } else {
-                                mGender = Gender.None;
-                            }
 
-                            if (document.getGeoPoint("position") != null &&
-                                    document.getDouble("bonus") != null &&
-                                    document.getLong("ID") != null) {
-                                // Обновляем значение по ID что эти точки уже нашли другие пользователи
-                                // Карта при обновлени автоматически подхватит измененения
-                                ManagersFactory.getInstance().getPlayerManager().addPlayer(new Player(
-                                        document.getGeoPoint("position"),
-                                        document.getDouble("bonus"),
-                                        document.getString("name"),
-                                        mGender,
-                                        document.getString("photoUrl"),
-                                        document.getString("ID")));
-                            } else {
-                                Log.e(LOG_TAG, "Field was empty " + document.getId() + " => " + document.getData());
-                            }
+
+                            GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
+
+                            // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
+                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                                continue;
+
+                            // Обновляем значение по ID что эти точки уже нашли другие пользователи
+                            // Карта при обновлени автоматически подхватит измененения
+                            ManagersFactory.getInstance().getPlayerManager().addPlayer(new Player(
+                                    document.getLong(USER_BONUS),
+                                    document.getString(USER_NAME),
+                                    document.getString(USER_PHOTO),
+                                    document.getId(),
+                                    document.getBoolean(USER_NET_STATUS),
+                                    document.getString(USER_TOURNAMENT_ID),
+                                    document.getString(USER_TEAM_ID),
+                                    document.getLong(USER_TOTAL_BONUS),
+                                    geoPoint.getLatitude(),
+                                    geoPoint.getLongitude(),
+                                    document.getLong(USER_GENDER)));
 
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }

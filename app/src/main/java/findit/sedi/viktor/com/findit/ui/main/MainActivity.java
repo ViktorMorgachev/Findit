@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                 // Отправляем на сервер
                 ServerManager.getInstance().updateUserOnServer("location");
+                ServerManager.getInstance().updateUserOnServer("net_status");
             }
 
             // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)

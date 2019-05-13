@@ -29,7 +29,7 @@ public class MyWorker extends Worker {
         // Условии что игра имеет место
         if (true) {
           //  CloudFirestoreManager.getInstance().getPoint();
-          //  CloudFirestoreManager.getInstance().getPlayers();
+            CloudFirestoreManager.getInstance().getPlayers();
         }
         // Нужно будет обновлять с помощью Bus заставить обновится Активности RatingActivity
 

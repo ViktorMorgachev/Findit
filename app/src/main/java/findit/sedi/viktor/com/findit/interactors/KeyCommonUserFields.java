@@ -9,11 +9,12 @@ import java.lang.annotation.RetentionPolicy;
  * Created by Developer on 14.04.2018.
  */
 // Названия полей
-public interface KeyCommonAccountFields {
+public interface KeyCommonUserFields {
 
     @StringDef({KeysField.USER_PASSWORD, KeysField.USER_EMAIL, KeysField.USER_BONUS,
             KeysField.USER_NAME, KeysField.USER_PHOTO, KeysField.USER_PHONE,
-            KeysField.USER_GENDER, KeysField.USER_NET_STATUS, KeysField.USER_LOCATION, KeysField.USER_TOURNAMENT_ID})
+            KeysField.USER_GENDER, KeysField.USER_NET_STATUS, KeysField.USER_LOCATION,
+            KeysField.USER_TOURNAMENT_ID, KeysField.USER_TEAM_ID, KeysField.USER_TOTAL_BONUS, KeysField.USER_ACCOUNT_TYPE})
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
         String USER_PASSWORD = "Password";
@@ -26,6 +27,9 @@ public interface KeyCommonAccountFields {
         String USER_GENDER = "Gender";
         String USER_LOCATION = "Location";
         String USER_TOURNAMENT_ID = "TournamentID";
+        String USER_TEAM_ID = "TeamID";
+        String USER_TOTAL_BONUS = "TotalBonus";
+        String USER_ACCOUNT_TYPE = "AccountType";
 
     }
 
