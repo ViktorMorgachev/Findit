@@ -1,15 +1,12 @@
-package findit.sedi.viktor.com.findit.ui.main.fragment;
+package findit.sedi.viktor.com.findit.ui.main.fragments.maps;
 
 import android.content.Context;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -19,23 +16,21 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.common.util.concurrent.ServiceManager;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.Util;
-import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
-import findit.sedi.viktor.com.findit.ui.main.MainActivity;
+import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
 
 
 public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
 
-    private MainActivity.EventsListener mCallBackListener;
 
+    private MapsFragmentListener mCallBackClickListener;
 
     // Views
     private MapView mMapView;
@@ -58,11 +53,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     }
 
 
-    public void setEventsListener(MainActivity.EventsListener eventsListener) {
-        mCallBackListener = eventsListener;
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.main_google_map, container, false);
@@ -81,7 +71,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
 
-                    mCallBackListener.mapReady();
+                    mCallBackClickListener.mapReady();
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationServices.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
                 }
             });
@@ -125,12 +115,12 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-       /* try {
-            mCallBackListener = (OnMapEventsListener) context;
+        try {
+            mCallBackClickListener = (MapsFragmentListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnMapEventsListener");
-        }*/
+                    + " must implement MapsFragmentListener");
+        }
     }
 
 

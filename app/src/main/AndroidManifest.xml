@@ -23,7 +23,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/Theme.AppCompat.NoActionBar">
+        android:theme="@style/MyMaterialTheme">
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -54,13 +54,14 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.about_place.PlaceAboutActivity"></activity>
-        <activity android:name=".ui.profile.ProfileActivity"
+        <activity android:name=".ui.profile_info.ProfileInfoActivity"
             android:launchMode="singleTask"></activity>
         <activity android:name=".ui.main.MainActivity"></activity>
         <activity android:name=".ui.preloader.PreviewActivity"></activity>
         <activity
             android:name=".ui.scanner_code.QRCodeCameraActivity" />
         <activity android:name=".ui.tournament.TounamentActivity" />
+        <activity android:name=".ui.rating.RatingActivity" />
 
 
     </application>

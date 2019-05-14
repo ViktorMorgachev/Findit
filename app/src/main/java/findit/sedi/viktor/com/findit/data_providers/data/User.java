@@ -27,6 +27,9 @@ public class User {
     private double Longtude;
 
 
+    public User() {
+    }
+
     public User(String phone, String name, @NonNull String ID, String email, long bonus, String photoUrl, String password, long gender, String tournamentsID, String teamID, long totalBonus) {
         this.phone = phone;
         this.name = name;

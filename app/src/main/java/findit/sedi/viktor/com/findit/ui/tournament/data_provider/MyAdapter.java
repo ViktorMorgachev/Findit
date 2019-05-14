@@ -19,6 +19,7 @@ import java.util.List;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {

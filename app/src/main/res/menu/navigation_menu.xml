@@ -27,6 +27,11 @@
             android:icon="@drawable/ic_tournament_24dp"
             android:title="@string/current_tournaments" />
 
+        <item
+            android:id="@+id/nav_rating"
+            android:icon="@drawable/ic_tournament_24dp"
+            android:title="@string/current_rating" />
+
 
     </group>
 </menu>

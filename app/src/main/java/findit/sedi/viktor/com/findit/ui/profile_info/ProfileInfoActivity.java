@@ -1,7 +1,6 @@
-package findit.sedi.viktor.com.findit.ui.profile;
+package findit.sedi.viktor.com.findit.ui.profile_info;
 
 import android.arch.lifecycle.Lifecycle;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -25,7 +24,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
-public class ProfileActivity extends AppCompatActivity implements View.OnClickListener {
+public class ProfileInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
     // View
     private TextView mTextViewBonus;
@@ -41,7 +40,6 @@ public class ProfileActivity extends AppCompatActivity implements View.OnClickLi
 
     //Logic
     private FirebaseUser mFirebaseUser;
-    private Intent mRestartIntent;
 
 
     @Override

@@ -404,7 +404,7 @@ public class CloudFirestoreManager {
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-                            ManagersFactory.getInstance().getPlayerManager().addPlayer(new Player(
+                            ManagersFactory.getInstance().getPlayersManager().addPlayer(new Player(
                                     document.getLong(USER_BONUS),
                                     document.getString(USER_NAME),
                                     document.getString(USER_PHOTO),

@@ -8,7 +8,7 @@ public class ManagersFactory {
     private AccountManager mAccountManager;
     private TeamManager mTeamManager;
     private TournamentManager mTournamentManager;
-    private PlayerManager mPlayerManager;
+    private PlayersManager mPlayersManager;
     private Context mContext;
 
 
@@ -50,13 +50,13 @@ public class ManagersFactory {
         } else return null;
     }
 
-    public PlayerManager getPlayerManager() {
+    public PlayersManager getPlayersManager() {
         if (mContext != null) {
-            if (mPlayerManager != null)
-                return mPlayerManager;
+            if (mPlayersManager != null)
+                return mPlayersManager;
             else {
-                mPlayerManager = new PlayerManager();
-                return mPlayerManager;
+                mPlayersManager = new PlayersManager();
+                return mPlayersManager;
             }
         } else return null;
     }

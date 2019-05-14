@@ -48,8 +48,10 @@ import findit.sedi.viktor.com.findit.common.PlaceManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
-import findit.sedi.viktor.com.findit.ui.main.fragment.GoogleMapFragment;
-import findit.sedi.viktor.com.findit.ui.profile.ProfileActivity;
+import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
+import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
+import findit.sedi.viktor.com.findit.ui.profile_info.ProfileInfoActivity;
+import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
@@ -59,7 +61,7 @@ import static findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity.KE
  * Главная активность которая будет управлять другими активностями возможно с помощью Cicerone
  */
 
-public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener, MapsFragmentListener {
 
 
     //Widgets
@@ -84,53 +86,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private CommonMapManager mCommonMapManager;
     private PlaceManager mPlaceManager = ManagersFactory.getInstance().getPlaceManager();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
-    private EventsListener mEventsListener = new EventsListener() {
-
-        @Override
-        public void findMe() {
-
-        }
-
-        @Override
-        public void showPassedPoints() {
-
-        }
-
-        @Override
-        public void addedPoint() {
-
-        }
-
-        @Override
-        public void showMenu() {
-
-        }
-
-        @Override
-        public void showOptions() {
-
-        }
-
-        @Override
-        public void mapReady() {
-            if (sLatLng != null) {
-                updateMap(DEFAULT_ZOOM, "");
-
-                // Изменяем координаты пользователя
-                ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
-                // Отправляем на сервер
-                ServerManager.getInstance().updateUserOnServer("location");
-                ServerManager.getInstance().updateUserOnServer("net_status");
-            }
-
-            // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
-            if (!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
-                CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
-        }
-    };
-
-
-    //
 
 
     @Override
@@ -194,7 +149,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     .addToBackStack("null")
                     .commit();
 
-            mGoogleMapFragment.setEventsListener(mEventsListener);
         }
 
 
@@ -380,13 +334,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+
         int id = menuItem.getItemId();
 
         if (id == R.id.nav_profile) {
-            startActivity(new Intent(this, ProfileActivity.class));
+            startActivity(new Intent(this, ProfileInfoActivity.class));
             // Handle the camera action
         } else if (id == R.id.nav_tournaments) {
             startActivity(new Intent(this, TounamentActivity.class));
+        } else if (id == R.id.nav_rating) {
+            startActivity(new Intent(this, RatingActivity.class));
         }
             /*else if (id == R.id.nav_gallery) {
 
@@ -415,24 +372,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
 
-    public interface EventsListener {
-
-        void findMe();
-
-        // Показать зелёные точки на карте, где побывал пользователь
-        void showPassedPoints();
-
-        void addedPoint();
-
-        void showMenu();
-
-        void showOptions();
-
-        void mapReady();
-
-    }
-
-
     @Override
     protected void onStop() {
         super.onStop();
@@ -446,6 +385,25 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void updatePoint(long ID, long mark) {
 
         CommonMapManager.getInstance().updatePoint(ID, mark);
+
+    }
+
+    @Override
+    public void mapReady() {
+
+        if (sLatLng != null) {
+            updateMap(DEFAULT_ZOOM, "");
+
+            // Изменяем координаты пользователя
+            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+            // Отправляем на сервер
+            ServerManager.getInstance().updateUserOnServer("location");
+            ServerManager.getInstance().updateUserOnServer("net_status");
+        }
+
+        // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
+        if (!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
+            CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
 
     }
 }

@@ -7,14 +7,15 @@ import java.util.Map;
 
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlayerStorage;
+import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 
 //
-public class PlayerManager {
+public class PlayersManager {
 
-    private List<Player> mPlayers = new ArrayList<>();
+    private ArrayList<Player> mPlayers = new ArrayList<>();
     private FirebasePlayerStorage mFirebasePlayerStorage = FirebasePlayerStorage.getInstance();
 
-    public PlayerManager() {
+    public PlayersManager() {
         // Инициализируем с БД
         init();
     }
@@ -61,4 +62,7 @@ public class PlayerManager {
     }
 
 
+    public ArrayList<Player> getPlayers() {
+        return mPlayers;
+    }
 }
