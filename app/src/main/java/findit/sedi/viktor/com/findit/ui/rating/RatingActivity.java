@@ -40,6 +40,7 @@ public class RatingActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
         mAdapter = new MyAdapter(this, ManagersFactory.getInstance().getPlayersManager().getPlayers());
+
         recyclerView.setAdapter(mAdapter);
 
 

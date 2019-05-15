@@ -16,11 +16,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.data_providers.data.Place;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
@@ -143,6 +145,18 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
             // Рисуем своё местоположени
             // if (mMarkerOptionsMe.getPosition() != null)
             mMap.addMarker(mMarkerOptionsMe);
+
+            // Рисуем местоположение остальных игроков
+            if (ManagersFactory.getInstance().getPlayersManager().getPlayers().size() != 0)
+            for (int i = 0; i < ManagersFactory.getInstance().getPlayersManager().getPlayers().size(); i++) {
+
+                GeoPoint geoPoint = ManagersFactory.getInstance().getPlayersManager().getPlayers().get(i).getGeopoint();
+                mMarkerOptions = new MarkerOptions();
+                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_person_pin_24dp));
+                mMarkerOptions.position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                mMap.addMarker(mMarkerOptions);
+
+            }
 
         }
     }

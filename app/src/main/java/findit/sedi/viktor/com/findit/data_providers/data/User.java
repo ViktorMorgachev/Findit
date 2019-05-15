@@ -25,6 +25,7 @@ public class User {
     private long totalBonus;
     private double Latitude;
     private double Longtude;
+    private boolean netStatus;
 
 
     public User() {
@@ -168,5 +169,13 @@ public class User {
 
     public void setID(@NonNull String ID) {
         this.ID = ID;
+    }
+
+    public boolean isNetStatus() {
+        return netStatus;
+    }
+
+    public void setNetStatus(boolean netStatus) {
+        this.netStatus = netStatus;
     }
 }

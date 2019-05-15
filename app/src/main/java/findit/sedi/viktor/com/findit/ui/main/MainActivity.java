@@ -2,6 +2,7 @@ package findit.sedi.viktor.com.findit.ui.main;
 
 import android.Manifest;
 import android.annotation.TargetApi;
+import android.arch.lifecycle.Lifecycle;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -34,6 +35,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
+import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +48,8 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.common.PlaceManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
@@ -92,6 +96,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        Toast.makeText(this, "Activity was Created", Toast.LENGTH_LONG).show();
+
         // Востановить необходимые данные с сервера
         if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
             restoreDataFromServer();
@@ -131,10 +137,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mCommonMapManager.setContext(this);
 
 
-        initLocationCallback();
-
-        // Initialize FusedLocationClient
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -152,7 +154,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
 
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
@@ -173,7 +175,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onResume() {
         super.onResume();
 
+        initLocationCallback();
 
+        // Initialize FusedLocationClient
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
+
+        Toast.makeText(this, "Activity was Resumed", Toast.LENGTH_LONG).show();
+        FinditBus.getInstance().register(this);
         getLocation();
     }
 
@@ -371,13 +381,21 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         return false;
     }
 
+    @Subscribe
+    public void updatePlayerLocation(UpdatePlayersLocations updatePlayersLocations) {
+
+        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+            mCommonMapManager.updatePlayers();
+        }
+
+    }
 
     @Override
     protected void onStop() {
         super.onStop();
         Toast.makeText(this, "Activity was stoped", Toast.LENGTH_LONG).show();
         WorkManager.getInstance().cancelAllWork();
-        ServerManager.getInstance().changeUserNetStatus(false);
+        FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
     }
 

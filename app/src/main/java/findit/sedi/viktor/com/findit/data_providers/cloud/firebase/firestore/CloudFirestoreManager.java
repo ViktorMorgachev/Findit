@@ -31,6 +31,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
@@ -419,6 +420,9 @@ public class CloudFirestoreManager {
 
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
+
+                        FinditBus.getInstance().post(new UpdatePlayersLocations());
+
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
                     }

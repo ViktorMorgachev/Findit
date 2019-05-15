@@ -146,6 +146,14 @@ public class CommonMapManager {
 
     }
 
+    public void updatePlayers() {
+
+        if (mServiceType == ServiceType.GOOGLE) {
+            mGoogleMapFragment.updateMap();
+        }
+
+    }
+
     public enum ServiceType {
         YANDEX,
         GOOGLE,
