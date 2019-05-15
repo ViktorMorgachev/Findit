@@ -8,7 +8,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.data_providers.data.Place;
 
 public class PlaceAboutActivity extends AppCompatActivity {
 

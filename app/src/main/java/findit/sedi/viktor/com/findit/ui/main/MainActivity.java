@@ -46,7 +46,7 @@ import androidx.work.WorkManager;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
-import findit.sedi.viktor.com.findit.common.PlaceManager;
+import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private List<MarkerOptions> mMarkerOptions = new ArrayList<>();
     private GoogleMapFragment mGoogleMapFragment;
     private CommonMapManager mCommonMapManager;
-    private PlaceManager mPlaceManager = ManagersFactory.getInstance().getPlaceManager();
+    private QrPointManager mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
 
@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void checkMapForPlaces() {
 
 
-        String id = mPlaceManager.getValidIDsOfPlaced(sLatLng);
+        String id = mQrPointManager.getValidIDsOfPlaced(sLatLng);
 
         if (id != null && !id.equalsIgnoreCase("")) {
             // Запускаем активность и отправляем ID в неё
@@ -420,8 +420,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
-        if (!ManagersFactory.getInstance().getPlaceManager().getPlaces().isEmpty())
-            CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getPlaceManager().getPlaces());
+        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())
+        //    CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
 
     }
 }

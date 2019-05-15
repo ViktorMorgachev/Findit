@@ -4,7 +4,7 @@ import android.content.Context;
 
 public class ManagersFactory {
 
-    private PlaceManager mPlaceManager;
+    private QrPointManager mQrPointManager;
     private AccountManager mAccountManager;
     private TeamManager mTeamManager;
     private TournamentManager mTournamentManager;
@@ -39,13 +39,13 @@ public class ManagersFactory {
     }
 
 
-    public PlaceManager getPlaceManager() {
+    public QrPointManager getQrPointManager() {
         if (mContext != null) {
-            if (mPlaceManager != null)
-                return mPlaceManager;
+            if (mQrPointManager != null)
+                return mQrPointManager;
             else {
-                mPlaceManager = new PlaceManager();
-                return mPlaceManager;
+                mQrPointManager = new QrPointManager();
+                return mQrPointManager;
             }
         } else return null;
     }

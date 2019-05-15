@@ -1,7 +1,5 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.myserver;
 
-import com.google.firebase.auth.FirebaseAuth;
-
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
@@ -24,12 +22,12 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().updatePoint("fond", id);
 
         // У себя помечаем в БД что место найденно по ID
-        ManagersFactory.getInstance().getPlaceManager().getPlaceByID(id).setMark(2);
+        ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).setMark("fond");
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-        user.setBonus(ManagersFactory.getInstance().getPlaceManager().getPlaceByID(id).getBonus());
+        user.setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
 
 
         ManagersFactory.getInstance().getAccountManager().updateUser(user);
@@ -42,7 +40,7 @@ public class ServerManager {
 
     }
 
-    public void getPlaces() {
+    public void getQrPlaces() {
 
 
     }

@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telephony.SmsManager;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -13,8 +12,7 @@ import java.util.HashMap;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data_providers.data.Place;
-import findit.sedi.viktor.com.findit.common.PlaceManager;
+import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
@@ -25,7 +23,7 @@ public class PreviewActivity extends Activity {
 
     private Handler mDataLoader = new Handler();
     private Thread mThread;
-    private PlaceManager mPlaceManager;
+    private QrPointManager mQrPointManager;
 
     private GifImageView mGifImageView;
     private ProgressLoder mProgressLoder;
@@ -42,7 +40,7 @@ public class PreviewActivity extends Activity {
 
         ManagersFactory.getInstance().setContext(this);
 
-        mPlaceManager = ManagersFactory.getInstance().getPlaceManager();
+        mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
 
         setContentView(R.layout.preview_layout);
 
@@ -73,7 +71,7 @@ public class PreviewActivity extends Activity {
                     HashMap<Long, Place> placeHashMap = new HashMap<>();
                     Place place;
 
-                   // ServerManager.getInstance().getPlaces();
+                   // ServerManager.getInstance().getQrPlaces();
                     // Очередь нам не важна, просто получаем значения и инициализируем пока в наши менеджеры
                     ServerManager.getInstance().getTeams();
                     ServerManager.getInstance().getTournaments();
@@ -94,7 +92,7 @@ public class PreviewActivity extends Activity {
 
                     //    placeHashMap.put(place.getID(), place);
 
-                    mPlaceManager.savePlaces(placeHashMap);
+                    mQrPointManager.saveQrPoints(placeHashMap);
 
                     mDataLoader.post(new Runnable() {
                         @Override

@@ -1,8 +1,9 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database;
 
+import java.util.ArrayList;
 import java.util.Map;
 
-import findit.sedi.viktor.com.findit.data_providers.data.Place;
+import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 
 // Работает с БД, обновляет, добавляет, хранит, удаляет....
 public class FirebasePlacesStorage {
@@ -20,7 +21,7 @@ public class FirebasePlacesStorage {
 
 
     // при закрытии приложения сохранять в БД
-    public void savеPlacesToDatabase(Map<Long, Place> places) {
+    public void savеPlacesToDatabase(ArrayList<QrPoint> points) {
         // сохраняем в БД
     }
 

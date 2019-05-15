@@ -6,6 +6,9 @@ import android.support.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 import findit.sedi.viktor.com.findit.data_providers.Gender;
 
 @Entity
@@ -26,6 +29,7 @@ public class User {
     private double Latitude;
     private double Longtude;
     private boolean netStatus;
+    private HashMap<String, ArrayList<String>> mDiscoveredPointIDs;
 
 
     public User() {
@@ -177,5 +181,13 @@ public class User {
 
     public void setNetStatus(boolean netStatus) {
         this.netStatus = netStatus;
+    }
+
+    public HashMap<String, ArrayList<String>> getDiscoveredPointIDs() {
+        return mDiscoveredPointIDs;
+    }
+
+    public void setDiscoveredPointIDs(HashMap<String, ArrayList<String>> discoveredPointIDs) {
+        mDiscoveredPointIDs = discoveredPointIDs;
     }
 }

@@ -445,7 +445,7 @@ public class CloudFirestoreManager {
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
 
-                            ManagersFactory.getInstance().getPlaceManager().markPlace(document.getLong("ID"), document.getLong("Icon"));
+                            ManagersFactory.getInstance().getQrPointManager().markQrPoint(document.getLong("ID"), document.getLong("Icon"));
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
                     } else {
