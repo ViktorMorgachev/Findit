@@ -36,7 +36,9 @@ import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_EMAIL;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_FONDED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_GENDER;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_LOCATION;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_NAME;
@@ -362,7 +364,9 @@ public class CloudFirestoreManager {
                                         document.getLong(USER_GENDER) == null ? 0 : document.getLong(USER_GENDER),
                                         document.getString(USER_TOURNAMENT_ID),
                                         document.getString(USER_TEAM_ID),
-                                        document.getLong(USER_TOTAL_BONUS) == null ? 0 : document.getLong(USER_TOTAL_BONUS)
+                                        document.getLong(USER_TOTAL_BONUS) == null ? 0 : document.getLong(USER_TOTAL_BONUS),
+                                        (ArrayList<String>) document.get(USER_DISCOVERED_QR_POINTS),
+                                        (ArrayList<String>) document.get(USER_FONDED_QR_POINTS)
                                 ));
 
 
@@ -445,7 +449,7 @@ public class CloudFirestoreManager {
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
 
-                            ManagersFactory.getInstance().getQrPointManager().markQrPoint(document.getLong("ID"), document.getLong("Icon"));
+                           // ManagersFactory.getInstance().getQrPointManager().markQrPoint(document.getLong("ID"), document.getLong("Icon"));
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
                     } else {

@@ -7,6 +7,8 @@ import java.util.List;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlacesStorage;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
+import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
 
 public class QrPointManager {
 
@@ -69,55 +71,23 @@ public class QrPointManager {
 
     /**
      * Перебираем все точки и показываем подсказки только тех тайников, которые принадлежат к нашему турниру
-     * и не зафиксированны у нас что мы открыли локацию тайника, (то есть каждому новому пользователю набревшему на знак вопроса или открывшего
-     * локацию тайника) (И расстояние до тайников не более чем в них указано)
+     * (И расстояние до тайников не более чем в них указано)
      */
-    public String getValidIDsOfPlaced(LatLng latLng) {
+    public String getNearbyOfQrPlaced(LatLng latLng) {
 
+        // Вытаскивает только те точки, рядом с которым пользователь, и совпадает айдишник турнира а выше уже по фильтру
         for (int i = 0; i < mQrPoints.size(); i++) {
-            if (checkWithOurDiscoveredPoints(mQrPoints.get(i).getID()) &&
-                    checkForTournamentID(mQrPoints.get(i).getTournamentID()) &&
-                    (Util.getInstance().getDistance(latLng, mQrPoints.get(i).getLatLong())) <= mQrPoints.get(i).getDistance()) {
-                // Показываем оповещение
+            if (((Util.getInstance().getDistance(latLng, mQrPoints.get(i).getLatLong())) <= mQrPoints.get(i).getDistance()) &&
+                    mQrPoints.get(i).getID().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentsID())) {
+
+                FinditBus.getInstance().post(new PlaceAboutEvent(mQrPoints.get(i).getID()));
+
             }
 
         }
 
         return "";
 
-
     }
 
-    private boolean checkForTournamentID(String tournamentID) {
-        return ManagersFactory.getInstance().getAccountManager().getUser().getTournamentsID().equalsIgnoreCase(tournamentID);
-    }
-
-    private boolean checkWithOurDiscoveredPoints(String id) {
-
-        boolean isOpened = false;
-        boolean isFonded = false;
-
-        for (int i = 0; i < ManagersFactory.getInstance().getAccountManager()
-                .getUser().getDiscoveredPointIDs().get("Discovered").size(); i++) {
-
-            if (id.equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager()
-                    .getUser().getDiscoveredPointIDs().get("Discovered").get(i))) {
-                isOpened = true;
-                break;
-            }
-        }
-
-        for (int i = 0; i < ManagersFactory.getInstance().getAccountManager()
-                .getUser().getDiscoveredPointIDs().get("Fond").size(); i++) {
-
-            if (id.equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager()
-                    .getUser().getDiscoveredPointIDs().get("Fond").get(i))) {
-                isFonded = true;
-                break;
-            }
-        }
-
-        return isFonded || isOpened;
-
-    }
 }

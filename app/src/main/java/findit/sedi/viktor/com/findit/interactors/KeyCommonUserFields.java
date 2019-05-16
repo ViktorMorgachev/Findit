@@ -14,7 +14,8 @@ public interface KeyCommonUserFields {
     @StringDef({KeysField.USER_PASSWORD, KeysField.USER_EMAIL, KeysField.USER_BONUS,
             KeysField.USER_NAME, KeysField.USER_PHOTO, KeysField.USER_PHONE,
             KeysField.USER_GENDER, KeysField.USER_NET_STATUS, KeysField.USER_LOCATION,
-            KeysField.USER_TOURNAMENT_ID, KeysField.USER_TEAM_ID, KeysField.USER_TOTAL_BONUS, KeysField.USER_ACCOUNT_TYPE})
+            KeysField.USER_TOURNAMENT_ID, KeysField.USER_TEAM_ID, KeysField.USER_TOTAL_BONUS,
+            KeysField.USER_ACCOUNT_TYPE, KeysField.USER_DISCOVERED_QR_POINTS, KeysField.USER_FONDED_QR_POINTS})
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
         String USER_PASSWORD = "Password";
@@ -30,6 +31,8 @@ public interface KeyCommonUserFields {
         String USER_TEAM_ID = "TeamID";
         String USER_TOTAL_BONUS = "TotalBonus";
         String USER_ACCOUNT_TYPE = "AccountType";
+        String USER_DISCOVERED_QR_POINTS = "DiscoveredQrPointsIDs";
+        String USER_FONDED_QR_POINTS = "FondedQrPointsIDs";
 
     }
 

@@ -18,7 +18,7 @@ public interface KeyCommonQrPointsFields {
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
         String QRPOINT_BONUS = "Bonus";
-        String QRPOINT_TYPE = "Type";
+        String QRPOINT_TYPE = "Reusable";
         String QRPOINT_MARK = "Mark";
         String QRPOINT_QUEST_BONUS = "QuestBonus";
         String QRPOINT_QUESTS = "Quests";

@@ -12,7 +12,7 @@ import java.util.HashMap;
 public class QrPoint {
 
     private long Bonus; // Бонусы которые получит пользователь
-    private String Type; // Тип переиспользуемый или не переиспользуемый
+    private boolean isReusable; // Тип переиспользуемый или не переиспользуемый
     private String Mark; // Открыли, нашли, не нашли
     private long questBonus; // Бонус за одну отгаданную подсказку
     private HashMap<String, ArrayList<String>> quests; // Список с заданими (вопросами на которые должен ответить игрок)
@@ -27,11 +27,13 @@ public class QrPoint {
     private long Difficulty; // Сложностьы
     private String ID;
 
-    public QrPoint(long bonus, String type, String mark, long questBonus,
-                   HashMap<String, ArrayList<String>> quests, String tipForNextQrPoint, String tip, String tournamentID,
-                   boolean isMain, String tipPhoto, double latitude, double longTitude, double distance, long difficulty, String ID) {
+
+    public QrPoint(long bonus, boolean isReusable, String mark,
+                   long questBonus, HashMap<String, ArrayList<String>> quests,
+                   String tipForNextQrPoint, String tip, String tournamentID, boolean isMain, String tipPhoto,
+                   double latitude, double longTitude, double distance, long difficulty, String ID) {
         Bonus = bonus;
-        Type = type;
+        this.isReusable = isReusable;
         Mark = mark;
         this.questBonus = questBonus;
         this.quests = quests;
@@ -47,6 +49,15 @@ public class QrPoint {
         this.ID = ID;
     }
 
+
+    public boolean isReusable() {
+        return isReusable;
+    }
+
+    public void setReusable(boolean reusable) {
+        isReusable = reusable;
+    }
+
     public long getBonus() {
         return Bonus;
     }
@@ -55,13 +66,6 @@ public class QrPoint {
         Bonus = bonus;
     }
 
-    public String getType() {
-        return Type;
-    }
-
-    public void setType(String type) {
-        Type = type;
-    }
 
     public String getMark() {
         return Mark;

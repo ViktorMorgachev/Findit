@@ -24,6 +24,7 @@ import java.util.List;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.Util;
+import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
 
@@ -136,7 +137,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         if (mMap != null) {
             mMap.clear();
 
-            // Рисуем точки только
+            // Рисуем только те точки которые с метокой none, их не нашли а по умолчанию они относятся к нашему турниру
             for (int i = 0; i < mMarkerPoints.size(); i++) {
                 mMap.addMarker(mMarkerPoints.get(i));
             }
@@ -246,7 +247,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         updateMap();
     }
 
-    public void initPoints(List<Place> places) {
+    public void initPoints(List<QrPoint> places) {
 
 
         mMarkerOptions = new MarkerOptions();

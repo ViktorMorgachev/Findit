@@ -19,18 +19,21 @@ public class ServerManager {
     public void sendCode(String id, String mark) {
 
         // Код по отправке qr кода на сервер
-        CloudFirestoreManager.getInstance().updatePoint("fond", id);
+        //  CloudFirestoreManager.getInstance().updatePoint("fond", id);
 
-        // У себя помечаем в БД что место найденно по ID
-        ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).setMark("fond");
+        // У себя помечаем в БД что место либо найденно, либо обнаруженно,  по ID
+        ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).setMark(mark);
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         user.setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
 
+        // Нужно будет отправить на сервер информацию об обновлении бонусов у пользователя, если командная игра, то и добавить бонусы к команде
+        // И после обновить пользователя
 
-        ManagersFactory.getInstance().getAccountManager().updateUser(user);
+
+        // В зависимости от настроек турнира, можем удалить бонусы у QrPoint и обновить на сервере
 
     }
 

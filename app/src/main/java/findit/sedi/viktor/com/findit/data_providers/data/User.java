@@ -29,13 +29,12 @@ public class User {
     private double Latitude;
     private double Longtude;
     private boolean netStatus;
-    private HashMap<String, ArrayList<String>> mDiscoveredPointIDs;
+    private ArrayList<String> mFondedQrPointsIDs;
+    private ArrayList<String> mDiscoveredQrPointIDs;
 
-
-    public User() {
-    }
-
-    public User(String phone, String name, @NonNull String ID, String email, long bonus, String photoUrl, String password, long gender, String tournamentsID, String teamID, long totalBonus) {
+    public User(String phone, String name, @NonNull String ID, String email, long bonus,
+                String photoUrl, String password, long gender, String tournamentsID, String teamID, long totalBonus,
+                ArrayList<String> discoveredQrPointIDs, ArrayList<String> fondedQrPointsIDs) {
         this.phone = phone;
         this.name = name;
         this.ID = ID;
@@ -47,6 +46,28 @@ public class User {
         TournamentsID = tournamentsID;
         TeamID = teamID;
         this.totalBonus = totalBonus;
+        mDiscoveredQrPointIDs = discoveredQrPointIDs;
+        mFondedQrPointsIDs = fondedQrPointsIDs;
+    }
+
+
+    public ArrayList<String> getFondedQrPointsIDs() {
+        return mFondedQrPointsIDs;
+    }
+
+    public void setFondedQrPointsIDs(ArrayList<String> fondedQrPointsIDs) {
+        mFondedQrPointsIDs = fondedQrPointsIDs;
+    }
+
+    public ArrayList<String> getDiscoveredQrPointIDs() {
+        return mDiscoveredQrPointIDs;
+    }
+
+    public void setDiscoveredQrPointIDs(ArrayList<String> discoveredQrPointIDs) {
+        mDiscoveredQrPointIDs = discoveredQrPointIDs;
+    }
+
+    public User() {
     }
 
 
@@ -183,11 +204,4 @@ public class User {
         this.netStatus = netStatus;
     }
 
-    public HashMap<String, ArrayList<String>> getDiscoveredPointIDs() {
-        return mDiscoveredPointIDs;
-    }
-
-    public void setDiscoveredPointIDs(HashMap<String, ArrayList<String>> discoveredPointIDs) {
-        mDiscoveredPointIDs = discoveredPointIDs;
-    }
 }
