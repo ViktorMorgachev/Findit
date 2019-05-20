@@ -24,7 +24,9 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 import java.io.IOException;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 
 public class QRCodeCameraActivity extends AppCompatActivity {
@@ -37,7 +39,6 @@ public class QRCodeCameraActivity extends AppCompatActivity {
     Button btnAction;
     String code = "";
     String intentData = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -70,6 +71,8 @@ public class QRCodeCameraActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(QRCodeCameraActivity.this, "Отправленно", Toast.LENGTH_LONG).show();
                 ServerManager.getInstance().sendCode(code, "fond");
+                ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
+                ServerManager.getInstance().updateUserOnServer("bonus");
                 QRCodeCameraActivity.this.onBackPressed();
             }
         });

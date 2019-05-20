@@ -45,7 +45,7 @@ public class AccountManager {
 
     public void updateUserByEmail(String email, IAction IAction) {
 
-        ServerManager.getInstance().initUser(email, IAction);
+        ServerManager.getInstance().updateUser(email, IAction);
 
     }
 

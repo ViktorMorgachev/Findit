@@ -25,15 +25,32 @@ import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.Gender;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
+import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_DIFFICULTY;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_DISTANCE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_IS_MAIN;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_LOCATION;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_MARK;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_QUESTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_QUEST_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TIP_FOR_CURRENT;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TIP_FOR_NEXT;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TIP_PHOTO;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TOURNAMENT_ID;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_DISCOVERED_QR_POINTS;
@@ -49,7 +66,6 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.Keys
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TEAM_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOTAL_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOURNAMENT_ID;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_POINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_USERS_PATH;
@@ -94,7 +110,7 @@ public class CloudFirestoreManager {
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
     public void updateUser(String tag) {
 
-
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
         // Логика такова, работа во втором потоке, он запускает другие потоки,
         // Сам засыпает на 1 секунду, если обновления успешны у всех трёх потоков, то останавливаем сами себя и отплавляем событие на обновление
         // Данных
@@ -106,7 +122,6 @@ public class CloudFirestoreManager {
 
                     final int[] succesResult = {0};
 
-                    document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
                     document.update(USER_NAME, ManagersFactory.getInstance().getAccountManager().getUser().getName())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -168,17 +183,32 @@ public class CloudFirestoreManager {
             });
             thread.start();
 
-        }
+        } else if (tag.equalsIgnoreCase("location")) {
 
-        if (tag.equalsIgnoreCase("location")) {
-
-
-            document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
             document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } else if (tag.equalsIgnoreCase("net_status")) {
+
+            document.update(USER_NET_STATUS, true)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -188,17 +218,28 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
-        }
+        } else if (tag.equalsIgnoreCase("fonded_qrpoint")) {
 
-        if (tag.equalsIgnoreCase("net_status")) {
-
-
-            document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
-
-            document.update(USER_NET_STATUS, true)
+            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } else if (tag.equalsIgnoreCase("bonus")) {
+            document.update(USER_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getBonus())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -434,24 +475,54 @@ public class CloudFirestoreManager {
     }
 
 
-    public void updatePoint(String icon, String ID) {
+    public void updateQrPointByID(String id, String mark) {
 
+
+        document = mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).document(id);
+        document.update(QRPOINT_MARK, mark);
 
     }
 
-    public void getPoint() {
+    public void getQrPlaces() {
 
-        mFirebaseFirestore.collection(KEY_POINTS_PATH).get()
+        mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                            // Ставим ограничение, если не равна нашему турниру, то откллоняем
+                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentsID()))
+                                continue;
+
+                            GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
+
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
+                            ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
+                                    document.getLong(QRPOINT_BONUS),
+                                    document.getBoolean(QRPOINT_TYPE),
+                                    document.getLong(QRPOINT_QUEST_BONUS),
+                                    (HashMap<String, ArrayList<String>>) document.get(QRPOINT_QUESTS),
+                                    document.getString(QRPOINT_TIP_FOR_NEXT),
+                                    document.getString(QRPOINT_TIP_FOR_CURRENT),
+                                    document.getString(QRPOINT_TOURNAMENT_ID),
+                                    document.getBoolean(QRPOINT_IS_MAIN),
+                                    document.getString(QRPOINT_TIP_PHOTO),
+                                    geoPoint.getLatitude(),
+                                    geoPoint.getLongitude(),
+                                    document.getDouble(QRPOINT_DISTANCE),
+                                    document.getLong(QRPOINT_DIFFICULTY),
+                                    document.getId())
+                            );
 
-                           // ManagersFactory.getInstance().getQrPointManager().markQrPoint(document.getLong("ID"), document.getLong("Icon"));
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
+
+                        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())
+                            FinditBus.getInstance().post(new UpdateAllQrPoints());
+
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
                     }

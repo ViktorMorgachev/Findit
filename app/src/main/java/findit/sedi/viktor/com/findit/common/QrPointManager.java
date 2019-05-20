@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlacesStorage;
+import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
@@ -75,10 +76,9 @@ public class QrPointManager {
      */
     public String getNearbyOfQrPlaced(LatLng latLng) {
 
-        // Вытаскивает только те точки, рядом с которым пользователь, и совпадает айдишник турнира а выше уже по фильтру
+        // Вытаскивает только те точки, рядом с которым пользователь
         for (int i = 0; i < mQrPoints.size(); i++) {
-            if (((Util.getInstance().getDistance(latLng, mQrPoints.get(i).getLatLong())) <= mQrPoints.get(i).getDistance()) &&
-                    mQrPoints.get(i).getID().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentsID())) {
+            if (((Util.getInstance().getDistance(latLng, mQrPoints.get(i).getLatLong())) <= mQrPoints.get(i).getDistance())) {
 
                 FinditBus.getInstance().post(new PlaceAboutEvent(mQrPoints.get(i).getID()));
 
@@ -90,4 +90,17 @@ public class QrPointManager {
 
     }
 
+    public void addQrPoint(QrPoint point) {
+
+        // Проверяем есть ли в списке такач точка?\
+        for (int i = 0; i < mQrPoints.size(); i++) {
+            if (mQrPoints.get(i).getID().equalsIgnoreCase(point.getID())) {
+                return;
+            }
+        }
+
+        mQrPoints.add(point);
+
+
+    }
 }

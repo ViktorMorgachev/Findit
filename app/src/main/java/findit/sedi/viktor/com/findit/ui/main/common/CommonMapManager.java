@@ -6,6 +6,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
 
+import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
 
@@ -128,7 +129,7 @@ public class CommonMapManager {
 
     }
 
-    public void initPoints(List<Place> places) {
+    public void initPoints(List<QrPoint> places) {
 
 
         if (mServiceType == ServiceType.GOOGLE) {
@@ -137,7 +138,7 @@ public class CommonMapManager {
 
     }
 
-    public void updatePoint(long id, long mark) {
+    public void updatePoint(String id, String mark) {
 
         if (mServiceType == ServiceType.GOOGLE) {
             mGoogleMapFragment.updatePoint(id, mark);
@@ -152,6 +153,8 @@ public class CommonMapManager {
         }
 
     }
+
+
 
     public enum ServiceType {
         YANDEX,

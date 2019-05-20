@@ -13,10 +13,10 @@ import kotlin.reflect.KFunction;
 
 public interface KeyCommonPath {
 
-    @StringDef({KeysField.KEY_POINTS_PATH, KeysField.KEY_TEAMS_PATH, KeysField.KEY_TOURNAMENTS_PATH, KeysField.KEY_USERS_PATH})
+    @StringDef({KeysField.KEY_QRPOINTS_PATH, KeysField.KEY_TEAMS_PATH, KeysField.KEY_TOURNAMENTS_PATH, KeysField.KEY_USERS_PATH})
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
-        String KEY_POINTS_PATH = "points";
+        String KEY_QRPOINTS_PATH = "qrpoints";
         String KEY_USERS_PATH = "users";
         String KEY_TOURNAMENTS_PATH = "tournament";
         String KEY_TEAMS_PATH = "tournamentTeams";

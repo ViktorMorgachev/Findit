@@ -188,7 +188,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             // Создаеём пользователя получив информармацию из БД Firebase чтобы проинициализировать пользователя
                             // Для этого придётся перебрать список всех пользователей в БД Firestore для того чтобы проинициализировать и дать необходимый айдишник
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().initUser(user.getEmail(), mIAction);
+                            ServerManager.getInstance().updateUser(user.getEmail(), mIAction);
 
                         } else {
                             // If sign in fails, display a message to the user.

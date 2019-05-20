@@ -25,9 +25,10 @@ public class MyWorker extends Worker {
     public Result doWork() {
 
 
+        // Тут настроим на обновление через некторое время, он будет управлять потоками обновлями и устанавливать время
         if (true) {
-          //  CloudFirestoreManager.getInstance().getPoint();
             CloudFirestoreManager.getInstance().getPlayers();
+            CloudFirestoreManager.getInstance().getQrPlaces();
         }
 
         return Result.retry();

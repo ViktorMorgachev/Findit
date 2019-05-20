@@ -49,8 +49,10 @@ import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
@@ -112,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         setContentView(R.layout.activity_main);
 
         mPeriodicWorkRequest =
-                new PeriodicWorkRequest.Builder(MyWorker.class, 5000, TimeUnit.SECONDS)
+                new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
                         .addTag("periodic_work").build();
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
@@ -230,8 +232,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void chechNearbyQrPlace(PlaceAboutEvent placeAboutEvent) {
 
         QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID());
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        boolean discovered = false; // Открывали ли ранее
+        boolean fond = false; // Находили ли ранее?
 
-        if (!qrPoint.isReusable()) {
+
             Toast.makeText(getApplicationContext(), "Вы рядом с возможно новым тайником", Toast.LENGTH_LONG).show();
 
             // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
@@ -243,30 +248,62 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 intent.putExtra(KEY_PLACE_ID, qrPoint.getID());
                 startActivity(intent);
 
+                // Помечаем у себя в списке QrPoints что она detecteds
+                ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID()).setMark("detected");
 
                 // Одновременно меняем статус на сервере что на это место набрели
                 ServerManager.getInstance().sendCode(qrPoint.getID(), "detected");
 
 
+                // Синхронизация с сервером
+                ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
+
+                // Обновление информации на карте
+                updatePoint(qrPoint.getID(), "detected");
 
 
             } else { // Иначе его обнаруживали, так как статус не none
                 // Проверям обнаруживали ли мы ранее это точку?
-                for (int i = 0; i < ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs().size(); i++) {
-                    if (ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                        Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на него для подсказки", Toast.LENGTH_LONG).show();
-                        return;
+                for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
+                    if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+                        discovered = true;
+                        Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", Toast.LENGTH_LONG).show();
+                        break;
                     }
                 }
+
+                if (!discovered){
+                    for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
+                        if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+                            fond = true;
+                            Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
+                            break;
+                        }
+                    }
+                }
+
+                // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
+                if (!fond && !discovered){
+
+
+                    // Запускаем активность и отправляем ID в неё
+                    Intent intent = new Intent(this, PlaceAboutActivity.class);
+                    intent.putExtra(KEY_PLACE_ID, qrPoint.getID());
+                    startActivity(intent);
+
+
+                    // Сохраняем у себя и на сервере информацию о найденных точках
+                    ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs().add(qrPoint.getID());
+
+                    ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
+
+                }
+
             }
 
 
-        }
 
 
-        // Тут я думаю
-
-        //  if (ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID()))
 
     }
 
@@ -415,6 +452,16 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+
+    @Subscribe
+    public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {
+
+        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+            mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
+        }
+
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -432,7 +479,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     // Будем обновлять по ID только не обходимую точку
-    private void updatePoint(long ID, long mark) {
+    private void updatePoint(String ID, String mark) {
 
         CommonMapManager.getInstance().updatePoint(ID, mark);
 
@@ -453,6 +500,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
         if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty()) {
+
         }
         ;
         //    CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());

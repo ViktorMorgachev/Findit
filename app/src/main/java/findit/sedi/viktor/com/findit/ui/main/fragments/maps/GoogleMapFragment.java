@@ -41,7 +41,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     // Logic
     private MarkerOptions mMarkerOptionsMe = new MarkerOptions();
-    private List<MarkerOptions> mMarkerPoints = new ArrayList<>();
+    private List<MarkerOptions> mMarkerQrPoints = new ArrayList<>();
 
     private MarkerOptions mMarkerOptions;
 
@@ -127,7 +127,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
 
     public void deletePoints() {
-        mMarkerPoints.clear();
+        mMarkerQrPoints.clear();
 
     }
 
@@ -138,8 +138,8 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
             mMap.clear();
 
             // Рисуем только те точки которые с метокой none, их не нашли а по умолчанию они относятся к нашему турниру
-            for (int i = 0; i < mMarkerPoints.size(); i++) {
-                mMap.addMarker(mMarkerPoints.get(i));
+            for (int i = 0; i < mMarkerQrPoints.size(); i++) {
+                mMap.addMarker(mMarkerQrPoints.get(i));
             }
 
             // Рисуем своё местоположени
@@ -203,7 +203,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMarkerOptions = new MarkerOptions();
         mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
         mMarkerOptions.position(latLng);
-        mMarkerPoints.add(mMarkerOptions);
+        mMarkerQrPoints.add(mMarkerOptions);
 
 
         updateMap();
@@ -215,7 +215,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.icon(BitmapDescriptorFactory.fromResource(drawable));
         markerOptions.position(latLong);
-        mMarkerPoints.add(markerOptions);
+        mMarkerQrPoints.add(markerOptions);
 
         updateMap();
 
@@ -223,9 +223,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
   /*  public void deletePoint(LatLngpoint) {
 
-        for (int i = 0; i < mMarkerPoints.size(); i++) {
-            if (mMarkerPoints.get(i).getPosition().equals(point.getLatLong().toLatLng())) {
-                mMarkerPoints.remove(mMarkerPoints.get(i));
+        for (int i = 0; i < mMarkerQrPoints.size(); i++) {
+            if (mMarkerQrPoints.get(i).getPosition().equals(point.getLatLong().toLatLng())) {
+                mMarkerQrPoints.remove(mMarkerQrPoints.get(i));
                 return;
             }
         }
@@ -241,7 +241,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     public void clearMap() {
 
-        mMarkerPoints.clear();
+        mMarkerQrPoints.clear();
         mIAction = null;
 
         updateMap();
@@ -253,16 +253,15 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMarkerOptions = new MarkerOptions();
 
         for (int i = 0; i < places.size(); i++) {
-            if (places.get(i).getMark() == 2) {
+            if (places.get(i).getMark().equalsIgnoreCase("fond")) {
                 mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
-            } else if (places.get(i).getMark() == 1) {
-
+            } else if (places.get(i).getMark().equalsIgnoreCase("detected")) {
+                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_temp_24dp));
             } else {
-
             }
-            mMarkerOptions.position(places.get(i).getLatLng());
-            mMarkerOptions.title(String.valueOf(places.get(i).getIDs()));
-            mMarkerPoints.add(mMarkerOptions);
+            mMarkerOptions.position(places.get(i).getLatLong());
+            mMarkerOptions.title(String.valueOf(places.get(i).getID()));
+            mMarkerQrPoints.add(mMarkerOptions);
         }
 
 
@@ -272,15 +271,15 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     }
 
     // В надежде что  пустые icon можно инициализировать
-    public void updatePoint(long id, long mark) {
+    public void updatePoint(String id, String mark) {
 
         // Ищем точку у которой идентификатор необходимый
-        for (int i = 0; i < mMarkerPoints.size(); i++) {
-            if (mMarkerPoints.get(i).getTitle().equalsIgnoreCase(String.valueOf(id))) {
-                if (mark == 2) {
+        for (int i = 0; i < mMarkerQrPoints.size(); i++) {
+            if (mMarkerQrPoints.get(i).getTitle().equalsIgnoreCase(String.valueOf(id))) {
+                if (mark.equalsIgnoreCase("fond")) {
                     mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
-                } else if (mark == 1) {
-
+                } else if (mark.equalsIgnoreCase("discovered")) {
+                    mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_temp_24dp));
                 } else {
 
                 }
