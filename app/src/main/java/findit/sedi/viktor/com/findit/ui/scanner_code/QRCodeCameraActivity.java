@@ -26,7 +26,6 @@ import java.io.IOException;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
-import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 
 public class QRCodeCameraActivity extends AppCompatActivity {
@@ -69,8 +68,16 @@ public class QRCodeCameraActivity extends AppCompatActivity {
         btnAction.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(QRCodeCameraActivity.this, "Отправленно", Toast.LENGTH_LONG).show();
+                Toast.makeText(QRCodeCameraActivity.this, "Вы получили  " +
+                        ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus() + " бонусов", Toast.LENGTH_LONG).show();
                 ServerManager.getInstance().sendCode(code, "fond");
+
+                // Если маркер одноразовый, то обнуляем значение
+                if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).isReusable())
+                {
+                    ServerManager.getInstance().resetQrPlaceBonus(code);
+                }
+
                 ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
                 ServerManager.getInstance().updateUserOnServer("bonus");
                 QRCodeCameraActivity.this.onBackPressed();

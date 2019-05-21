@@ -97,4 +97,9 @@ public class ServerManager {
 
     }
 
+    public void resetQrPlaceBonus(String code) {
+
+        CloudFirestoreManager.getInstance().resetQrPlaceBonus(code);
+
+    }
 }

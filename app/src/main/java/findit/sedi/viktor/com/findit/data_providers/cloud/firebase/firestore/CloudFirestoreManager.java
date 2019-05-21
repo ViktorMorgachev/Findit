@@ -500,9 +500,11 @@ public class CloudFirestoreManager {
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
+
                             ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
                                     document.getLong(QRPOINT_BONUS),
                                     document.getBoolean(QRPOINT_TYPE),
+                                    document.getString(QRPOINT_MARK),
                                     document.getLong(QRPOINT_QUEST_BONUS),
                                     (HashMap<String, ArrayList<String>>) document.get(QRPOINT_QUESTS),
                                     document.getString(QRPOINT_TIP_FOR_NEXT),
@@ -512,7 +514,7 @@ public class CloudFirestoreManager {
                                     document.getString(QRPOINT_TIP_PHOTO),
                                     geoPoint.getLatitude(),
                                     geoPoint.getLongitude(),
-                                    document.getDouble(QRPOINT_DISTANCE),
+                                    document.getLong(QRPOINT_DISTANCE),
                                     document.getLong(QRPOINT_DIFFICULTY),
                                     document.getId())
                             );
@@ -527,6 +529,14 @@ public class CloudFirestoreManager {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
                     }
                 });
+
+    }
+
+    public void resetQrPlaceBonus(String code) {
+
+
+        document = mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).document(code);
+        document.update(QRPOINT_BONUS, 0);
 
     }
 }

@@ -220,21 +220,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     break;
                 }
 
-
             }
         };
     }
 
 
-    // TODO По нажатию на знак вопроса показывать этот диалог, только если вы рядом с ним, и его уже обнаруживали
     // Сюда попадают тольеко те указатели, которые относятся к нашему турниру
     @Subscribe
     public void chechNearbyQrPlace(PlaceAboutEvent placeAboutEvent) {
 
-        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID());
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
-        boolean discovered = false; // Открывали ли ранее
-        boolean fond = false; // Находили ли ранее?
+
+        if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+
+
+            QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID());
+            User user = ManagersFactory.getInstance().getAccountManager().getUser();
+            boolean discovered = false; // Открывали ли ранее
+            boolean fond = false; // Находили ли ранее?
 
 
             Toast.makeText(getApplicationContext(), "Вы рядом с возможно новым тайником", Toast.LENGTH_LONG).show();
@@ -254,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 // Одновременно меняем статус на сервере что на это место набрели
                 ServerManager.getInstance().sendCode(qrPoint.getID(), "detected");
 
-
                 // Синхронизация с сервером
                 ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
 
@@ -272,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     }
                 }
 
-                if (!discovered){
+                if (!discovered) {
                     for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
                         if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
                             fond = true;
@@ -283,7 +284,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 }
 
                 // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
-                if (!fond && !discovered){
+                if (!fond && !discovered) {
 
 
                     // Запускаем активность и отправляем ID в неё
@@ -301,8 +302,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
             }
 
-
-
+        }
 
 
     }
