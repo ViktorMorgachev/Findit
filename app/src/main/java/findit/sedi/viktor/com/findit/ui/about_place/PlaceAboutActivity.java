@@ -8,6 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 
 public class PlaceAboutActivity extends AppCompatActivity {
 
@@ -18,7 +19,7 @@ public class PlaceAboutActivity extends AppCompatActivity {
 
     private ImageView mImageView;
     private TextView mTextView;
-    private Place mPlace;
+    private QrPoint mPlace;
     public static final String KEY_PLACE_ID = PlaceAboutActivity.class.getCanonicalName() + "KEY_PLACE_ID";
 
     @Override

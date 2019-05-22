@@ -65,4 +65,8 @@ public class PlayersManager {
     public ArrayList<Player> getPlayers() {
         return mPlayers;
     }
+
+    public void clearPlayers() {
+        mPlayers.clear();
+    }
 }

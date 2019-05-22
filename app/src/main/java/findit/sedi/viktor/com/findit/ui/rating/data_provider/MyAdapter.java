@@ -31,7 +31,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         mPlayers.add(new Player(user.getBonus(), user.getName(), user.getPhotoUrl(),
-                user.getID(), user.isNetStatus(), user.getTournamentsID(), user.getTeamID(),
+                user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),
                 user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender()));
 
 
@@ -125,15 +125,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             // Если Он учавствует в Турнире и  иммеет наличия команды:
             if (!mPlayer.getTournamentID().equalsIgnoreCase("") && !mPlayer.getTeamID().equalsIgnoreCase("")) {
-                ((TextView) view.findViewById(R.id.tv_tounament_name)).setVisibility(View.VISIBLE);
+                ((TextView) view.findViewById(R.id.tv_tournament_name)).setVisibility(View.VISIBLE);
                 ((TextView) view.findViewById(R.id.tv_team_name)).setVisibility(View.VISIBLE);
 
-                ((TextView) view.findViewById(R.id.tv_tounament_name))
+                ((TextView) view.findViewById(R.id.tv_tournament_name))
                         .setText(App.instance.getResources().getString(R.string.tounament_name) + ": " +
-                                ManagersFactory.getInstance().getTournamentManager().getTournament(mPlayer.getTournamentID()).getDescribe());
+                                ManagersFactory.getInstance().getTournamentManager().getTournament(mPlayer.getTournamentID().trim()).getDescribe());
 
                 ((TextView) view.findViewById(R.id.tv_team_name)).setText(App.instance.getResources().getString(R.string.team) + ": " +
-                        ManagersFactory.getInstance().getTeamManager().getTeam(mPlayer.getTeamID()).getName());
+                        ManagersFactory.getInstance().getTeamManager().getTeam(mPlayer.getTeamID().trim()).getName());
             }
 
             ((TextView) view.findViewById(R.id.tv_gender)).setText(App.instance.getResources().getTextArray(R.array.Gender)[(int) mPlayer.getGender()]);

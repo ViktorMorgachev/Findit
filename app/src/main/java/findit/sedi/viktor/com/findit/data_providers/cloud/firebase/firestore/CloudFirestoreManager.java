@@ -29,7 +29,6 @@ import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
@@ -291,6 +290,34 @@ public class CloudFirestoreManager {
 
     }
 
+    public void updateTeams() {
+
+        ManagersFactory.getInstance().getTeamManager().clearTeams();
+
+        FirebaseFirestore.getInstance().collection(KEY_TEAMS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                            if (document.exists()) {
+
+                                ManagersFactory.getInstance().getTeamManager().addTeam(
+                                        new Team(document.getString("TournamentID"),
+                                                (List<String>) document.get("PlayersIDs"),
+                                                document.getId(),
+                                                document.getString("Name")));
+                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            }
+                        }
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+    }
+
 
     public void getTournaments() {
 
@@ -475,6 +502,52 @@ public class CloudFirestoreManager {
     }
 
 
+    public void updatePlayers() {
+
+
+        ManagersFactory.getInstance().getPlayersManager().clearPlayers();
+
+        mFirebaseFirestore.collection(KEY_USERS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                            GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
+
+                            // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
+                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                                continue;
+
+                            // Обновляем значение по ID что эти точки уже нашли другие пользователи
+                            // Карта при обновлени автоматически подхватит измененения
+                            ManagersFactory.getInstance().getPlayersManager().addPlayer(new Player(
+                                    document.getLong(USER_BONUS),
+                                    document.getString(USER_NAME),
+                                    document.getString(USER_PHOTO),
+                                    document.getId(),
+                                    document.getBoolean(USER_NET_STATUS),
+                                    document.getString(USER_TOURNAMENT_ID),
+                                    document.getString(USER_TEAM_ID),
+                                    document.getLong(USER_TOTAL_BONUS),
+                                    geoPoint.getLatitude(),
+                                    geoPoint.getLongitude(),
+                                    document.getLong(USER_GENDER)));
+
+                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                        }
+
+                        FinditBus.getInstance().post(new UpdatePlayersLocations());
+
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+    }
+
+
+
     public void updateQrPointByID(String id, String mark) {
 
 
@@ -493,13 +566,65 @@ public class CloudFirestoreManager {
 
 
                             // Ставим ограничение, если не равна нашему турниру, то откллоняем
-                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentsID()))
+                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
                                 continue;
 
                             GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
+
+                            ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
+                                    document.getLong(QRPOINT_BONUS),
+                                    document.getBoolean(QRPOINT_TYPE),
+                                    document.getString(QRPOINT_MARK),
+                                    document.getLong(QRPOINT_QUEST_BONUS),
+                                    (HashMap<String, ArrayList<String>>) document.get(QRPOINT_QUESTS),
+                                    document.getString(QRPOINT_TIP_FOR_NEXT),
+                                    document.getString(QRPOINT_TIP_FOR_CURRENT),
+                                    document.getString(QRPOINT_TOURNAMENT_ID),
+                                    document.getBoolean(QRPOINT_IS_MAIN),
+                                    document.getString(QRPOINT_TIP_PHOTO),
+                                    geoPoint.getLatitude(),
+                                    geoPoint.getLongitude(),
+                                    document.getLong(QRPOINT_DISTANCE),
+                                    document.getLong(QRPOINT_DIFFICULTY),
+                                    document.getId())
+                            );
+
+                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                        }
+
+                        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())
+                            FinditBus.getInstance().post(new UpdateAllQrPoints());
+
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+    }
+
+    public void updateQrPlaces(){
+
+        ManagersFactory.getInstance().getQrPointManager().clearQrPoints();
+
+        mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+
+                            // Ставим ограничение, если не равна нашему турниру, то откллоняем
+                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
+                                continue;
+
+                            GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
+
+                            // Обновляем значение по ID что эти точки уже нашли другие пользователи
+                            // Карта при обновлени автоматически подхватит измененения
+
 
                             ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
                                     document.getLong(QRPOINT_BONUS),

@@ -41,6 +41,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import findit.sedi.viktor.com.findit.R;
@@ -116,6 +118,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mPeriodicWorkRequest =
                 new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
                         .addTag("periodic_work").build();
+
+        Constraints constraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -200,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
                     sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    updateMap(DEFAULT_ZOOM, "");
+                  //  updateMap(DEFAULT_ZOOM, "");
 
                     // Изменяем координаты пользователя
 
@@ -451,7 +457,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
     }
-
 
     @Subscribe
     public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {

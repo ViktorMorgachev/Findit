@@ -103,4 +103,8 @@ public class QrPointManager {
 
 
     }
+
+    public void clearQrPoints() {
+        mQrPoints.clear();
+    }
 }

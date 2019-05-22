@@ -59,6 +59,10 @@ public class TeamManager {
         return null;
     }
 
+    public void clearTeams() {
+        mTeams.clear();
+    }
+
 
 
   /*  // Обновление пользователя по его ID

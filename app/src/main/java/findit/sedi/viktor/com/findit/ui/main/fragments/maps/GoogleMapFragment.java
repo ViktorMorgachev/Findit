@@ -14,6 +14,7 @@ import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.firestore.GeoPoint;
@@ -72,6 +73,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
+                    mMap.setMapStyle(
+                            MapStyleOptions.loadRawResourceStyle(
+                                    getContext(), R.raw.google_map_style));
 
                     mCallBackClickListener.mapReady();
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationServices.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
@@ -137,7 +141,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         if (mMap != null) {
             mMap.clear();
 
-            // Рисуем только те точки которые с метокой none, их не нашли а по умолчанию они относятся к нашему турниру
             for (int i = 0; i < mMarkerQrPoints.size(); i++) {
                 mMap.addMarker(mMarkerQrPoints.get(i));
             }
@@ -148,15 +151,15 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
             // Рисуем местоположение остальных игроков
             if (ManagersFactory.getInstance().getPlayersManager().getPlayers().size() != 0)
-            for (int i = 0; i < ManagersFactory.getInstance().getPlayersManager().getPlayers().size(); i++) {
+                for (int i = 0; i < ManagersFactory.getInstance().getPlayersManager().getPlayers().size(); i++) {
 
-                GeoPoint geoPoint = ManagersFactory.getInstance().getPlayersManager().getPlayers().get(i).getGeopoint();
-                mMarkerOptions = new MarkerOptions();
-                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_person_pin_24dp));
-                mMarkerOptions.position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
-                mMap.addMarker(mMarkerOptions);
+                    GeoPoint geoPoint = ManagersFactory.getInstance().getPlayersManager().getPlayers().get(i).getGeopoint();
+                    mMarkerOptions = new MarkerOptions();
+                    mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_person_pin_24dp));
+                    mMarkerOptions.position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
+                    mMap.addMarker(mMarkerOptions);
 
-            }
+                }
 
         }
     }

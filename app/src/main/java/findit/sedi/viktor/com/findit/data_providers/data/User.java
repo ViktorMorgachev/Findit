@@ -1,17 +1,13 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
-import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
-import findit.sedi.viktor.com.findit.data_providers.Gender;
 
-@Entity
 public class User {
     private String phone;
     private String name;
@@ -23,7 +19,7 @@ public class User {
     private String photoUrl;
     private String password;
     private long mGender;
-    private String TournamentsID;
+    private String TournamentID;
     private String TeamID;
     private long totalBonus;
     private double Latitude;
@@ -33,7 +29,7 @@ public class User {
     private ArrayList<String> mDiscoveredQrPointIDs;
 
     public User(String phone, String name, @NonNull String ID, String email, long bonus,
-                String photoUrl, String password, long gender, String tournamentsID, String teamID, long totalBonus,
+                String photoUrl, String password, long gender, String tournamentID, String teamID, long totalBonus,
                 ArrayList<String> discoveredQrPointIDs, ArrayList<String> fondedQrPointsIDs) {
         this.phone = phone;
         this.name = name;
@@ -43,7 +39,7 @@ public class User {
         this.photoUrl = photoUrl;
         this.password = password;
         mGender = gender;
-        TournamentsID = tournamentsID;
+        TournamentID = tournamentID;
         TeamID = teamID;
         this.totalBonus = totalBonus;
         mDiscoveredQrPointIDs = discoveredQrPointIDs;
@@ -71,12 +67,12 @@ public class User {
     }
 
 
-    public String getTournamentsID() {
-        return TournamentsID;
+    public String getTournamentID() {
+        return TournamentID;
     }
 
-    public void setTournamentsID(String tournamentsID) {
-        TournamentsID = tournamentsID;
+    public void setTournamentID(String tournamentID) {
+        TournamentID = tournamentID;
     }
 
     public String getTeamID() {
