@@ -452,7 +452,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Subscribe
     public void updatePlayerLocation(UpdatePlayersLocations updatePlayersLocations) {
 
-        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+        if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             mCommonMapManager.updatePlayers();
         }
 
@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Subscribe
     public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {
 
-        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+        if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
         }
 
