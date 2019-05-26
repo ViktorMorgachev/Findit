@@ -374,6 +374,8 @@ public class CloudFirestoreManager {
         user.put(USER_TEAM_ID, "");
         user.put(USER_TOTAL_BONUS, 0);
         user.put(USER_TOURNAMENT_ID, "");
+        user.put(USER_DISCOVERED_QR_POINTS, new ArrayList<String>());
+        user.put(USER_FONDED_QR_POINTS, new ArrayList<String>());
 
 
         // Add a new document with a generated ID

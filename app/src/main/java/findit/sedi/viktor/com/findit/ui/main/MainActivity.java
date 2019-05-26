@@ -102,12 +102,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Toast.makeText(this, "Activity was Created", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Activity was Created,  Player: " + ManagersFactory.getInstance().getAccountManager().getUser(), Toast.LENGTH_LONG).show();
 
         // Востановить необходимые данные с сервера
         if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
             restoreDataFromServer();
 
+        FinditBus.getInstance().register(this);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -189,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         Toast.makeText(this, "Activity was Resumed", Toast.LENGTH_LONG).show();
-        FinditBus.getInstance().register(this);
+
         getLocation();
     }
 

@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import androidx.work.Data;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
+import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
 
 // Он будет в фоне работать с TimerTaskами обновлять информацию с сервера в фоне постояянно, если это необходимо
@@ -28,9 +29,15 @@ public class MyWorker extends Worker {
         // Тут настроим на обновление через некторое время, он будет управлять потоками обновлями и устанавливать время
         // Так же всё это будет работать только при наличии интернета
         if (true) {
-            CloudFirestoreManager.getInstance().updatePlayers();
-            CloudFirestoreManager.getInstance().updateQrPlaces();
-            CloudFirestoreManager.getInstance().updateTeams();
+
+            if(ManagersFactory.getInstance().getAccountManager().getUser() != null) {
+
+                CloudFirestoreManager.getInstance().updatePlayers();
+                CloudFirestoreManager.getInstance().updateQrPlaces();
+                CloudFirestoreManager.getInstance().updateTeams();
+            }
+
+
         }
 
         return Result.retry();
