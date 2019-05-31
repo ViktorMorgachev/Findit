@@ -2,6 +2,7 @@ package findit.sedi.viktor.com.findit.common.background_services;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.widget.Toast;
 
 import androidx.work.Data;
 import androidx.work.Worker;
@@ -16,9 +17,11 @@ public class MyWorker extends Worker {
     // Будем получать айдишники тех точек. которые нашли другие пользователи
     public static final String EXTRA_OUTPUT_DATA = "output_value";
     private static Data mData;
+    private Context mContext;
 
     public MyWorker(@NonNull Context context, @NonNull WorkerParameters workerParams) {
         super(context, workerParams);
+        mContext = context;
     }
 
     @NonNull
@@ -29,15 +32,9 @@ public class MyWorker extends Worker {
         // Тут настроим на обновление через некторое время, он будет управлять потоками обновлями и устанавливать время
         // Так же всё это будет работать только при наличии интернета
         if (true) {
-
-            if(ManagersFactory.getInstance().getAccountManager().getUser() != null) {
-
                 CloudFirestoreManager.getInstance().updatePlayers();
                 CloudFirestoreManager.getInstance().updateQrPlaces();
                 CloudFirestoreManager.getInstance().updateTeams();
-            }
-
-
         }
 
         return Result.retry();

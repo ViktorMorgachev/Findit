@@ -9,8 +9,8 @@
         android:id="@+id/cv_tournament"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:animateLayoutChanges="true"
+        android:padding="10dp"
         app:cardCornerRadius="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
@@ -37,6 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/profile_name"
+                android:visibility="gone"
                 app:layout_constraintBottom_toTopOf="@id/tv_bonus_info"
                 app:layout_constraintLeft_toRightOf="@id/iv_photo"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -47,40 +48,39 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/bonus"
-                app:layout_constraintTop_toBottomOf="@id/tv_profile_name_child"
                 app:layout_constraintBottom_toTopOf="@id/tv_status_info"
-                app:layout_constraintLeft_toRightOf="@id/iv_photo" />
+                app:layout_constraintLeft_toRightOf="@id/iv_photo"
+                app:layout_constraintTop_toBottomOf="@id/tv_profile_name_child" />
 
             <TextView
                 android:id="@+id/tv_status_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Статус"
+                app:layout_constraintBottom_toTopOf="@id/tv_tournament_name"
                 app:layout_constraintLeft_toRightOf="@id/iv_photo"
                 app:layout_constraintRight_toLeftOf="@id/iv_status"
-                app:layout_constraintBottom_toTopOf="@id/tv_tournament_name"
-                app:layout_constraintTop_toBottomOf="@id/tv_bonus_info"  />
+                app:layout_constraintTop_toBottomOf="@id/tv_bonus_info" />
 
             <TextView
                 android:id="@+id/tv_tournament_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/tv_status_info"
-                app:layout_constraintLeft_toRightOf="@id/iv_photo"
-                app:layout_constraintRight_toLeftOf="@id/tv_team_name"
                 android:paddingRight="10dp"
+                android:text="Турнир: "
                 android:visibility="gone"
-                android:text="Турнир: "/>
+                app:layout_constraintLeft_toRightOf="@id/iv_photo"
+                app:layout_constraintTop_toBottomOf="@id/tv_status_info" />
 
             <TextView
                 android:id="@+id/tv_team_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:text="@string/team"
                 android:visibility="gone"
-                app:layout_constraintTop_toBottomOf="@id/tv_status_info"
-                app:layout_constraintLeft_toRightOf="@id/tv_tournament_name"
-                android:text="@string/team"/>
+                app:layout_constraintLeft_toRightOf="@id/iv_photo"
+                app:layout_constraintTop_toBottomOf="@id/tv_tournament_name" />
 
             <TextView
                 android:id="@+id/tv_gender"

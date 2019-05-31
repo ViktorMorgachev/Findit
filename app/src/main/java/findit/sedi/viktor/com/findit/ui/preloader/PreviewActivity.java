@@ -53,6 +53,7 @@ public class PreviewActivity extends Activity {
 
     }
 
+    // Нужно будет по максимуму всё получить с сервера
     private void loadDataFromServer() {
 
         // Защита, чтобы много потоков не пошло в сеть загружать данные

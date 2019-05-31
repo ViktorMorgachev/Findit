@@ -132,7 +132,9 @@ public class CommonMapManager {
     public void initPoints(List<QrPoint> places) {
 
 
+
         if (mServiceType == ServiceType.GOOGLE) {
+            mGoogleMapFragment.clearQrPoints();
             mGoogleMapFragment.initPoints(places);
         }
 

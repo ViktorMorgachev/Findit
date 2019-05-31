@@ -549,7 +549,6 @@ public class CloudFirestoreManager {
     }
 
 
-
     public void updateQrPointByID(String id, String mark) {
 
 
@@ -607,9 +606,10 @@ public class CloudFirestoreManager {
 
     }
 
-    public void updateQrPlaces(){
+    public void updateQrPlaces() {
 
         ManagersFactory.getInstance().getQrPointManager().clearQrPoints();
+
 
         mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
@@ -619,15 +619,14 @@ public class CloudFirestoreManager {
 
 
                             // Ставим ограничение, если не равна нашему турниру, то откллоняем
-                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
-                                continue;
+                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
+                                if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
+                                    continue;
 
                             GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-
-
                             ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
                                     document.getLong(QRPOINT_BONUS),
                                     document.getBoolean(QRPOINT_TYPE),

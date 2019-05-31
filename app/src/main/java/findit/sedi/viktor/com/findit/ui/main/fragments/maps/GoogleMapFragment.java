@@ -253,15 +253,27 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     public void initPoints(List<QrPoint> places) {
 
 
-        mMarkerOptions = new MarkerOptions();
-
         for (int i = 0; i < places.size(); i++) {
+
+            mMarkerOptions = new MarkerOptions();
+
             if (places.get(i).getMark().equalsIgnoreCase("fond")) {
                 mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
             } else if (places.get(i).getMark().equalsIgnoreCase("detected")) {
-                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_temp_24dp));
-            } else {
+                switch ((int) places.get(i).getDifficulty()) {
+                    case 1:
+                        mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_1_24dp));
+                        break;
+                    case 2:
+                        mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_2_24dp));
+                        break;
+                    case 3:
+                        mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_3_24dp));
+                        break;
+                }
+
             }
+
             mMarkerOptions.position(places.get(i).getLatLong());
             mMarkerOptions.title(String.valueOf(places.get(i).getID()));
             mMarkerQrPoints.add(mMarkerOptions);
@@ -292,5 +304,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
         updateMap();
 
+    }
+
+    public void clearQrPoints() {
+        mMarkerQrPoints.clear();
     }
 }

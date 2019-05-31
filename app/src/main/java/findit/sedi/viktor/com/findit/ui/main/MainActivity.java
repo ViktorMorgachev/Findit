@@ -37,6 +37,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Subscribe;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -100,6 +102,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         super.onCreate(savedInstanceState);
 
         Toast.makeText(this, "Activity was Created,  Player: " + ManagersFactory.getInstance().getAccountManager().getUser(), Toast.LENGTH_LONG).show();
@@ -110,19 +117,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         FinditBus.getInstance().register(this);
 
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
         setContentView(R.layout.activity_main);
-
-        mPeriodicWorkRequest =
-                new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
-                        .addTag("periodic_work").build();
 
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
+
+        mPeriodicWorkRequest =
+                new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
+                        .addTag("periodic_work").setConstraints(constraints).build();
+
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -137,10 +142,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         navigationView.setNavigationItemSelectedListener(this);
 
 
-        if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
-            mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
-            mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
-        }
+        mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
 
 
         mCommonMapManager = CommonMapManager.getInstance();
@@ -163,6 +165,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
 
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
 
@@ -184,10 +188,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         initLocationCallback();
 
-        // Initialize FusedLocationClient
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
 
+        // Initialize FusedLocationClient
+
+        if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
+            mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
+        }
 
         Toast.makeText(this, "Activity was Resumed", Toast.LENGTH_LONG).show();
 
@@ -207,19 +213,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
                     sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                  //  updateMap(DEFAULT_ZOOM, "");
+                    //  updateMap(DEFAULT_ZOOM, "");
 
                     // Изменяем координаты пользователя
-
-                    if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
-                        restoreDataFromServer();
-                    else {
 
                         ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                         // Отправляем на сервер
                         ServerManager.getInstance().updateUserOnServer("location");
 
-                    }
 
                     // checkMapForPlaces();
 
@@ -378,14 +379,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                             updateMap(DEFAULT_ZOOM, "");
                             // Изменяем координаты пользователя
-                            if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
-                                restoreDataFromServer();
-                            else {
+                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
                                 ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                                 // Отправляем на сервер
                                 ServerManager.getInstance().updateUserOnServer("location");
-                            }
-
 
                         }
                     }
@@ -455,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
             mCommonMapManager.updatePlayers();
+            Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -463,6 +461,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {
 
         if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+
+            Toast.makeText(this, "QrPoints updated", Toast.LENGTH_SHORT).show();
             mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
         }
 
@@ -481,7 +481,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-
     }
 
     // Будем обновлять по ID только не обходимую точку
