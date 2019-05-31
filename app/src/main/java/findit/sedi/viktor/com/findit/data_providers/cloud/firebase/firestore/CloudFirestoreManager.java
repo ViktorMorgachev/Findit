@@ -519,8 +519,9 @@ public class CloudFirestoreManager {
                             GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
 
                             // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
-                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
-                                continue;
+                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
+                                if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                                    continue;
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения

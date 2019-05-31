@@ -59,6 +59,7 @@ import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
+import findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainitDialogue;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
@@ -277,6 +278,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
                         discovered = true;
                         Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", Toast.LENGTH_LONG).show();
+
                         break;
                     }
                 }
@@ -296,10 +298,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
                     // Запускаем активность и отправляем ID в неё
-                    Intent intent = new Intent(this, PlaceAboutActivity.class);
+                   /* Intent intent = new Intent(this, PlaceAboutActivity.class);
                     intent.putExtra(KEY_PLACE_ID, qrPoint.getID());
-                    startActivity(intent);
+                    startActivity(intent);*/
+                    startActivity(new Intent(this, DiscoveredTainitDialogue.class));
 
+                    Toast.makeText(getApplicationContext(), "Кто-то обнаружил тайник, попробуйте его найти", Toast.LENGTH_LONG).show();
 
                     // Сохраняем у себя и на сервере информацию о найденных точках
                     ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs().add(qrPoint.getID());

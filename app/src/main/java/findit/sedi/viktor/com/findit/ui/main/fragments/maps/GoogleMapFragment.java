@@ -288,15 +288,25 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     // В надежде что  пустые icon можно инициализировать
     public void updatePoint(String id, String mark) {
 
+        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id);
+
         // Ищем точку у которой идентификатор необходимый
         for (int i = 0; i < mMarkerQrPoints.size(); i++) {
             if (mMarkerQrPoints.get(i).getTitle().equalsIgnoreCase(String.valueOf(id))) {
                 if (mark.equalsIgnoreCase("fond")) {
                     mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
                 } else if (mark.equalsIgnoreCase("discovered")) {
-                    mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_temp_24dp));
-                } else {
-
+                    switch ((int) qrPoint.getDifficulty()) {
+                        case 1:
+                            mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_1_24dp));
+                            break;
+                        case 2:
+                            mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_2_24dp));
+                            break;
+                        case 3:
+                            mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_3_24dp));
+                            break;
+                    }
                 }
                 return;
             }
