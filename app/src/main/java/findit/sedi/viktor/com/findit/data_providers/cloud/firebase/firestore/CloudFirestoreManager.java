@@ -30,11 +30,12 @@ import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
+import io.reactivex.Completable;
+import io.reactivex.CompletableEmitter;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_BONUS;
@@ -88,14 +89,10 @@ public class CloudFirestoreManager {
 
     // Вынесем его так же как сделали в Tournament
     // Придётся ставить хак для работы с Enum
-    private int genderType;
-    private static Handler mHandler;
-    private Gender mGender;
 
     private DocumentReference document;
     private FirebaseFirestore mFirebaseFirestore;
     private Context mContext = App.instance.getBaseContext();
-    private Map<String, Object> data = new HashMap<>();
 
     public static CloudFirestoreManager getInstance() {
         return ourInstance;
@@ -109,7 +106,7 @@ public class CloudFirestoreManager {
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
     public void updateUser(String tag) {
 
-        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getID());
         // Логика такова, работа во втором потоке, он запускает другие потоки,
         // Сам засыпает на 1 секунду, если обновления успешны у всех трёх потоков, то останавливаем сами себя и отплавляем событие на обновление
         // Данных
@@ -122,7 +119,7 @@ public class CloudFirestoreManager {
                     final int[] succesResult = {0};
 
 
-                    document.update(USER_NAME, ManagersFactory.getInstance().getAccountManager().getUser().getName())
+                    document.update(USER_NAME, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getName())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -137,7 +134,7 @@ public class CloudFirestoreManager {
                                 }
                             });
 
-                    document.update(USER_PHONE, ManagersFactory.getInstance().getAccountManager().getUser().getPhone())
+                    document.update(USER_PHONE, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getPhone())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -152,7 +149,7 @@ public class CloudFirestoreManager {
                                 }
                             });
 
-                    document.update(USER_GENDER, ManagersFactory.getInstance().getAccountManager().getUser().getGender())
+                    document.update(USER_GENDER, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getGender())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -176,7 +173,7 @@ public class CloudFirestoreManager {
                         }
                     }
 
-                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
 
                 }
             });
@@ -185,7 +182,7 @@ public class CloudFirestoreManager {
         } else if (tag.equalsIgnoreCase("location")) {
 
 
-            document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
+            document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getGeopoint())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -206,7 +203,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
 
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
@@ -219,11 +216,11 @@ public class CloudFirestoreManager {
                     });
         } else if (tag.equalsIgnoreCase("fonded_qrpoint")) {
 
-            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs())
+            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getDiscoveredQrPointIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -234,11 +231,11 @@ public class CloudFirestoreManager {
                         }
                     });
         } else if (tag.equalsIgnoreCase("bonus")) {
-            document.update(USER_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getBonus())
+            document.update(USER_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getBonus())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail(), null);
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -256,7 +253,7 @@ public class CloudFirestoreManager {
 
     public void changeUserNetStatus(boolean status) {
 
-        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getID());
         document.update(USER_NET_STATUS, status);
 
     }
@@ -355,8 +352,7 @@ public class CloudFirestoreManager {
     }
 
 
-    public void createUser(String email, String password, IAction IAction) {
-
+    public void createUser(String email, String password) {
 
         // Create a new user with a first and last name
         // Инициализируем остальные значения по умолчанию
@@ -384,10 +380,7 @@ public class CloudFirestoreManager {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email, null);
-                        if (IAction != null) {
-                            IAction.action();
-                        }
+                       ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -402,7 +395,7 @@ public class CloudFirestoreManager {
     }
 
 
-    public void initUser(String email, IAction IAction) {
+    public void initUser(String email) {
 
 
         // В этом  методе получаем список элементов, и инициализируем только тот, который на м нужен
@@ -419,7 +412,6 @@ public class CloudFirestoreManager {
 
                             // Если email не равен тому который нам нужен, то пропускаем, иначе инициализируем и стопаем
                             if (!document.getString(USER_EMAIL).equalsIgnoreCase(email)) {
-
                                 continue;
                             } else {
 
@@ -440,11 +432,12 @@ public class CloudFirestoreManager {
                                 ));
 
 
-                                if (IAction != null)
-                                    IAction.action();
-
-                                // По логике в этом методе пользователь запускает устройсво
                                 changeUserNetStatus(true);
+
+
+
+                                        // По логике в этом методе пользователь запускает устройсво
+
 
                                 FinditBus.getInstance().post(new UpdateUsersEvent());
 
@@ -457,7 +450,6 @@ public class CloudFirestoreManager {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
                     }
                 });
-
 
     }
 
@@ -474,7 +466,7 @@ public class CloudFirestoreManager {
                             GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
 
                             // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
-                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getID()))
                                 continue;
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
@@ -520,7 +512,7 @@ public class CloudFirestoreManager {
 
                             // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
                             if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                                if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                                if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getID()))
                                     continue;
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
@@ -568,7 +560,7 @@ public class CloudFirestoreManager {
 
 
                             // Ставим ограничение, если не равна нашему турниру, то откллоняем
-                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
+                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getTournamentID()))
                                 continue;
 
                             GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
@@ -621,7 +613,7 @@ public class CloudFirestoreManager {
 
                             // Ставим ограничение, если не равна нашему турниру, то откллоняем
                             if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                                if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
+                                if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getTournamentID()))
                                     continue;
 
                             GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
@@ -660,10 +652,8 @@ public class CloudFirestoreManager {
     }
 
     public void resetQrPlaceBonus(String code) {
-
-
         document = mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).document(code);
         document.update(QRPOINT_BONUS, 0);
-
     }
+
 }

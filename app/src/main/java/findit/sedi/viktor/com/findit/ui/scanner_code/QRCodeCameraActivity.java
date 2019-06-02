@@ -78,7 +78,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
                     ServerManager.getInstance().resetQrPlaceBonus(code);
                 }
 
-                ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
+                ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
                 ServerManager.getInstance().updateUserOnServer("bonus");
                 QRCodeCameraActivity.this.onBackPressed();
             }

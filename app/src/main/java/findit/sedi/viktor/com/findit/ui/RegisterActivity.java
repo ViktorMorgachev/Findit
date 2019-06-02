@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -26,8 +27,14 @@ import com.google.firebase.auth.FirebaseUser;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -39,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat;
     private TextInputEditText mEditEmail;
     private TextInputEditText mEditPassword;
-    private IAction mIAction;
+    private Disposable mDisposable;
     private TextInputEditText mEditPasswordRepeat;
     private SwitchCompat mSwitchCompat;
 
@@ -53,13 +60,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         mAuth = FirebaseAuth.getInstance();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        initActionCallBack();
 
 
     }
@@ -90,14 +93,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void initActionCallBack() {
-        mIAction = new IAction() {
-            @Override
-            public void action() {
-                startNextActivity();
-            }
-        };
-    }
 
     private void updateUI(FirebaseUser currentUser) {
 
@@ -120,13 +115,33 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             setUIListeners();
 
+
             mButtonOk.setOnClickListener(this::onClick);
 
         }
 
         if (currentUser != null) {
+            // Удаляем пользователя локально, подписываемся на обновления, и делаем запрос на обновления пользователя
 
-            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(currentUser.getEmail(), mIAction);
+            ServerManager.getInstance().updateUser(currentUser.getEmail());
+
+
+            mDisposable = ManagersFactory.getInstance().getAccountManager().getUser()
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribeWith(new DisposableSingleObserver<User>() {
+                        @Override
+                        public void onSuccess(User user) {
+                            Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
+                                    Toast.LENGTH_SHORT).show();
+                            startNextActivity();
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            e.printStackTrace();
+                        }
+                    });
+
         }
 
 
@@ -188,7 +203,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             // Создаеём пользователя получив информармацию из БД Firebase чтобы проинициализировать пользователя
                             // Для этого придётся перебрать список всех пользователей в БД Firestore для того чтобы проинициализировать и дать необходимый айдишник
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().updateUser(user.getEmail(), mIAction);
+                            ServerManager.getInstance().updateUser(user.getEmail());
 
                         } else {
                             // If sign in fails, display a message to the user.
@@ -216,11 +231,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Регистрация пройденна успешно", Toast.LENGTH_LONG).show();
-
                             // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString(), mIAction);
-
+                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString());
                         }
 
                     }
@@ -228,4 +241,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (!mDisposable.isDisposed())
+            mDisposable.dispose();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (!mDisposable.isDisposed())
+            mDisposable.dispose();
+    }
 }

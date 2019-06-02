@@ -2,35 +2,35 @@ package findit.sedi.viktor.com.findit.common;
 
 import android.util.Log;
 
+
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
+import io.reactivex.Completable;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.Single;
+import io.reactivex.SingleObserver;
+import io.reactivex.internal.operators.single.SingleJust;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class AccountManager {
 
-    private User mUser;
+    private Single<User> mUser;
 
-    public void saveUser(User user) {
-        mUser = user;
-        // FirebaseUserStorage.getInstance().savеUserToDatabase(user);
-
-    }
 
     public AccountManager() {
         // Вытаскиваем из БД
+
         init();
     }
 
+
     private void init() {
+        mUser = Single.just(new User());
     }
 
-
-    public void updateUser(User user) {
-        mUser = user;
-        //FirebaseUserStorage.getInstance().updateUserInDatabase(mUser);
-    }
 
     // Только когда пользователь удаляет аккаунт
     public void deleteUser() {
@@ -39,24 +39,18 @@ public class AccountManager {
     }
 
 
-    public User getUser() {
-        return mUser;
+    public Single<User> getUser() {
+        return mUser ;
     }
 
-    public void updateUserByEmail(String email, IAction IAction) {
 
-        ServerManager.getInstance().updateUser(email, IAction);
-
+    public void updateUserByEmail(String email) {
+        ServerManager.getInstance().updateUser(email);
     }
 
-    public void createUser(User user) {
-
-        this.mUser = user;
-
-    }
 
     public void initUser(User user) {
-        Log.d(LOG_TAG, "Init User "  + " => " + user.getID());
-        this.mUser = user;
+        Log.d(LOG_TAG, "Init User " + " => " + user.getID());
+        mUser = Single.just(user);
     }
 }

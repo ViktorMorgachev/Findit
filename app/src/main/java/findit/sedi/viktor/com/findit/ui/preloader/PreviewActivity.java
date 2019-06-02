@@ -54,6 +54,7 @@ public class PreviewActivity extends Activity {
     }
 
     // Нужно будет по максимуму всё получить с сервера
+    // Самую основную информацию кроме самого пользователя
     private void loadDataFromServer() {
 
         // Защита, чтобы много потоков не пошло в сеть загружать данные
@@ -85,14 +86,22 @@ public class PreviewActivity extends Activity {
                         }
                     });
 
+                    Thread getQrPoints = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ServerManager.getInstance().getQrPlaces();
+                        }
+                    });
 
                     // ServerManager.getInstance().getQrPlaces();
                     // Очередь нам не важна, просто получаем значения и инициализируем пока в наши менеджеры
                     getTeams.start();
                     getTournaments.start();
+                    getQrPoints.start();
 
 
                     try {
+                        getQrPoints.join();
                         getTeams.join();
                         getTournaments.join();
                     } catch (InterruptedException e) {

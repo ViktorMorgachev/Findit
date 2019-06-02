@@ -23,6 +23,10 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.observers.DisposableSingleObserver;
 
 public class ProfileInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -40,6 +44,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
     //Logic
     private FirebaseUser mFirebaseUser;
+    private Disposable mDisposable;
 
 
     @Override
@@ -57,6 +62,25 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         initUI();
 
+        mDisposable = ManagersFactory.getInstance().getAccountManager().getUser()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableSingleObserver<User>() {
+                    @Override
+                    public void onSuccess(User user) {
+                        mEditTextEmail.setText(mFirebaseUser.getEmail());
+                        mEditTextPassword.setText(user.getPassword());
+                        mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
+                        mEditTextName.setText(user.getName());
+                        mEditTextPhone.setText(user.getPhone());
+                        mSpinnerGender.setSelection((int) user.getGender());
+                        Toast.makeText(App.instance, "Обновленно успешно", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+
+                    }
+                });
 
         FinditBus.getInstance().register(this);
 
@@ -65,9 +89,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
     // Добавить вкладки (табы) в одной он видит свой профиль, в другой видит список мест в которых он побывал
     private void initUI() {
-
-
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         mTextViewBonus = findViewById(R.id.tv_bonus_info);
         mSpinnerGender = findViewById(R.id.sp_gender);
@@ -78,39 +99,13 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mButtonSave = findViewById(R.id.btn_save);
         mEditTextName = findViewById(R.id.et_name);
 
+
+
         mTextViewSignOut.setOnClickListener(this::onClick);
         mButtonSave.setOnClickListener(this::onClick);
 
-        mEditTextEmail.setText(mFirebaseUser.getEmail());
-        mEditTextPassword.setText(user.getPassword());
-        mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
-        mEditTextName.setText(user.getName());
-        mEditTextPhone.setText(user.getPhone());
-
-
-        mSpinnerGender.setSelection((int) user.getGender());
-
-
     }
 
-
-    @Subscribe
-    public void updateUser(UpdateUsersEvent updateUsersEvent) {
-
-        // Инициализируем значения
-        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
-
-            mEditTextEmail.setText(mFirebaseUser.getEmail());
-            mEditTextPassword.setText(ManagersFactory.getInstance().getAccountManager().getUser().getPassword());
-            mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + (int) ManagersFactory.getInstance().getAccountManager().getUser().getBonus());
-            mEditTextName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
-            mEditTextPhone.setText(ManagersFactory.getInstance().getAccountManager().getUser().getPhone());
-            mSpinnerGender.setSelection((int) ManagersFactory.getInstance().getAccountManager().getUser().getGender());
-        }
-
-        Toast.makeText(App.instance, "Обновленно успешно", Toast.LENGTH_SHORT).show();
-
-    }
 
 
     @Override
@@ -120,29 +115,29 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         if (v.getId() == R.id.tv_sign_out) {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
-
             ServerManager.getInstance().changeUserNetStatus(false);
         }
 
         if (v.getId() == R.id.btn_save) {
-
             // Получаем изменененияе полей которые нужно изменить на сервере
-
-
-            ManagersFactory.getInstance().getAccountManager().getUser().setPhone(mEditTextPhone.getText().toString());
-            ManagersFactory.getInstance().getAccountManager().getUser().setGender(mSpinnerGender.getSelectedItemPosition());
-            ManagersFactory.getInstance().getAccountManager().getUser().setName(mEditTextName.getText().toString());
-
             ServerManager.getInstance().updateUserOnServer("profile");
-
-
         }
 
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FinditBus.getInstance().unregister(this);
+        if (!mDisposable.isDisposed())
+            mDisposable.dispose();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        FinditBus.getInstance().unregister(this);
+        if (!mDisposable.isDisposed())
+            mDisposable.dispose();
     }
 }

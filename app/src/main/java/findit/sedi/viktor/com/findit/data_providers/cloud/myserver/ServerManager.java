@@ -4,9 +4,13 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
+import io.reactivex.Completable;
 
 public class ServerManager {
     private static final ServerManager ourInstance = new ServerManager();
+
+
+    // Logic
 
     public static ServerManager getInstance() {
         return ourInstance;
@@ -21,7 +25,7 @@ public class ServerManager {
 
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        User user = ManagersFactory.getInstance().getAccountManager().getUser().blockingGet();
 
         user.setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
 
@@ -32,11 +36,11 @@ public class ServerManager {
         // У себя помечаем в БД что место либо найденно, либо обнаруженно,  по ID, добавив его в список обнаруженных тайников или найденных
         // В зависимост и от тега
         if (mark.equalsIgnoreCase("discovered")){
-            ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs().add(id);
+            user.getDiscoveredQrPointIDs().add(id);
         } else if(mark.equalsIgnoreCase("fond")) {
             // Добавляем в списко обнаруженных, удаляем из списка найденных (переносим его)
-            ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs().add(id);
-            ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs().remove(id);
+            user.getFondedQrPointsIDs().add(id);
+            user.getDiscoveredQrPointIDs().remove(id);
         }
 
 
@@ -80,15 +84,14 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().getTournaments();
     }
 
-    public void createNewUser(String name, String password, IAction IAction) {
+    public void createNewUser(String name, String password) {
 
-        CloudFirestoreManager.getInstance().createUser(name, password, IAction);
+        CloudFirestoreManager.getInstance().createUser(name, password);
 
     }
 
-    public void updateUser(String email, IAction IAction) {
-
-        CloudFirestoreManager.getInstance().initUser(email, IAction);
+    public void updateUser(String email) {
+        CloudFirestoreManager.getInstance().initUser(email);
     }
 
     public void changeUserNetStatus(boolean status) {

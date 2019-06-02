@@ -112,9 +112,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Toast.makeText(this, "Activity was Created,  Player: " + ManagersFactory.getInstance().getAccountManager().getUser(), Toast.LENGTH_LONG).show();
 
-        // Востановить необходимые данные с сервера
-        if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
-            restoreDataFromServer();
 
         FinditBus.getInstance().register(this);
 
@@ -174,14 +171,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
-    private void restoreDataFromServer() {
-
-        // Небольшой Хак, при востановлении работы, нужно проинициализировать пользователя, если он null
-
-        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail(), null);
-
-
-    }
 
     @Override
     protected void onResume() {
@@ -193,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         // Initialize FusedLocationClient
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
-            mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
+            mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getName());
         }
 
         Toast.makeText(this, "Activity was Resumed", Toast.LENGTH_LONG).show();
@@ -218,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                     // Изменяем координаты пользователя
 
-                        ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                        ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                         // Отправляем на сервер
                         ServerManager.getInstance().updateUserOnServer("location");
 
@@ -243,7 +232,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
             QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID());
-            User user = ManagersFactory.getInstance().getAccountManager().getUser();
+            User user = ManagersFactory.getInstance().getAccountManager().getUser().blockingGet();
             boolean discovered = false; // Открывали ли ранее
             boolean fond = false; // Находили ли ранее?
 
@@ -306,7 +295,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     Toast.makeText(getApplicationContext(), "Кто-то обнаружил тайник, попробуйте его найти", Toast.LENGTH_LONG).show();
 
                     // Сохраняем у себя и на сервере информацию о найденных точках
-                    ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs().add(qrPoint.getID());
+                    ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().getFondedQrPointsIDs().add(qrPoint.getID());
 
                     ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
 
@@ -384,7 +373,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                             updateMap(DEFAULT_ZOOM, "");
                             // Изменяем координаты пользователя
                             if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                                ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                                ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                                 // Отправляем на сервер
                                 ServerManager.getInstance().updateUserOnServer("location");
 
@@ -501,7 +490,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             updateMap(DEFAULT_ZOOM, "");
 
             // Изменяем координаты пользователя
-            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+            ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer("location");
             ServerManager.getInstance().updateUserOnServer("net_status");
