@@ -38,6 +38,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
     Button btnAction;
     String code = "";
     String intentData = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,12 +74,11 @@ public class QRCodeCameraActivity extends AppCompatActivity {
                 ServerManager.getInstance().sendCode(code, "fond");
 
                 // Если маркер одноразовый, то обнуляем значение
-                if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).isReusable())
-                {
+                if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).isReusable()) {
                     ServerManager.getInstance().resetQrPlaceBonus(code);
                 }
 
-                ManagersFactory.getInstance().getAccountManager().getUser().blockingGet().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
+                ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
                 ServerManager.getInstance().updateUserOnServer("bonus");
                 QRCodeCameraActivity.this.onBackPressed();
             }

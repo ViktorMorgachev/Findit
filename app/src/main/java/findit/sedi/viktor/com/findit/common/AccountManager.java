@@ -10,25 +10,56 @@ import io.reactivex.Completable;
 import io.reactivex.Observable;
 import io.reactivex.Observer;
 import io.reactivex.Single;
+import io.reactivex.SingleEmitter;
 import io.reactivex.SingleObserver;
+import io.reactivex.SingleOnSubscribe;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.internal.operators.single.SingleJust;
+import io.reactivex.observers.DisposableObserver;
+import io.reactivex.subjects.PublishSubject;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
+
+// Подпишем на измененения самого обьекта
 public class AccountManager {
 
-    private Single<User> mUser;
+    private User mUser;
+    private PublishSubject<User> mChangeObservable = PublishSubject.create();
 
 
     public AccountManager() {
         // Вытаскиваем из БД
 
         init();
+        observe();
+    }
+
+    private void observe() {
+        mUser.getChanges()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<User>() {
+                    @Override
+                    public void onNext(User user) {
+                        mChangeObservable.onNext(user);
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
+                    }
+                });
     }
 
 
     private void init() {
-        mUser = Single.just(new User());
+        mUser = new User();
     }
 
 
@@ -39,8 +70,8 @@ public class AccountManager {
     }
 
 
-    public Single<User> getUser() {
-        return mUser ;
+    public User getUser() {
+        return mUser;
     }
 
 
@@ -51,6 +82,11 @@ public class AccountManager {
 
     public void initUser(User user) {
         Log.d(LOG_TAG, "Init User " + " => " + user.getID());
-        mUser = Single.just(user);
+        mUser = user;
+        mChangeObservable.onNext(mUser);
+    }
+
+    public Observable<User> getChanges() {
+        return mChangeObservable;
     }
 }

@@ -25,7 +25,7 @@ public class ServerManager {
 
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
-        User user = ManagersFactory.getInstance().getAccountManager().getUser().blockingGet();
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         user.setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
 
@@ -103,6 +103,12 @@ public class ServerManager {
     public void resetQrPlaceBonus(String code) {
 
         CloudFirestoreManager.getInstance().resetQrPlaceBonus(code);
+
+    }
+
+    public void getPlayers() {
+
+        CloudFirestoreManager.getInstance().getPlayers();
 
     }
 }

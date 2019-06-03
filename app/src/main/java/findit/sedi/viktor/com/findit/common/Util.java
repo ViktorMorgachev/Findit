@@ -38,6 +38,8 @@ public class Util {
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
 
+    /**Возвращаем растояние в метрах
+     * */
     public double getDistance(LatLng pointFirst, LatLng pointSecond) {
 
         Location locationA = new Location("LocationA");

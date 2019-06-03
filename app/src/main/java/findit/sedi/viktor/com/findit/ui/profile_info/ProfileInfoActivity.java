@@ -23,6 +23,7 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
@@ -44,7 +45,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
     //Logic
     private FirebaseUser mFirebaseUser;
-    private Disposable mDisposable;
+    private Observer<User> mUserObserver;
 
 
     @Override
@@ -62,11 +63,47 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         initUI();
 
-        mDisposable = ManagersFactory.getInstance().getAccountManager().getUser()
+        FinditBus.getInstance().register(this);
+
+
+    }
+
+    // Добавить вкладки (табы) в одной он видит свой профиль, в другой видит список мест в которых он побывал
+    private void initUI() {
+
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+        mTextViewBonus = findViewById(R.id.tv_bonus_info);
+        mSpinnerGender = findViewById(R.id.sp_gender);
+        mEditTextPhone = findViewById(R.id.et_phone);
+        mTextViewSignOut = findViewById(R.id.tv_sign_out);
+        mEditTextEmail = findViewById(R.id.et_email);
+        mEditTextPassword = findViewById(R.id.et_password);
+        mButtonSave = findViewById(R.id.btn_save);
+        mEditTextName = findViewById(R.id.et_name);
+
+        mEditTextEmail.setText(mFirebaseUser.getEmail());
+        mEditTextPassword.setText(user.getPassword());
+        mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
+        mEditTextName.setText(user.getName());
+        mEditTextPhone.setText(user.getPhone());
+        mSpinnerGender.setSelection((int) user.getGender());
+
+
+        mTextViewSignOut.setOnClickListener(this::onClick);
+        mButtonSave.setOnClickListener(this::onClick);
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableSingleObserver<User>() {
+                .subscribeWith(new DisposableObserver<User>() {
                     @Override
-                    public void onSuccess(User user) {
+                    public void onNext(User user) {
                         mEditTextEmail.setText(mFirebaseUser.getEmail());
                         mEditTextPassword.setText(user.getPassword());
                         mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
@@ -80,33 +117,14 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
                     public void onError(Throwable e) {
 
                     }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
                 });
 
-        FinditBus.getInstance().register(this);
-
-
     }
-
-    // Добавить вкладки (табы) в одной он видит свой профиль, в другой видит список мест в которых он побывал
-    private void initUI() {
-
-        mTextViewBonus = findViewById(R.id.tv_bonus_info);
-        mSpinnerGender = findViewById(R.id.sp_gender);
-        mEditTextPhone = findViewById(R.id.et_phone);
-        mTextViewSignOut = findViewById(R.id.tv_sign_out);
-        mEditTextEmail = findViewById(R.id.et_email);
-        mEditTextPassword = findViewById(R.id.et_password);
-        mButtonSave = findViewById(R.id.btn_save);
-        mEditTextName = findViewById(R.id.et_name);
-
-
-
-        mTextViewSignOut.setOnClickListener(this::onClick);
-        mButtonSave.setOnClickListener(this::onClick);
-
-    }
-
-
 
     @Override
     public void onClick(View v) {
@@ -130,14 +148,16 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     protected void onDestroy() {
         super.onDestroy();
         FinditBus.getInstance().unregister(this);
-        if (!mDisposable.isDisposed())
-            mDisposable.dispose();
+        if (mUserObserver != null) {
+            mUserObserver.onComplete();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (!mDisposable.isDisposed())
-            mDisposable.dispose();
+        if (mUserObserver != null) {
+            mUserObserver.onComplete();
+        }
     }
 }

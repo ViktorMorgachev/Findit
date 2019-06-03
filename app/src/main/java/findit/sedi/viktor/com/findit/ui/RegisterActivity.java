@@ -28,13 +28,13 @@ import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
-import io.reactivex.Observable;
+import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
+
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -46,7 +46,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat;
     private TextInputEditText mEditEmail;
     private TextInputEditText mEditPassword;
-    private Disposable mDisposable;
+    private Observer<User> mUserObserver;
     private TextInputEditText mEditPasswordRepeat;
     private SwitchCompat mSwitchCompat;
 
@@ -125,20 +125,27 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             ServerManager.getInstance().updateUser(currentUser.getEmail());
 
-
-            mDisposable = ManagersFactory.getInstance().getAccountManager().getUser()
+            mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(new DisposableSingleObserver<User>() {
+                    .subscribeWith(new DisposableObserver<User>() {
                         @Override
-                        public void onSuccess(User user) {
+                        public void onNext(User user) {
                             Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
                                     Toast.LENGTH_SHORT).show();
+                            Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
+
+                            if (user.getName() != null)
                             startNextActivity();
                         }
 
                         @Override
                         public void onError(Throwable e) {
                             e.printStackTrace();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
                         }
                     });
 
@@ -244,14 +251,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (!mDisposable.isDisposed())
-            mDisposable.dispose();
+        if (mUserObserver != null) {
+            mUserObserver.onComplete();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (!mDisposable.isDisposed())
-            mDisposable.dispose();
+        if (mUserObserver != null) {
+            mUserObserver.onComplete();
+        }
     }
 }

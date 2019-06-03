@@ -28,7 +28,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mPlayers = data;
 
         // Добавляем в список себя чтобы видеть ещё свой рейтинг
-        User user = ManagersFactory.getInstance().getAccountManager().getUser().blockingGet();
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         mPlayers.add(new Player(user.getBonus(), user.getName(), user.getPhotoUrl(),
                 user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),

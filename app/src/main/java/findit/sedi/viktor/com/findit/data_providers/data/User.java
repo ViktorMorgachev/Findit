@@ -7,6 +7,9 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
 
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+
 
 public class User {
     private String phone;
@@ -27,6 +30,8 @@ public class User {
     private boolean netStatus;
     private ArrayList<String> mFondedQrPointsIDs;
     private ArrayList<String> mDiscoveredQrPointIDs;
+    private PublishSubject<User> mChangeObservable = PublishSubject.create();
+
 
     public User(String phone, String name, @NonNull String ID, String email, long bonus,
                 String photoUrl, String password, long gender, String tournamentID, String teamID, long totalBonus,
@@ -44,6 +49,7 @@ public class User {
         this.totalBonus = totalBonus;
         mDiscoveredQrPointIDs = discoveredQrPointIDs;
         mFondedQrPointsIDs = fondedQrPointsIDs;
+        mChangeObservable.onNext(this);
     }
 
 
@@ -114,10 +120,12 @@ public class User {
     public void setGeopoint(double Latitude, double Longtude) {
         this.Latitude = Latitude;
         this.Longtude = Longtude;
+        mChangeObservable.onNext(this);
     }
 
     public void setGender(long gender) {
         mGender = gender;
+        mChangeObservable.onNext(this);
     }
 
     public long getGender() {
@@ -138,16 +146,19 @@ public class User {
         return phone;
     }
 
-    public void setPhone(String phone) {
+    public User setPhone(String phone) {
         this.phone = phone;
+        mChangeObservable.onNext(this);
+        return this;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public User setName(String name) {
         this.name = name;
+        return this;
     }
 
 
@@ -155,32 +166,38 @@ public class User {
         return email;
     }
 
-    public void setEmail(String email) {
+    public User setEmail(String email) {
         this.email = email;
+        return this;
     }
 
     public long getBonus() {
         return bonus;
     }
 
-    public void setBonus(long bonus) {
+    public User setBonus(long bonus) {
         this.bonus = bonus;
+        mChangeObservable.onNext(this);
+        return this;
     }
 
     public String getPhotoUrl() {
         return photoUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) {
+    public User setPhotoUrl(String photoUrl) {
         this.photoUrl = photoUrl;
+        return this;
     }
 
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
+    public User setPassword(String password) {
         this.password = password;
+        mChangeObservable.onNext(this);
+        return this;
     }
 
     @NonNull
@@ -188,8 +205,10 @@ public class User {
         return ID;
     }
 
-    public void setID(@NonNull String ID) {
+    public User setID(@NonNull String ID) {
         this.ID = ID;
+        mChangeObservable.onNext(this);
+        return this;
     }
 
     public boolean isNetStatus() {
@@ -198,6 +217,10 @@ public class User {
 
     public void setNetStatus(boolean netStatus) {
         this.netStatus = netStatus;
+    }
+
+    public Observable<User> getChanges() {
+        return mChangeObservable;
     }
 
 }

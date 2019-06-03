@@ -86,6 +86,13 @@ public class PreviewActivity extends Activity {
                         }
                     });
 
+                    Thread getPlayers = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            ServerManager.getInstance().getPlayers();
+                        }
+                    });
+
                     Thread getQrPoints = new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -98,9 +105,11 @@ public class PreviewActivity extends Activity {
                     getTeams.start();
                     getTournaments.start();
                     getQrPoints.start();
+                    getPlayers.start();
 
 
                     try {
+                        getPlayers.join();
                         getQrPoints.join();
                         getTeams.join();
                         getTournaments.join();
