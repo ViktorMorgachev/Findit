@@ -32,6 +32,11 @@
             android:icon="@drawable/ic_stars_24dp"
             android:title="@string/current_rating" />
 
+        <item
+            android:id="@+id/nav_finds"
+            android:icon="@drawable/ic_finds_24dp"
+            android:title="@string/finds" />
+
 
     </group>
 </menu>

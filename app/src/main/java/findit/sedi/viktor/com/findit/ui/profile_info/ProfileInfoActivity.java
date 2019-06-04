@@ -22,12 +22,9 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
-import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
 import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.observers.DisposableObserver;
-import io.reactivex.observers.DisposableSingleObserver;
 
 public class ProfileInfoActivity extends AppCompatActivity implements View.OnClickListener {
 

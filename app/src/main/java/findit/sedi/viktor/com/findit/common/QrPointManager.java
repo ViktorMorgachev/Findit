@@ -79,15 +79,11 @@ public class QrPointManager {
         // Вытаскивает только те точки, рядом с которым пользователь
         for (int i = 0; i < mQrPoints.size(); i++) {
             if (((Util.getInstance().getDistance(latLng, mQrPoints.get(i).getLatLong())) <= mQrPoints.get(i).getDistance())) {
-
-                FinditBus.getInstance().post(new PlaceAboutEvent(mQrPoints.get(i).getID()));
-
+                return mQrPoints.get(i).getID();
             }
 
         }
-
         return "";
-
     }
 
     public void addQrPoint(QrPoint point) {

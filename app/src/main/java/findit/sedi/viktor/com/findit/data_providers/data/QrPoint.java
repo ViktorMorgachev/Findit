@@ -24,7 +24,7 @@ public class QrPoint {
     private double Latitude;
     private double LongTitude;
     private double Distance;
-    private long Difficulty; // Сложностьы
+    private long Difficulty; // Сложность
     private String ID;
 
 

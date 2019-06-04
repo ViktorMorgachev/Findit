@@ -104,6 +104,23 @@
                 app:layout_constraintTop_toTopOf="@id/tv_status_info"
                 app:srcCompat="@drawable/ic_status_offline_24dp" />
 
+            <TextView
+                android:id="@+id/tv_discovered"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/discovered"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintLeft_toRightOf="@id/iv_photo"
+                app:layout_constraintTop_toBottomOf="@id/tv_team_name"/>
+
+            <TextView
+                android:id="@+id/tv_fonded"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/fonded"
+                app:layout_constraintLeft_toRightOf="@id/iv_photo"
+                app:layout_constraintTop_toBottomOf="@id/tv_discovered"/>
+
 
         </android.support.constraint.ConstraintLayout>
 

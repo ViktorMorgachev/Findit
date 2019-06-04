@@ -71,15 +71,15 @@ public class QRCodeCameraActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Toast.makeText(QRCodeCameraActivity.this, "Вы получили  " +
                         ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus() + " бонусов", Toast.LENGTH_LONG).show();
+
+
+
                 ServerManager.getInstance().sendCode(code, "fond");
 
-                // Если маркер одноразовый, то обнуляем значение
+               /* // Если маркер одноразовый, то обнуляем значение
                 if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).isReusable()) {
                     ServerManager.getInstance().resetQrPlaceBonus(code);
-                }
-
-                ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus());
-                ServerManager.getInstance().updateUserOnServer("bonus");
+                }*/
                 QRCodeCameraActivity.this.onBackPressed();
             }
         });

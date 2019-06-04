@@ -27,6 +27,8 @@ public class User {
     private long totalBonus;
     private double Latitude;
     private double Longtude;
+    private long sumOfFondedPoints; // Сколько нашёл суммарно, qr + money + simple
+    private long sumOfDiscoveredPoints; // Сколько обнаружил суммарно, qr + money + simple
     private boolean netStatus;
     private ArrayList<String> mFondedQrPointsIDs;
     private ArrayList<String> mDiscoveredQrPointIDs;
@@ -35,7 +37,7 @@ public class User {
 
     public User(String phone, String name, @NonNull String ID, String email, long bonus,
                 String photoUrl, String password, long gender, String tournamentID, String teamID, long totalBonus,
-                ArrayList<String> discoveredQrPointIDs, ArrayList<String> fondedQrPointsIDs) {
+                ArrayList<String> discoveredQrPointIDs, ArrayList<String> fondedQrPointsIDs, long sumOfFondedPoints, long sumOfDiscoveredPoints) {
         this.phone = phone;
         this.name = name;
         this.ID = ID;
@@ -47,6 +49,8 @@ public class User {
         TournamentID = tournamentID;
         TeamID = teamID;
         this.totalBonus = totalBonus;
+        this.sumOfFondedPoints = sumOfFondedPoints;
+        this.sumOfDiscoveredPoints = sumOfDiscoveredPoints;
         mDiscoveredQrPointIDs = discoveredQrPointIDs;
         mFondedQrPointsIDs = fondedQrPointsIDs;
         mChangeObservable.onNext(this);
@@ -120,12 +124,10 @@ public class User {
     public void setGeopoint(double Latitude, double Longtude) {
         this.Latitude = Latitude;
         this.Longtude = Longtude;
-        mChangeObservable.onNext(this);
     }
 
     public void setGender(long gender) {
         mGender = gender;
-        mChangeObservable.onNext(this);
     }
 
     public long getGender() {
@@ -148,7 +150,6 @@ public class User {
 
     public User setPhone(String phone) {
         this.phone = phone;
-        mChangeObservable.onNext(this);
         return this;
     }
 
@@ -177,7 +178,6 @@ public class User {
 
     public User setBonus(long bonus) {
         this.bonus = bonus;
-        mChangeObservable.onNext(this);
         return this;
     }
 
@@ -196,7 +196,6 @@ public class User {
 
     public User setPassword(String password) {
         this.password = password;
-        mChangeObservable.onNext(this);
         return this;
     }
 
@@ -207,7 +206,6 @@ public class User {
 
     public User setID(@NonNull String ID) {
         this.ID = ID;
-        mChangeObservable.onNext(this);
         return this;
     }
 
@@ -223,4 +221,11 @@ public class User {
         return mChangeObservable;
     }
 
+    public long getSumOfFondedPoints() {
+        return sumOfFondedPoints;
+    }
+
+    public long getSumOfDiscoveredPoints() {
+        return sumOfDiscoveredPoints;
+    }
 }

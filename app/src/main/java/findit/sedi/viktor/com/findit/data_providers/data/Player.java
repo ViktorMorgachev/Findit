@@ -2,8 +2,6 @@ package findit.sedi.viktor.com.findit.data_providers.data;
 
 import com.google.firebase.firestore.GeoPoint;
 
-import findit.sedi.viktor.com.findit.data_providers.Gender;
-
 public class Player {
 
     private long bonus;
@@ -16,11 +14,13 @@ public class Player {
     private long totalBonus;
     private double Latitude;
     private long mGender;
+    private long sumOfFondedFinds;
+    private long sumOFDiscoveredFinds;
     private double Longtude;
 
 
     public Player(long bonus, String name, String photoUrl, String ID, boolean net_status,
-                  String tournamentID, String teamID, long totalBonus, double latitude, double longtude, long gender) {
+                  String tournamentID, String teamID, long totalBonus, double latitude, double longtude, long gender, long sumOfFondedFinds, long sumOFDiscoveredFinds) {
         this.bonus = bonus;
         this.name = name;
         this.photoUrl = photoUrl;
@@ -32,6 +32,8 @@ public class Player {
         Latitude = latitude;
         mGender = gender;
         Longtude = longtude;
+        this.sumOfFondedFinds = sumOfFondedFinds;
+        this.sumOFDiscoveredFinds = sumOFDiscoveredFinds;
     }
 
     public void setBonus(long bonus) {
@@ -115,5 +117,13 @@ public class Player {
 
     public long getGender() {
         return mGender;
+    }
+
+    public long getSumOfFondedFinds() {
+        return sumOfFondedFinds;
+    }
+
+    public long getSumOFDiscoveredFinds() {
+        return sumOFDiscoveredFinds;
     }
 }

@@ -64,9 +64,12 @@
         <activity android:name=".ui.tournament.TounamentActivity" />
         <activity android:name=".ui.rating.RatingActivity" />
         <activity
-            android:name=".ui.find_tainik.DiscoveredTainitDialogue"
+            android:name=".ui.find_tainik.DiscoveredTainikActivity"
             android:launchMode="singleTask"
-            android:theme="@style/Animation.AppCompat.Dialog" />
+            android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
+        <activity android:name=".ui.finds_activity.FindsActivity"
+            android:launchMode="singleTask"
+            />
 
 
     </application>

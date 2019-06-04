@@ -32,7 +32,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         mPlayers.add(new Player(user.getBonus(), user.getName(), user.getPhotoUrl(),
                 user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),
-                user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender()));
+                user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender(), user.getSumOfFondedPoints(), user.getSumOfDiscoveredPoints()));
 
 
         // Сортируем данные чв порядке уменьшения балов
@@ -123,7 +123,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             } else
                 ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_offline_24dp);
 
-            // Если Он учавствует в Турнире и  иммеет наличия команды:
+            // Если Он учавствует в Турнире и  имеет наличия команды:
             if (!mPlayer.getTournamentID().equalsIgnoreCase("") && !mPlayer.getTeamID().equalsIgnoreCase("")) {
                 ((TextView) view.findViewById(R.id.tv_tournament_name)).setVisibility(View.VISIBLE);
                 ((TextView) view.findViewById(R.id.tv_team_name)).setVisibility(View.VISIBLE);
@@ -137,6 +137,12 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
 
             ((TextView) view.findViewById(R.id.tv_gender)).setText(App.instance.getResources().getTextArray(R.array.Gender)[(int) mPlayer.getGender()]);
+
+
+            ((TextView) view.findViewById(R.id.tv_discovered)).setText(view.getContext().getResources().getString(R.string.discovered) + " " + mPlayer.getSumOFDiscoveredFinds());
+
+            ((TextView) view.findViewById(R.id.tv_fonded)).setText(view.getContext().getResources().getString(R.string.fonded) + " " + mPlayer.getSumOfFondedFinds());
+
 
             childView.add(view);
 

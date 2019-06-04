@@ -55,4 +55,8 @@
     <string name="team">Команда</string>
     <string name="current_rating">Рейтинг</string>
     <string name="find">Найти</string>
+    <string name="next">Далее</string>
+    <string name="finds">Находки</string>
+    <string name="fonded">Нашёл тайников</string>
+    <string name="discovered">Открыл тайников</string>
 </resources>

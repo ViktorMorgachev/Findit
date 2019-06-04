@@ -1,10 +1,12 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.myserver;
 
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
-import io.reactivex.Completable;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
+
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_FONDED_QR_POINTS;
 
 public class ServerManager {
     private static final ServerManager ourInstance = new ServerManager();
@@ -27,24 +29,23 @@ public class ServerManager {
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-        user.setBonus(ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
-
 
         //Меняем на сервере статус точки по её ID
         ServerManager.getInstance().updateQrPointByID(id, mark);
 
         // У себя помечаем в БД что место либо найденно, либо обнаруженно,  по ID, добавив его в список обнаруженных тайников или найденных
         // В зависимост и от тега
-        if (mark.equalsIgnoreCase("discovered")){
+        if (mark.equalsIgnoreCase("discovered")) {
             user.getDiscoveredQrPointIDs().add(id);
-        } else if(mark.equalsIgnoreCase("fond")) {
+            updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+        } else if (mark.equalsIgnoreCase("fond")) {
+            user.setBonus(ManagersFactory.getInstance().getAccountManager().getUser().getBonus() + ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_BONUS);
             // Добавляем в списко обнаруженных, удаляем из списка найденных (переносим его)
+            updateUserOnServer(KEY_UPDATE_FONDED_QR_POINTS);
             user.getFondedQrPointsIDs().add(id);
             user.getDiscoveredQrPointIDs().remove(id);
         }
-
-
-        updateUserOnServer("qrpoint");
 
 
         // Нужно будет отправить на сервер информацию об обновлении бонусов у пользователя, если командная игра, то и добавить бонусы к команде

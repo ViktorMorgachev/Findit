@@ -1,7 +1,6 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
 import android.content.Context;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data_providers.Gender;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
@@ -33,11 +31,11 @@ import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
-import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateUsersEvent;
-import io.reactivex.Completable;
-import io.reactivex.CompletableEmitter;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_USERS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_DIFFICULTY;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_DISTANCE;
@@ -51,6 +49,22 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TIP_PHOTO;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TOURNAMENT_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TYPE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_FROM;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_TO;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DESCRIBE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DIFFICULTY;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_PLAYERS_IDS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TEAMS_IDS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TIPS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TOTAL_BONUSES;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TYPE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_FONDED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_LOCATION;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_NET_STATUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_PROFILE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_DISCOVERED_QR_POINTS;
@@ -63,22 +77,11 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.Keys
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PASSWORD;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PHONE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_PHOTO;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_SUM_OF_DISCOVERED_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_SUM_OF_FONDED_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TEAM_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOTAL_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_TOURNAMENT_ID;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_USERS_PATH;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_FROM;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_TO;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DESCRIBE;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DIFFICULTY;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_PLAYERS_IDS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TEAMS_IDS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TIPS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TOTAL_BONUSES;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_TYPE;
 
 
 public class CloudFirestoreManager {
@@ -104,6 +107,7 @@ public class CloudFirestoreManager {
 
 
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
+    // TODO Нужно пофиксить этот как можно быстрей по возможности а то он растёт
     public void updateUser(String tag) {
 
         Log.d(LOG_TAG, "User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
@@ -112,7 +116,7 @@ public class CloudFirestoreManager {
         // Логика такова, работа во втором потоке, он запускает другие потоки,
         // Сам засыпает на 1 секунду, если обновления успешны у всех трёх потоков, то останавливаем сами себя и отплавляем событие на обновление
         // Данных
-        if (tag.equalsIgnoreCase("profile")) {
+        if (tag.equalsIgnoreCase(KEY_UPDATE_PROFILE)) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -181,7 +185,7 @@ public class CloudFirestoreManager {
             });
             thread.start();
 
-        } else if (tag.equalsIgnoreCase("location")) {
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_LOCATION)) {
 
 
             document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
@@ -199,7 +203,8 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
-        } else if (tag.equalsIgnoreCase("net_status")) {
+
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_NET_STATUS)) {
 
             document.update(USER_NET_STATUS, true)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -216,9 +221,9 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
-        } else if (tag.equalsIgnoreCase("fonded_qrpoint")) {
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_DISCOVERED_QR_POINTS)) {
 
-            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs())
+            document.update(USER_DISCOVERED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -232,8 +237,55 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
-        } else if (tag.equalsIgnoreCase("bonus")) {
+
+            document.update(USER_SUM_OF_DISCOVERED_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getSumOfFondedPoints() + 1)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_BONUS)) {
             document.update(USER_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getBonus())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_FONDED_QR_POINTS)) {
+            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+            document.update(USER_SUM_OF_FONDED_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getSumOfFondedPoints() + 1)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -377,6 +429,8 @@ public class CloudFirestoreManager {
         user.put(USER_TOURNAMENT_ID, "");
         user.put(USER_DISCOVERED_QR_POINTS, new ArrayList<String>());
         user.put(USER_FONDED_QR_POINTS, new ArrayList<String>());
+        user.put(USER_SUM_OF_FONDED_POINTS, 0);
+        user.put(USER_SUM_OF_DISCOVERED_POINTS, 0);
 
 
         // Add a new document with a generated ID
@@ -385,7 +439,7 @@ public class CloudFirestoreManager {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                       ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
+                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -402,7 +456,6 @@ public class CloudFirestoreManager {
 
     public void initUser(String email) {
 
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
         // В этом  методе получаем список элементов, и инициализируем только тот, который на м нужен
         FirebaseFirestore.getInstance().collection(KEY_USERS_PATH).get()
@@ -432,7 +485,10 @@ public class CloudFirestoreManager {
                                         document.getString(USER_TEAM_ID),
                                         document.getLong(USER_TOTAL_BONUS) == null ? 0 : document.getLong(USER_TOTAL_BONUS),
                                         (ArrayList<String>) document.get(USER_DISCOVERED_QR_POINTS),
-                                        (ArrayList<String>) document.get(USER_FONDED_QR_POINTS)
+                                        (ArrayList<String>) document.get(USER_FONDED_QR_POINTS),
+                                        document.getLong(USER_SUM_OF_FONDED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS),
+                                        document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_DISCOVERED_POINTS)
+
                                 ));
 
 
@@ -440,12 +496,6 @@ public class CloudFirestoreManager {
 
                                 changeUserNetStatus(true);
 
-
-
-                                        // По логике в этом методе пользователь запускает устройсво
-
-
-                                FinditBus.getInstance().post(new UpdateUsersEvent());
 
                                 break;
                             }
@@ -488,7 +538,9 @@ public class CloudFirestoreManager {
                                     document.getLong(USER_TOTAL_BONUS),
                                     geoPoint.getLatitude(),
                                     geoPoint.getLongitude(),
-                                    document.getLong(USER_GENDER)));
+                                    document.getLong(USER_GENDER),
+                                    document.getLong(USER_SUM_OF_FONDED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS),
+                                    document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS)));
 
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
@@ -534,7 +586,11 @@ public class CloudFirestoreManager {
                                     document.getLong(USER_TOTAL_BONUS),
                                     geoPoint.getLatitude(),
                                     geoPoint.getLongitude(),
-                                    document.getLong(USER_GENDER)));
+                                    document.getLong(USER_GENDER),
+                                    document.getLong(USER_SUM_OF_FONDED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS),
+                                    document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS))
+
+                            );
 
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }

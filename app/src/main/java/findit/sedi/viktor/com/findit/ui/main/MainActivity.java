@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.annotation.UiThread;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
@@ -18,7 +17,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -36,10 +34,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.auth.FirebaseAuth;
 import com.squareup.otto.Subscribe;
-
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,18 +46,16 @@ import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
-import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
-import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
-import findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity;
-import findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainitDialogue;
+import findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
@@ -71,8 +64,9 @@ import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
-import static findit.sedi.viktor.com.findit.ui.about_place.PlaceAboutActivity.KEY_PLACE_ID;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_LOCATION;
+import static findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity.POINT_ID;
 
 /**
  * Главная активность которая будет управлять другими активностями возможно с помощью Cicerone
@@ -155,12 +149,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        initLocationCallback();
-
-        getLocation();
-        // Тут получаем значение из процесса используя LiveData, и обновляем точки
-        //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
-        // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
         if (mCommonMapManager.getServiceType().equals(CommonMapManager.ServiceType.GOOGLE)) {
 
             mGoogleMapFragment = GoogleMapFragment.getInstance();
@@ -174,13 +162,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
+        initLocationCallback();
+
+        getLocation();
+        // Тут получаем значение из процесса используя LiveData, и обновляем точки
+        //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
+        // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
+
+
     }
 
 
     @Override
     protected void onResume() {
         super.onResume();
-
 
 
         // Initialize FusedLocationClient
@@ -214,10 +209,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
 
                     // Отправляем на сервер если расстояние изменилось более чем на 50м
-                    if (mLastLocation != null && Util.getInstance().getDistance(sLatLng, mLastLocation) > 50)
-                        ServerManager.getInstance().updateUserOnServer("location");
+
+                    ServerManager.getInstance().updateUserOnServer("location");
 
 
+                    chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
+                    mLastLocation = sLatLng;
                     // checkMapForPlaces();
 
 
@@ -230,80 +227,76 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
     // Сюда попадают тольеко те указатели, которые относятся к нашему турниру
-    @Subscribe
-    public void chechNearbyQrPlace(PlaceAboutEvent placeAboutEvent) {
+    public void chechNearbyQrPlace(String ID) {
 
 
         if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
 
 
-            QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID());
+            QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
             User user = ManagersFactory.getInstance().getAccountManager().getUser();
+
             boolean discovered = false; // Открывали ли ранее
             boolean fond = false; // Находили ли ранее?
 
 
-            Toast.makeText(getApplicationContext(), "Вы рядом с возможно новым тайником", Toast.LENGTH_LONG).show();
+            for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
+                if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+                    fond = true;
+                    Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
+            for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
+                if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+                    Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
+
+
+            Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong()), Toast.LENGTH_LONG).show();
 
             // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
 
             if (qrPoint.getMark().equalsIgnoreCase("none")) {
 
                 // Запускаем активность и отправляем ID в неё
-                Intent intent = new Intent(this, PlaceAboutActivity.class);
-                intent.putExtra(KEY_PLACE_ID, qrPoint.getID());
+                Intent intent = new Intent(this, DiscoveredTainikActivity.class);
+                intent.putExtra(POINT_ID, qrPoint.getID());
                 startActivity(intent);
 
                 // Помечаем у себя в списке QrPoints что она detecteds
-                ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(placeAboutEvent.getID()).setMark("detected");
+                ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID).setMark("discovered");
 
                 // Одновременно меняем статус на сервере что на это место набрели
-                ServerManager.getInstance().sendCode(qrPoint.getID(), "detected");
-
+                ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
                 // Синхронизация с сервером
-                ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
+                ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
 
                 // Обновление информации на карте
-                updatePoint(qrPoint.getID(), "detected");
+                updatePoint(qrPoint.getID(), "discovered");
+
+                return;
 
 
-            } else { // Иначе его обнаруживали, так как статус не none
+            } else { // Иначе его обнаруживал кто-то другой
                 // Проверям обнаруживали ли мы ранее это точку?
-                for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
-                    if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                        discovered = true;
-                        Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", Toast.LENGTH_LONG).show();
 
-                        break;
-                    }
-                }
+                if (qrPoint.getMark().equalsIgnoreCase("fond")) {
+                    Toast.makeText(getApplicationContext(), "Кто-то уже нашёл данный тайник", Toast.LENGTH_LONG).show();
+                    return;
+                } else {
+                    // Одновременно меняем статус что мы тут побывали
+                    ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
+                    ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
 
-                if (!discovered) {
-                    for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
-                        if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                            fond = true;
-                            Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
-                            break;
-                        }
-                    }
-                }
-
-                // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
-                if (!fond && !discovered) {
-
-
+                    // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
                     // Запускаем активность и отправляем ID в неё
-                   /* Intent intent = new Intent(this, PlaceAboutActivity.class);
-                    intent.putExtra(KEY_PLACE_ID, qrPoint.getID());
-                    startActivity(intent);*/
-                    startActivity(new Intent(this, DiscoveredTainitDialogue.class));
-
-                    Toast.makeText(getApplicationContext(), "Кто-то обнаружил тайник, попробуйте его найти", Toast.LENGTH_LONG).show();
-
-                    // Сохраняем у себя и на сервере информацию о найденных точках
-                    ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs().add(qrPoint.getID());
-
-                    ServerManager.getInstance().updateUserOnServer("fonded_qrpoint");
+                    Intent intent = new Intent(this, DiscoveredTainikActivity.class);
+                    intent.putExtra(POINT_ID, qrPoint.getID());
+                    startActivity(intent);
 
                 }
 
@@ -382,7 +375,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
                             // Отправляем на сервер
 
-                            ServerManager.getInstance().updateUserOnServer("location");
+                            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
                         }
                     }

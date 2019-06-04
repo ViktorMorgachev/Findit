@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="find">Найти</string>
+    <string name="next">Далее</string>
+    <string name="finds">Находки</string>
+    <string name="fonded">Нашёл тайников</string>
+    <string name="discovered">Открыл тайников</string>
 </resources>

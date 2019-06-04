@@ -257,9 +257,11 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
             mMarkerOptions = new MarkerOptions();
 
+            if (places.get(i).getMark().equalsIgnoreCase("none"))
+                mMarkerOptions.icon(null);
             if (places.get(i).getMark().equalsIgnoreCase("fond")) {
                 mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
-            } else if (places.get(i).getMark().equalsIgnoreCase("detected")) {
+            } else if (places.get(i).getMark().equalsIgnoreCase("discovered")) {
                 switch ((int) places.get(i).getDifficulty()) {
                     case 1:
                         mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_1_24dp));
