@@ -36,8 +36,8 @@ public class ServerManager {
         // У себя помечаем в БД что место либо найденно, либо обнаруженно,  по ID, добавив его в список обнаруженных тайников или найденных
         // В зависимост и от тега
         if (mark.equalsIgnoreCase("discovered")) {
-            user.getDiscoveredQrPointIDs().add(id);
-            updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+           user.getDiscoveredQrPointIDs().add(id);
+           updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
         } else if (mark.equalsIgnoreCase("fond")) {
             user.setBonus(ManagersFactory.getInstance().getAccountManager().getUser().getBonus() + ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_BONUS);

@@ -6,6 +6,7 @@
     android:padding="10dp">
 
     <TextView
+        android:id="@+id/tv_question"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -20,22 +21,26 @@
         android:background="@color/blue"></View>
 
     <RadioGroup
+        android:id="@+id/rg_answers"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <RadioButton
+            android:id="@+id/rb_1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ответ"
             android:textSize="15sp" />
 
         <RadioButton
+            android:id="@+id/rb_2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ответ"
             android:textSize="15sp" />
 
         <RadioButton
+            android:id="@+id/rb_3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Ответ"
@@ -52,13 +57,13 @@
 
     <View
         android:layout_width="wrap_content"
-        android:layout_weight="1"
-        android:layout_height="0dp">
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
     </View>
 
     <Button
-
+        android:id="@+id/btn_next"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/colorAccent"

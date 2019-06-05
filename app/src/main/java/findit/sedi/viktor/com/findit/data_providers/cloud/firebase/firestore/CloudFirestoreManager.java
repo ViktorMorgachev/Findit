@@ -65,6 +65,7 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_LOCATION;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_NET_STATUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_PROFILE;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_TOURNAMENT;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_ACCOUNT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUserFields.KeysField.USER_DISCOVERED_QR_POINTS;
@@ -299,6 +300,37 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
+        } else if (tag.equalsIgnoreCase(KEY_UPDATE_TOURNAMENT)) {
+            document.update(USER_TOURNAMENT_ID, ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
+            document.update(USER_TEAM_ID, ManagersFactory.getInstance().getAccountManager().getUser().getTeamID())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
         }
 
 

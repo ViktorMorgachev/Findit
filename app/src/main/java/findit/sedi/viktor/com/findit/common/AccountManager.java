@@ -2,20 +2,11 @@ package findit.sedi.viktor.com.findit.common;
 
 import android.util.Log;
 
-
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
-import io.reactivex.Completable;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests;
 import io.reactivex.Observable;
-import io.reactivex.Observer;
-import io.reactivex.Single;
-import io.reactivex.SingleEmitter;
-import io.reactivex.SingleObserver;
-import io.reactivex.SingleOnSubscribe;
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.internal.operators.single.SingleJust;
 import io.reactivex.observers.DisposableObserver;
 import io.reactivex.subjects.PublishSubject;
 
@@ -88,5 +79,14 @@ public class AccountManager {
 
     public Observable<User> getChanges() {
         return mChangeObservable;
+    }
+
+    public void joinToTournament(String tournamentID, String teamID) {
+
+        mUser.setTeamID(teamID);
+        mUser.setTournamentID(tournamentID);
+
+        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateRequests.KeysField.KEY_UPDATE_TOURNAMENT);
+
     }
 }

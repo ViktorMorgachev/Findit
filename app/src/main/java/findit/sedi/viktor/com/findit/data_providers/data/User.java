@@ -178,6 +178,7 @@ public class User {
 
     public User setBonus(long bonus) {
         this.bonus = bonus;
+        this.totalBonus = totalBonus + bonus;
         return this;
     }
 

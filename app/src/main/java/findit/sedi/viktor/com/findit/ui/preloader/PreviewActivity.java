@@ -48,6 +48,7 @@ public class PreviewActivity extends Activity {
 
         mGifImageView = findViewById(R.id.gif_image);
         mGifImageView.setImageResource(R.drawable.loader_spinner_1s_200px);
+        mGifImageView.animate();
 
         loadDataFromServer();
 

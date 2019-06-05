@@ -13,7 +13,8 @@ public interface KeyCommonUpdateRequests {
 
     @StringDef({KeysField.KEY_UPDATE_PROFILE, KeysField.KEY_UPDATE_LOCATION,
             KeysField.KEY_UPDATE_NET_STATUS, KeysField.KEY_UPDATE_FONDED_QR_POINTS,
-            KeysField.KEY_UPDATE_BONUS, KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS})
+            KeysField.KEY_UPDATE_BONUS, KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS,
+            KeysField.KEY_UPDATE_TOURNAMENT})
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
         String KEY_UPDATE_PROFILE = "profile";
@@ -22,5 +23,6 @@ public interface KeyCommonUpdateRequests {
         String KEY_UPDATE_FONDED_QR_POINTS = "fonded_qrpoint";
         String KEY_UPDATE_DISCOVERED_QR_POINTS = "discovered_qrpoint";
         String KEY_UPDATE_BONUS = "bonus";
+        String KEY_UPDATE_TOURNAMENT = "tournament_team";
     }
 }

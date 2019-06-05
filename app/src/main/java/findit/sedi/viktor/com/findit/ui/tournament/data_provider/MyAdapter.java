@@ -1,8 +1,10 @@
 package findit.sedi.viktor.com.findit.ui.tournament.data_provider;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,18 +22,19 @@ import java.util.List;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
     private LayoutInflater inflater;
+    private static Context mContext;
     private ArrayList<Tournament> mTournaments;
     private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss");
 
 
     public MyAdapter(Context context, ArrayList<Tournament> data) {
         mTournaments = data;
+        mContext = context;
         this.inflater = LayoutInflater.from(context);
     }
 
@@ -92,7 +96,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public TextView typeOfTournament;
         public TextView countOfTeams;
         public TextView difficulty;
-        public  TextView totalPlayers;
+        public TextView totalPlayers;
         public RatingBar difficultyValue;
         public ImageView arrow;
         private LinearLayout mLinearLayout;
@@ -152,6 +156,17 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         // попасть участник
                         String TournamentID = filterData(R.string.id, tournamentID.getText().toString());
                         String teamID = teamsIDs.get(finalI).trim();
+
+
+                        // Если уже принадлежим турниру
+                        if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+                            if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
+                                Toast.makeText(mContext, "Вы уже в данном турнире", Toast.LENGTH_SHORT).show();
+                            else
+                                Toast.makeText(mContext, "Вы не можете менять турнир и команду", Toast.LENGTH_SHORT).show();
+                        } else showDialog(TournamentID, teamID);
+
+
                     }
                 });
 
@@ -159,6 +174,31 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             }
         }
+
+        private void showDialog(String tournamentID, String teamID) {
+
+
+            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+            alertDialog.setTitle("Присоединение к турниру");
+            alertDialog.setMessage("Вы хотите присоединиться к данной команде?");
+            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ДА",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "НЕТ",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+
+
+        }
+
 
         @Override
         public void onClick(View v) {
@@ -208,4 +248,6 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
         }
     }
+
+
 }

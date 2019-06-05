@@ -47,7 +47,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity android:name=".ui.RegisterActivity">
+        <activity
+            android:name=".ui.RegisterActivity"
+            android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -59,17 +61,23 @@
             android:name=".ui.profile_info.ProfileInfoActivity"
             android:launchMode="singleTask"></activity>
         <activity android:name=".ui.main.MainActivity"></activity>
-        <activity android:name=".ui.preloader.PreviewActivity"></activity>
+        <activity
+            android:name=".ui.preloader.PreviewActivity"
+            android:noHistory="true"></activity>
         <activity android:name=".ui.scanner_code.QRCodeCameraActivity" />
+        <activity
+            android:name=".ui.find_tainik.QuestTainikActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".ui.tournament.TounamentActivity" />
         <activity android:name=".ui.rating.RatingActivity" />
         <activity
             android:name=".ui.find_tainik.DiscoveredTainikActivity"
-            android:launchMode="singleTask"
+            android:launchMode="singleTop"
+            android:noHistory="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
-        <activity android:name=".ui.finds_activity.FindsActivity"
-            android:launchMode="singleTask"
-            />
+        <activity
+            android:name=".ui.finds_activity.FindsActivity"
+            android:launchMode="singleTask" />
 
 
     </application>

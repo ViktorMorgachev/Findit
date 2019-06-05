@@ -32,7 +32,7 @@ public class MyWorker extends Worker {
         // Тут настроим на обновление через некторое время, он будет управлять потоками обновлями и устанавливать время
         // Так же всё это будет работать только при наличии интернета
         if (true) {
-                CloudFirestoreManager.getInstance().updatePlayers();
+
                 CloudFirestoreManager.getInstance().updateQrPlaces();
                 CloudFirestoreManager.getInstance().updateTeams();
         }

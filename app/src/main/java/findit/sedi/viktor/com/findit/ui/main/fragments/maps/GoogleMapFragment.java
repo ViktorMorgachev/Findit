@@ -3,9 +3,11 @@ package findit.sedi.viktor.com.findit.ui.main.fragments.maps;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -28,6 +30,8 @@ import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
+
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 
 public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMoveListener, GoogleMap.OnMarkerClickListener {
@@ -64,6 +68,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
         MapsInitializer.initialize(getContext());
 
+
+        Toast.makeText(getContext(), "GoogleMap was onCreateView", Toast.LENGTH_LONG).show();
+
         if (mMapView != null) {
 
             mMapView.onCreate(null);  //Don't forget to call onCreate after get the mapView!
@@ -97,18 +104,22 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     @Override
     public void onResume() {
         super.onResume();
+        Log.d(LOG_TAG, "Google map  was resumed");
         mMapView.onResume();
     }
 
     @Override
     public void onPause() {
         super.onPause();
+
+        Log.d(LOG_TAG, "Google map  was paused");
         mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Log.d(LOG_TAG, "Google map  was destroed");
         mMapView.onDestroy();
     }
 
@@ -258,7 +269,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
             mMarkerOptions = new MarkerOptions();
 
             if (places.get(i).getMark().equalsIgnoreCase("none"))
-                mMarkerOptions.icon(null);
+                mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_none_place_24dp));
             if (places.get(i).getMark().equalsIgnoreCase("fond")) {
                 mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
             } else if (places.get(i).getMark().equalsIgnoreCase("discovered")) {

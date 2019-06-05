@@ -11,12 +11,12 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -64,6 +64,7 @@ import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_LOCATION;
 import static findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity.POINT_ID;
@@ -77,7 +78,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     //Widgets
     private GoogleMap mMap;
-    private Fragment mFragment;
     private FloatingActionButton mFloatingActionButton;
     // TODO снова запускаем лишь тогда когда игра активна
     private PeriodicWorkRequest mPeriodicWorkRequest;
@@ -149,18 +149,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
-        if (mCommonMapManager.getServiceType().equals(CommonMapManager.ServiceType.GOOGLE)) {
 
-            mGoogleMapFragment = GoogleMapFragment.getInstance();
+        showMap();
 
-            mCommonMapManager.addGoogleFragment(mGoogleMapFragment);
-
-            mFragmentManager.beginTransaction()
-                    .replace(R.id.map_fragment, mGoogleMapFragment)
-                    .addToBackStack("null")
-                    .commit();
-
-        }
 
         initLocationCallback();
 
@@ -172,11 +163,34 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+    private void showMap() {
+        if (mCommonMapManager.getServiceType().equals(CommonMapManager.ServiceType.GOOGLE)) {
+            mGoogleMapFragment = GoogleMapFragment.getInstance();
+            mCommonMapManager.addGoogleFragment(mGoogleMapFragment);
+
+            if (mFragmentManager.findFragmentById(R.id.map_fragment) == null) {
+                mFragmentManager.beginTransaction()
+                        .add(R.id.map_fragment, mGoogleMapFragment)
+                        .addToBackStack("null")
+                        .commit();
+            } else {
+                mFragmentManager.beginTransaction()
+                        .replace(R.id.map_fragment, mGoogleMapFragment)
+                        .addToBackStack("null")
+                        .commit();
+            }
+        }
+    }
+
 
     @Override
     protected void onResume() {
         super.onResume();
 
+
+        Log.d(LOG_TAG, "Activity was resumed");
+
+        showMap();
 
         // Initialize FusedLocationClient
 
@@ -212,8 +226,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                     ServerManager.getInstance().updateUserOnServer("location");
 
-
-                    chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
+                    // Если находится на переднем плане фрагмент
+                    if (mGoogleMapFragment != null)
+                        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
+                            chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
                     mLastLocation = sLatLng;
                     // checkMapForPlaces();
 
@@ -229,8 +245,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     // Сюда попадают тольеко те указатели, которые относятся к нашему турниру
     public void chechNearbyQrPlace(String ID) {
 
+        if (ID.equalsIgnoreCase(""))
+            return;
 
-        if (getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
 
             QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
@@ -358,7 +376,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
 
         }
-
         // Один раз получаем пестоположение
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -386,8 +403,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     private LocationRequest getLocationRequest() {
         LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(5000);
-        locationRequest.setFastestInterval(3000);
+        locationRequest.setInterval(8000);
+        locationRequest.setFastestInterval(5000);
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         return locationRequest;
     }
@@ -443,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Subscribe
     public void updatePlayerLocation(UpdatePlayersLocations updatePlayersLocations) {
 
-        if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
             mCommonMapManager.updatePlayers();
             Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
         }
@@ -453,7 +470,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Subscribe
     public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {
 
-        if (this.getLifecycle().getCurrentState() != Lifecycle.State.DESTROYED) {
+        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
             Toast.makeText(this, "QrPoints updated", Toast.LENGTH_SHORT).show();
             mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
@@ -461,16 +478,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(LOG_TAG, "Activity was paused");
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
-
+        Log.d(LOG_TAG, "Activity was stoped");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Toast.makeText(this, "Activity was destroed", Toast.LENGTH_LONG).show();
+        Log.d(LOG_TAG, "Activity was destroed");
         WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
@@ -492,16 +516,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             // Изменяем координаты пользователя
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
+
             ServerManager.getInstance().updateUserOnServer("location");
             ServerManager.getInstance().updateUserOnServer("net_status");
         }
 
-        // И потом только по айди будем меняять состояние меток (показывать, скрывать. и.т.д)
-        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty()) {
-
-        }
         ;
         //    CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Log.d(LOG_TAG, "Activity on backpressed");
     }
 }
