@@ -121,39 +121,37 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         if (currentUser != null) {
             // Удаляем пользователя локально, подписываемся на обновления, и делаем запрос на обновления пользователя
-
             ServerManager.getInstance().updateUser(currentUser.getEmail());
-
-            mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
-                    .subscribeOn(AndroidSchedulers.mainThread())
-                    .subscribeWith(new DisposableObserver<User>() {
-                        @Override
-                        public void onNext(User user) {
-
-                            if (RegisterActivity.this.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-                                this.onComplete();
-                            }
-
-                            Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
-                                    Toast.LENGTH_SHORT).show();
-                            Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
-
-                            if (user.getName() != null)
-                                startNextActivity();
-                        }
-
-                        @Override
-                        public void onError(Throwable e) {
-                            e.printStackTrace();
-                        }
-
-                        @Override
-                        public void onComplete() {
-                            Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
-                        }
-                    });
-
         }
+
+        mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribeWith(new DisposableObserver<User>() {
+                    @Override
+                    public void onNext(User user) {
+
+                        if (RegisterActivity.this.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
+                            this.onComplete();
+                        }
+
+                        Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
+                                Toast.LENGTH_SHORT).show();
+                        Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
+
+                        if (user.getName() != null)
+                            startNextActivity();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        e.printStackTrace();
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
+                    }
+                });
 
 
     }

@@ -9,7 +9,7 @@ import java.lang.annotation.RetentionPolicy;
  * Created by Developer on 14.04.2018.
  */
 
-public interface KeyCommonUpdateRequests {
+public interface KeyCommonUpdateUserRequests {
 
     @StringDef({KeysField.KEY_UPDATE_PROFILE, KeysField.KEY_UPDATE_LOCATION,
             KeysField.KEY_UPDATE_NET_STATUS, KeysField.KEY_UPDATE_FONDED_QR_POINTS,

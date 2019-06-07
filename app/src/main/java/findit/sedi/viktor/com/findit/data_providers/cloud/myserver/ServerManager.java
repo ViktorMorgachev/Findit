@@ -4,9 +4,9 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_BONUS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests.KeysField.KEY_UPDATE_FONDED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_FONDED_QR_POINTS;
 
 public class ServerManager {
     private static final ServerManager ourInstance = new ServerManager();
@@ -110,6 +110,12 @@ public class ServerManager {
     public void getPlayers() {
 
         CloudFirestoreManager.getInstance().getPlayers();
+
+    }
+
+    public void updateTournament(String id, String tag) {
+
+        CloudFirestoreManager.getInstance().updateTournament(id, tag);
 
     }
 }

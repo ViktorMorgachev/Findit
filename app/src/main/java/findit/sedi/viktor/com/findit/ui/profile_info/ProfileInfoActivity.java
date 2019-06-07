@@ -1,6 +1,5 @@
 package findit.sedi.viktor.com.findit.ui.profile_info;
 
-import android.arch.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -14,7 +13,6 @@ import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.squareup.otto.Subscribe;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
@@ -22,9 +20,10 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
-import io.reactivex.Observer;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
+
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_PROFILE;
 
 public class ProfileInfoActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -42,7 +41,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
     //Logic
     private FirebaseUser mFirebaseUser;
-    private Observer<User> mUserObserver;
+    private DisposableObserver<User> mUserObserver;
 
 
     @Override
@@ -135,7 +134,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         if (v.getId() == R.id.btn_save) {
             // Получаем изменененияе полей которые нужно изменить на сервере
-            ServerManager.getInstance().updateUserOnServer("profile");
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_PROFILE);
         }
 
     }
@@ -145,16 +144,16 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     protected void onDestroy() {
         super.onDestroy();
         FinditBus.getInstance().unregister(this);
-        if (mUserObserver != null) {
-            mUserObserver.onComplete();
+        if (!mUserObserver.isDisposed()) {
+            mUserObserver.dispose();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        if (mUserObserver != null) {
-            mUserObserver.onComplete();
+        if (!mUserObserver.isDisposed()) {
+            mUserObserver.dispose();
         }
     }
 }

@@ -140,7 +140,7 @@ public class QuestTainikFragment extends Fragment implements View.OnClickListene
 
     public interface OnButtonClickListener {
         void onRightAnswer();
-
+        void onBackPress();
         void onWrongAnswer();
     }
 

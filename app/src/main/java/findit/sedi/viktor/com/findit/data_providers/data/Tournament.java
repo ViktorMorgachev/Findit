@@ -1,10 +1,14 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
 import com.google.firebase.Timestamp;
-import com.thoughtbot.expandablerecyclerview.models.ExpandableGroup;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateTournamentRequests;
+
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateTournamentRequests.KeysField.KEY_UPDATE_PLAYERS;
 
 public class Tournament {
 
@@ -135,6 +139,20 @@ public class Tournament {
             return TournamentType.Teams;
         else
             throw new UnsupportedOperationException();
+
+    }
+
+    public void addPlayer(String id) {
+
+        getPlayersIDs().add(id);
+
+        updateTournamentByTag(getID(), KEY_UPDATE_PLAYERS);
+
+    }
+
+    private void updateTournamentByTag(String id, String tag) {
+
+        ServerManager.getInstance().updateTournament(id, tag);
 
     }
 

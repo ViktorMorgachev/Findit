@@ -15,6 +15,7 @@ import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.QuestTainikFragment;
+import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.TipTainikFragment;
 
 import static findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity.POINT_ID;
 
@@ -25,6 +26,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     private FragmentManager mFragmentManager;
     private QrPoint mQrPoint;
     static int count = 0;
+    public int bonus = 0;
     private ArrayList<String> mArrayListAnswers = new ArrayList<>();
 
     public static final int LAYOUT_RES_ID = R.layout.fragment_layout;
@@ -62,17 +64,34 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     @Override
     public void onRightAnswer() {
 
-        ManagersFactory.getInstance().getAccountManager().getUser().setBonus(ManagersFactory.getInstance().getAccountManager().getUser().getBonus() + mQrPoint.getQuestBonus());
+        bonus = (int) (bonus + mQrPoint.getQuestBonus());
         showFragment();
 
     }
 
+    @Override
+    public void onBackPress() {
+        onBackPressed();
+    }
+
+
+    @Override
+    public void onWrongAnswer() {
+
+        showResultAndTipFragmant();
+
+    }
+
+
+
     private void showFragment() {
 
 
-        if (count > mQrPoint.getQuests().size()) {
+        if (count == mQrPoint.getQuests().size()) {
             Toast.makeText(getApplicationContext(), "Вы ответили на все вопросы", Toast.LENGTH_SHORT).show();
             // Обновляем пользователя на сервере, его бонусы
+
+            showResultAndTipFragmant();
 
             return;
         }
@@ -82,13 +101,16 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
         if (mFragment == null) {
             mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count), Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
             mFragmentManager.beginTransaction()
+                    .addToBackStack(null)
                     .add(R.id.fragment, mFragment)
                     .commit();
 
 
         } else {
-            mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count), Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
+            mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count),
+                    Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
             mFragmentManager.beginTransaction()
+                    .addToBackStack(null)
                     .replace(R.id.fragment, mFragment)
                     .commit();
         }
@@ -97,11 +119,24 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
 
     }
 
+    private void showResultAndTipFragmant() {
 
-    @Override
-    public void onWrongAnswer() {
+        if (mFragment == null) {
+            mFragment = TipTainikFragment.newInstance(mQrPoint.getTipForNextQrPoint(), mQrPoint.getTip(), mQrPoint.getTipPhoto(), bonus);
+            mFragmentManager.beginTransaction()
+                    .add(R.id.fragment, mFragment)
+                    .commit();
 
-        // Обновляем бонусы пользователя не сервере, сколько он получил
+
+        } else {
+            mFragment = TipTainikFragment.newInstance(mQrPoint.getTipForNextQrPoint(), mQrPoint.getTip(), mQrPoint.getTipPhoto(), bonus);
+            mFragmentManager.beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment, mFragment)
+                    .commit();
+        }
 
     }
+
+
 }

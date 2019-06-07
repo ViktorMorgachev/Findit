@@ -12,7 +12,6 @@
     </View>
 
     <TextView
-        android:layout_weight=""
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -21,6 +20,7 @@
         android:textSize="17sp" />
 
     <Button
+        android:id="@+id/btn_bonuses"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -53,7 +53,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="Тайник находится......"
+        android:text="@string/tip_for_current"
+        android:textColor="@android:color/black"
+        android:textSize="17sp" />
+
+
+
+    <TextView
+        android:id="@+id/tv_tip_for_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/next_tainik"
         android:textColor="@android:color/black"
         android:textSize="17sp" />
 
@@ -62,5 +73,13 @@
         android:layout_height="wrap_content"
         android:layout_weight="1">
     </View>
+
+    <Button
+        android:id="@+id/btn_ok"
+        android:layout_width="match_parent"
+        android:text="Ага"
+        android:background="@color/colorAccent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

@@ -59,4 +59,6 @@
     <string name="finds">Находки</string>
     <string name="fonded">Нашёл тайников</string>
     <string name="discovered">Открыл тайников</string>
+    <string name="next_tainik">Следующий тайник</string>
+    <string name="tip_for_current">Тайник находится...</string>
 </resources>

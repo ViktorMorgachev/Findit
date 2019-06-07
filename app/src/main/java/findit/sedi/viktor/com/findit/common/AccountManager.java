@@ -3,8 +3,9 @@ package findit.sedi.viktor.com.findit.common;
 import android.util.Log;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateRequests;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
@@ -86,7 +87,14 @@ public class AccountManager {
         mUser.setTeamID(teamID);
         mUser.setTournamentID(tournamentID);
 
-        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateRequests.KeysField.KEY_UPDATE_TOURNAMENT);
+        // Добавим в к турниру к команде нового пользователя
+
+        Tournament tournament = ManagersFactory.getInstance().getTournamentManager().getTournament(tournamentID);
+
+        tournament.addPlayer(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+
+
+        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_TOURNAMENT);
 
     }
 }
