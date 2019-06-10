@@ -39,6 +39,12 @@
                 android:text="@string/count_of_players"
                 android:textColor="@android:color/black" />
 
+            <TextView
+                android:id="@+id/tv_count_of_bonus"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/count_of_bonus"
+                android:textColor="@android:color/black" />
 
         </LinearLayout>
 

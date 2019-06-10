@@ -51,11 +51,13 @@ import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
+import findit.sedi.viktor.com.findit.data_providers.data.Team;
+import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
-import findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity;
+import findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
@@ -67,7 +69,7 @@ import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
-import static findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity.POINT_ID;
+import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
 /**
  * Главная активность которая будет управлять другими активностями возможно с помощью Cicerone
@@ -254,13 +256,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
             User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-            boolean discovered = false; // Открывали ли ранее
-            boolean fond = false; // Находили ли ранее?
 
 
             for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
                 if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                    fond = true;
+
                     Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
                     return;
                 }
@@ -281,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (qrPoint.getMark().equalsIgnoreCase("none")) {
 
                 // Запускаем активность и отправляем ID в неё
-                Intent intent = new Intent(this, DiscoveredTainikActivity.class);
+                Intent intent = new Intent(this, NearbyTainikActivity.class);
                 intent.putExtra(POINT_ID, qrPoint.getID());
                 startActivity(intent);
 
@@ -290,8 +290,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                 // Одновременно меняем статус на сервере что на это место набрели
                 ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
+
                 // Синхронизация с сервером
                 ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+
+
 
                 // Обновление информации на карте
                 updatePoint(qrPoint.getID(), "discovered");
@@ -312,7 +315,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                     // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
                     // Запускаем активность и отправляем ID в неё
-                    Intent intent = new Intent(this, DiscoveredTainikActivity.class);
+                    Intent intent = new Intent(this, NearbyTainikActivity.class);
                     intent.putExtra(POINT_ID, qrPoint.getID());
                     startActivity(intent);
 

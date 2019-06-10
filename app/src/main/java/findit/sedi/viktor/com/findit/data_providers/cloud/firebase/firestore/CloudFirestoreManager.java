@@ -51,6 +51,10 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TOURNAMENT_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonQrPointsFields.KeysField.QRPOINT_TYPE;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTeamsFields.KeysField.KEY_TEAM_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTeamsFields.KeysField.KEY_TEAM_NAME;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTeamsFields.KeysField.KEY_TEAM_PLAYER_IDS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonTeamsFields.KeysField.KEY_TEAM_TOURNAMENT_ID;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_FROM;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DATE_TO;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonTournamentsFields.KeysField.TOURNAMENTS_DESCRIBE;
@@ -363,10 +367,11 @@ public class CloudFirestoreManager {
                             if (document.exists()) {
 
                                 ManagersFactory.getInstance().getTeamManager().addTeam(
-                                        new Team(document.getString("TournamentID"),
-                                                (List<String>) document.get("PlayersIDs"),
+                                        new Team(document.getString(KEY_TEAM_TOURNAMENT_ID),
+                                                (List<String>) document.get(KEY_TEAM_PLAYER_IDS),
                                                 document.getId(),
-                                                document.getString("Name")));
+                                                document.getString(KEY_TEAM_NAME),
+                                                document.getLong(KEY_TEAM_BONUS)));
                                 Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                             }
                         }
@@ -391,10 +396,11 @@ public class CloudFirestoreManager {
                             if (document.exists()) {
 
                                 ManagersFactory.getInstance().getTeamManager().addTeam(
-                                        new Team(document.getString("TournamentID"),
-                                                (List<String>) document.get("PlayersIDs"),
+                                        new Team(document.getString(KEY_TEAM_TOURNAMENT_ID),
+                                                (List<String>) document.get(KEY_TEAM_PLAYER_IDS),
                                                 document.getId(),
-                                                document.getString("Name")));
+                                                document.getString(KEY_TEAM_NAME),
+                                                document.getLong(KEY_TEAM_BONUS)));
                                 Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                             }
                         }

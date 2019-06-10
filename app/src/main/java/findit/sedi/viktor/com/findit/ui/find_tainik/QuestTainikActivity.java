@@ -13,11 +13,14 @@ import java.util.Objects;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.QuestTainikFragment;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.TipTainikFragment;
 
-import static findit.sedi.viktor.com.findit.ui.find_tainik.DiscoveredTainikActivity.POINT_ID;
+import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
 public class QuestTainikActivity extends AppCompatActivity implements QuestTainikFragment.OnButtonClickListener {
 
@@ -25,6 +28,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     private Fragment mFragment;
     private FragmentManager mFragmentManager;
     private QrPoint mQrPoint;
+    private User mUser = ManagersFactory.getInstance().getAccountManager().getUser();
     static int count = 0;
     public int bonus = 0;
     private ArrayList<String> mArrayListAnswers = new ArrayList<>();
@@ -44,7 +48,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     }
 
     public static Intent getIntent(Context context, String qrPointID) {
-        Intent intent = new Intent(context, DiscoveredTainikActivity.class);
+        Intent intent = new Intent(context, NearbyTainikActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.putExtra(POINT_ID, qrPointID);
         return intent;
@@ -65,6 +69,11 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     public void onRightAnswer() {
 
         bonus = (int) (bonus + mQrPoint.getQuestBonus());
+
+        mUser.addBonus(bonus);
+
+        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS);
+
         showFragment();
 
     }
@@ -78,10 +87,9 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     @Override
     public void onWrongAnswer() {
 
-        showResultAndTipFragmant();
+        showResultAndTipFragmant(false);
 
     }
-
 
 
     private void showFragment() {
@@ -91,8 +99,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
             Toast.makeText(getApplicationContext(), "Вы ответили на все вопросы", Toast.LENGTH_SHORT).show();
             // Обновляем пользователя на сервере, его бонусы
 
-            showResultAndTipFragmant();
-
+            showResultAndTipFragmant(true);
             return;
         }
 
@@ -119,24 +126,24 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
 
     }
 
-    private void showResultAndTipFragmant() {
-
-        if (mFragment == null) {
-            mFragment = TipTainikFragment.newInstance(mQrPoint.getTipForNextQrPoint(), mQrPoint.getTip(), mQrPoint.getTipPhoto(), bonus);
-            mFragmentManager.beginTransaction()
-                    .add(R.id.fragment, mFragment)
-                    .commit();
+    private void showResultAndTipFragmant(boolean success) {
 
 
-        } else {
-            mFragment = TipTainikFragment.newInstance(mQrPoint.getTipForNextQrPoint(), mQrPoint.getTip(), mQrPoint.getTipPhoto(), bonus);
-            mFragmentManager.beginTransaction()
-                    .addToBackStack(null)
-                    .replace(R.id.fragment, mFragment)
-                    .commit();
+            if (mFragment == null) {
+                mFragment = TipTainikFragment.newInstance(mQrPoint.getID(), bonus, success);
+                mFragmentManager.beginTransaction()
+                        .add(R.id.fragment, mFragment)
+                        .commit();
+
+
+            } else {
+                mFragment = TipTainikFragment.newInstance(mQrPoint.getID(), bonus, success);
+                mFragmentManager.beginTransaction()
+                        .addToBackStack(null)
+                        .replace(R.id.fragment, mFragment)
+                        .commit();
+            }
         }
-
-    }
 
 
 }

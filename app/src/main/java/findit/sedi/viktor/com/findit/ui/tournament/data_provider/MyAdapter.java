@@ -144,10 +144,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                 View view = layoutInflater.inflate(R.layout.item_card_tournament_child, mLinearLayout);
 
-                ((TextView) view.findViewById(R.id.tv_count_of_players)).setText(App.instance.getResources().getString(R.string.count_of_players) + ": " + teamsIDs.get(finalI).length());
+                ((TextView) view.findViewById(R.id.tv_count_of_players)).setText(App.instance.getResources().getString(R.string.count_of_players) + ": " + ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI)).getPlayersIds().size());
                 ((TextView) view.findViewById(R.id.tv_name)).setText
                         (App.instance.getResources().getString(R.string.name) + ": " + (ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI).trim()).getName()));
-
+                ((TextView) view.findViewById(R.id.tv_count_of_bonus)).setText(App.instance.getResources().getString(R.string.count_of_bonus) + ": "
+                        + ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI)).getBonus());
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override

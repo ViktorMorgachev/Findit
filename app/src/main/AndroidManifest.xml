@@ -71,7 +71,7 @@
         <activity android:name=".ui.tournament.TounamentActivity" />
         <activity android:name=".ui.rating.RatingActivity" />
         <activity
-            android:name=".ui.find_tainik.DiscoveredTainikActivity"
+            android:name=".ui.find_tainik.NearbyTainikActivity"
             android:launchMode="singleTop"
             android:noHistory="true"
             android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />

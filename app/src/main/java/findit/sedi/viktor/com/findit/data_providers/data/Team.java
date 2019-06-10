@@ -8,13 +8,15 @@ public class Team {
     private List<String> playersIds;
     private String TeamID;
     private String name;
+    private long bonus;
 
 
-    public Team(String tournamentID, List<String> playersIds, String teamID, String name) {
+    public Team(String tournamentID, List<String> playersIds, String teamID, String name, long bonus) {
         TournamentID = tournamentID.trim();
         this.playersIds = playersIds;
         TeamID = teamID.trim();
         this.name = name.trim();
+        this.bonus = bonus;
     }
 
 
@@ -49,5 +51,13 @@ public class Team {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public long getBonus() {
+        return bonus;
+    }
+
+    public void setBonus(long bonus) {
+        this.bonus = bonus;
     }
 }
