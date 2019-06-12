@@ -42,11 +42,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     // View
     private Button mButtonOk;
-    private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat;
+    private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat, mTextViewName;
     private TextInputEditText mEditEmail;
     private TextInputEditText mEditPassword;
-    private DisposableObserver<User> mUserObserver;
+    private TextInputEditText mEditName;
     private TextInputEditText mEditPasswordRepeat;
+    private DisposableObserver<User> mUserObserver;
     private SwitchCompat mSwitchCompat;
 
     // Logic
@@ -110,6 +111,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             mEditPasswordRepeat = findViewById(R.id.et_password_repeat);
             mTextViewPasswordRepeat = findViewById(R.id.tv_info_password_repeat);
             mSwitchCompat = findViewById(R.id.swRegistration);
+            mEditName = findViewById(R.id.et_name);
+            mTextViewName = findViewById(R.id.tv_info_name);
 
 
             setUIListeners();
@@ -171,10 +174,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 if (isRegister) {
                     mTextViewPasswordRepeat.setVisibility(View.VISIBLE);
                     mEditPasswordRepeat.setVisibility(View.VISIBLE);
+                    mEditName.setVisibility(View.VISIBLE);
+                    mTextViewName.setVisibility(View.VISIBLE);
                     mButtonOk.setText("Регистрация");
                 } else {
                     mTextViewPasswordRepeat.setVisibility(View.GONE);
                     mEditPasswordRepeat.setVisibility(View.GONE);
+                    mEditName.setVisibility(View.GONE);
+                    mTextViewName.setVisibility(View.GONE);
                     mButtonOk.setText("Войти");
                 }
             }
@@ -184,6 +191,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btn_register) {
+
+            if (isRegister) {
+                if (mEditName.getText().toString().equalsIgnoreCase("")) {
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.please_input_name), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
             registerOrEnterUser();
         }
     }
@@ -242,7 +257,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             Toast.makeText(RegisterActivity.this, "Регистрация пройденна успешно", Toast.LENGTH_LONG).show();
                             // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
                             FirebaseUser user = mAuth.getCurrentUser();
-                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString());
+                            ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString(), mEditName.getText().toString());
                         }
 
                     }

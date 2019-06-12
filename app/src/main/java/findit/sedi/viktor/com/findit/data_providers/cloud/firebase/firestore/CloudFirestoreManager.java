@@ -447,7 +447,7 @@ public class CloudFirestoreManager {
     }
 
 
-    public void createUser(String email, String password) {
+    public void createUser(String email, String password, String name) {
 
         // Create a new user with a first and last name
         // Инициализируем остальные значения по умолчанию
@@ -460,7 +460,7 @@ public class CloudFirestoreManager {
         user.put(USER_PHOTO, "");
         user.put(USER_LOCATION, new GeoPoint(0, 0));
         user.put(USER_ACCOUNT_TYPE, "Free");
-        user.put(USER_NAME, "");
+        user.put(USER_NAME, name);
         user.put(USER_PHONE, "");
         user.put(USER_TEAM_ID, "");
         user.put(USER_TOTAL_BONUS, 0);
