@@ -113,7 +113,6 @@ public class CloudFirestoreManager {
 
 
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
-    // TODO Нужно пофиксить этот как можно быстрей по возможности а то он растёт
     public void updateUser(String tag) {
 
         Log.d(LOG_TAG, "User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());

@@ -59,8 +59,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         initUI();
 
-        FinditBus.getInstance().register(this);
-
 
     }
 
@@ -134,6 +132,14 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         if (v.getId() == R.id.btn_save) {
             // Получаем изменененияе полей которые нужно изменить на сервере
+
+            User user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+            user.setName(mEditTextName.getText().toString());
+            user.setPhone(mEditTextPhone.getText().toString());
+            user.setGender(mSpinnerGender.getSelectedItemPosition());
+
+
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_PROFILE);
         }
 
