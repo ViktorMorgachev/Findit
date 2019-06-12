@@ -772,4 +772,31 @@ public class CloudFirestoreManager {
 
 
     }
+
+    public boolean checkProfile(String email) {
+
+        final boolean[] result = {false};
+
+        mFirebaseFirestore.collection(KEY_USERS_PATH).get()
+                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+
+                            // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
+                            if (document.getString(USER_EMAIL).equalsIgnoreCase(email))
+                                result[0] = true;
+                            return;
+
+                        }
+
+
+                    } else {
+                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                    }
+                });
+
+        return result[0];
+
+    }
 }

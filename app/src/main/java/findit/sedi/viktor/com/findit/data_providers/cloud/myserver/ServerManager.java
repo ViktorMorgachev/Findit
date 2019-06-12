@@ -126,4 +126,10 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().updateTournament(id, tag);
 
     }
+
+    public boolean checkProfile(String email) {
+
+         return  CloudFirestoreManager.getInstance().checkProfile(email);
+
+    }
 }

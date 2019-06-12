@@ -165,6 +165,8 @@
         android:id="@+id/iv_google_enter"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:clickable="true"
+        android:focusable="true"
         android:src="@drawable/googleg_standard_color_18"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"

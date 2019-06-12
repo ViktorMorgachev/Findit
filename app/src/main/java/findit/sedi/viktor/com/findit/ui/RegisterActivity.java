@@ -13,17 +13,25 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
@@ -38,20 +46,23 @@ import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysFi
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 201;
-    private FirebaseAuth mAuth;
+    private static final int RC_SIGN_IN = 1;
 
     // View
     private Button mButtonOk;
     private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat, mTextViewName;
     private TextInputEditText mEditEmail;
     private TextInputEditText mEditPassword;
+    private ImageView mImageViewGoogleEnter;
     private TextInputEditText mEditName;
     private TextInputEditText mEditPasswordRepeat;
     private DisposableObserver<User> mUserObserver;
     private SwitchCompat mSwitchCompat;
+    private GoogleSignInClient mGoogleSignInClient;
 
     // Logic
     private boolean isRegister;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,6 +75,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
     }
 
@@ -89,17 +107,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        updateUI(currentUser);
+        GoogleSignInAccount googleSignInAccount = GoogleSignIn.getLastSignedInAccount(this);
+
+
+        updateUI(currentUser, googleSignInAccount);
 
     }
 
 
-    private void updateUI(FirebaseUser currentUser) {
+    private void updateUI(FirebaseUser currentUser, GoogleSignInAccount googleSignInAccount) {
 
 
         // Если пользователь зарегестрированн  в системе, вытаскиваем из преференсов данные
         // То сразу переходим в
-        if (currentUser == null) {
+        if (currentUser == null && googleSignInAccount == null) {
 
             setContentView(R.layout.register_layout);
 
@@ -113,19 +134,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             mSwitchCompat = findViewById(R.id.swRegistration);
             mEditName = findViewById(R.id.et_name);
             mTextViewName = findViewById(R.id.tv_info_name);
+            mImageViewGoogleEnter = findViewById(R.id.iv_google_enter);
 
 
             setUIListeners();
 
 
+            mImageViewGoogleEnter.setOnClickListener(this::onClick);
             mButtonOk.setOnClickListener(this::onClick);
 
         }
 
-        if (currentUser != null) {
-            // Удаляем пользователя локально, подписываемся на обновления, и делаем запрос на обновления пользователя
-            ServerManager.getInstance().updateUser(currentUser.getEmail());
-        }
 
         mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
                 .subscribeOn(AndroidSchedulers.mainThread())
@@ -157,6 +176,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 });
 
 
+        if (currentUser != null) {
+            ServerManager.getInstance().updateUser(currentUser.getEmail());
+            return;
+        }
+
+        if (googleSignInAccount != null) {
+            firebaseAuthWithGoogle(googleSignInAccount);
+            return;
+        }
+
+
     }
 
     private void startNextActivity() {
@@ -186,6 +216,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 }
             }
         });
+
+        mImageViewGoogleEnter.setOnClickListener(this::onClick);
+
     }
 
     @Override
@@ -200,7 +233,18 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             }
 
             registerOrEnterUser();
+
+        } else if (v.getId() == R.id.iv_google_enter) {
+
+            signIn();
         }
+    }
+
+    private void signIn() {
+
+        Intent signInIntent = mGoogleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+
     }
 
     private void registerOrEnterUser() {
@@ -258,6 +302,71 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
                             FirebaseUser user = mAuth.getCurrentUser();
                             ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString(), mEditName.getText().toString());
+                        }
+
+                    }
+                });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // Result returned from launching the Intent from GoogleSignInClient.getSignInIntent(...);
+        if (requestCode == RC_SIGN_IN) {
+            // The Task returned from this call is always completed, no need to attach
+            // a listener.
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            firebaseAuthWithGoogle(account);
+
+        } catch (ApiException e) {
+            // The ApiException status code indicates the detailed failure reason.
+            // Please refer to the GoogleSignInStatusCodes class reference for more information.
+            Toast.makeText(getApplicationContext(), R.string.registration_error, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    private void firebaseAuthWithGoogle(GoogleSignInAccount acct) {
+
+
+        AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+        mAuth.signInWithCredential(credential)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+
+                            FirebaseUser user = mAuth.getCurrentUser();
+
+                            // Смотрим есть ли такой пользователь на сервере с таким email, если нет, то регистрация, иначе аутентификация
+                            boolean isHas = ServerManager.getInstance().checkProfile(user.getEmail());
+
+                            if (!isHas) {
+
+                                Toast.makeText(RegisterActivity.this, "Регистрация успешно пройдена.",
+                                        Toast.LENGTH_SHORT).show();
+                                ServerManager.getInstance().createNewUser(user.getEmail(), "byGoogle", user.getDisplayName());
+                            } else {
+                                Toast.makeText(RegisterActivity.this, "Аутентификация успешно пройдена.",
+                                        Toast.LENGTH_SHORT).show();
+                                ServerManager.getInstance().updateUser(user.getEmail());
+                            }
+
+
+                        } else {
+                            Toast.makeText(RegisterActivity.this, "Ошибка аутентификации",
+                                    Toast.LENGTH_SHORT).show();
                         }
 
                     }

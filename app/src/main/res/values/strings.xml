@@ -65,4 +65,5 @@
     <string name="count_of_bonus">Количество бонусов</string>
     <string name="tv_name">Ваше имя</string>
     <string name="please_input_name">Пожалуйста укажите ваше имя или ник</string>
+    <string name="registration_error">Ошибка регистрации</string>
 </resources>
