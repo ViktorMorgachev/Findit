@@ -1,5 +1,6 @@
 package findit.sedi.viktor.com.findit.ui.profile_info;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -20,6 +21,7 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.ui.RegisterActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 
@@ -128,6 +130,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
             ServerManager.getInstance().changeUserNetStatus(false);
+            startActivity(new Intent(this, RegisterActivity.class));
         }
 
         if (v.getId() == R.id.btn_save) {
