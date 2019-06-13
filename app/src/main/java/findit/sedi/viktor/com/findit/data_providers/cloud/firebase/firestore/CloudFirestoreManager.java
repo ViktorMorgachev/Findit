@@ -32,6 +32,7 @@ import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
+import io.reactivex.observers.DisposableObserver;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
@@ -773,7 +774,7 @@ public class CloudFirestoreManager {
 
     }
 
-    public boolean checkProfile(String email) {
+    public void checkProfile(String email, DisposableObserver<Boolean> observable) {
 
         final boolean[] result = {false};
 
@@ -783,12 +784,19 @@ public class CloudFirestoreManager {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
-                            // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
-                            if (document.getString(USER_EMAIL).equalsIgnoreCase(email))
-                                result[0] = true;
-                            return;
+                            Log.d(LOG_TAG, task + " => " + document.getString(USER_EMAIL));
 
+                            // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
+                            if (document.getString(USER_EMAIL).equalsIgnoreCase(email)) {
+                                result[0] = true;
+                                observable.onNext(result[0]);
+                                observable.dispose();
+                                return;
+                            }
                         }
+
+                        observable.onNext(result[0]);
+                        observable.dispose();
 
 
                     } else {
@@ -796,7 +804,6 @@ public class CloudFirestoreManager {
                     }
                 });
 
-        return result[0];
 
     }
 }

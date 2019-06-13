@@ -5,6 +5,7 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.Clo
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import io.reactivex.observers.DisposableObserver;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
@@ -127,9 +128,9 @@ public class ServerManager {
 
     }
 
-    public boolean checkProfile(String email) {
+    public void checkProfile(String email, DisposableObserver<Boolean> booleanDisposableObserver) {
 
-         return  CloudFirestoreManager.getInstance().checkProfile(email);
+        CloudFirestoreManager.getInstance().checkProfile(email, booleanDisposableObserver);
 
     }
 }

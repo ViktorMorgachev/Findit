@@ -161,7 +161,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
             mMap.addMarker(mMarkerOptionsMe);
 
             // Рисуем местоположение остальных игроков
-            if (ManagersFactory.getInstance().getPlayersManager().getPlayers().size() != 0)
+          /*  if (ManagersFactory.getInstance().getPlayersManager().getPlayers().size() != 0)
                 for (int i = 0; i < ManagersFactory.getInstance().getPlayersManager().getPlayers().size(); i++) {
 
                     GeoPoint geoPoint = ManagersFactory.getInstance().getPlayersManager().getPlayers().get(i).getGeopoint();
@@ -170,7 +170,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                     mMarkerOptions.position(new LatLng(geoPoint.getLatitude(), geoPoint.getLongitude()));
                     mMap.addMarker(mMarkerOptions);
 
-                }
+                }*/
 
         }
     }

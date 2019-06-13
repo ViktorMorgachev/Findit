@@ -33,6 +33,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
+import org.reactivestreams.Subscriber;
+
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
@@ -57,6 +59,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private TextInputEditText mEditName;
     private TextInputEditText mEditPasswordRepeat;
     private DisposableObserver<User> mUserObserver;
+    private DisposableObserver<Boolean> mBooleanDisposableObserver;
+    private Subscriber<Boolean> mSubscriber;
     private SwitchCompat mSwitchCompat;
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -349,19 +353,34 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                             FirebaseUser user = mAuth.getCurrentUser();
 
+                            mBooleanDisposableObserver = new DisposableObserver<Boolean>() {
+                                @Override
+                                public void onNext(Boolean aBoolean) {
+
+                                    if (!aBoolean) {
+                                        Toast.makeText(RegisterActivity.this, "Регистрация успешно пройдена.",
+                                                Toast.LENGTH_SHORT).show();
+                                        ServerManager.getInstance().createNewUser(user.getEmail(), "byGoogle", user.getDisplayName());
+                                    } else {
+                                        Toast.makeText(RegisterActivity.this, "Аутентификация успешно пройдена.",
+                                                Toast.LENGTH_SHORT).show();
+                                        ServerManager.getInstance().updateUser(user.getEmail());
+                                    }
+                                }
+
+                                @Override
+                                public void onError(Throwable e) {
+
+                                }
+
+                                @Override
+                                public void onComplete() {
+
+                                }
+                            };
+
                             // Смотрим есть ли такой пользователь на сервере с таким email, если нет, то регистрация, иначе аутентификация
-                            boolean isHas = ServerManager.getInstance().checkProfile(user.getEmail());
-
-                            if (!isHas) {
-
-                                Toast.makeText(RegisterActivity.this, "Регистрация успешно пройдена.",
-                                        Toast.LENGTH_SHORT).show();
-                                ServerManager.getInstance().createNewUser(user.getEmail(), "byGoogle", user.getDisplayName());
-                            } else {
-                                Toast.makeText(RegisterActivity.this, "Аутентификация успешно пройдена.",
-                                        Toast.LENGTH_SHORT).show();
-                                ServerManager.getInstance().updateUser(user.getEmail());
-                            }
+                            ServerManager.getInstance().checkProfile(user.getEmail(), mBooleanDisposableObserver);
 
 
                         } else {
@@ -380,13 +399,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (mUserObserver != null && !mUserObserver.isDisposed()) {
             mUserObserver.dispose();
         }
+        if (mBooleanDisposableObserver != null && !mBooleanDisposableObserver.isDisposed()) {
+            mBooleanDisposableObserver.dispose();
+        }
+
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        if (mUserObserver != null && !mUserObserver.isDisposed()) {
-            mUserObserver.dispose();
-        }
-    }
+
 }

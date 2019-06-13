@@ -12,6 +12,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -44,6 +47,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     //Logic
     private FirebaseUser mFirebaseUser;
     private DisposableObserver<User> mUserObserver;
+    private GoogleSignInClient mGoogleSignInClient;
 
 
     @Override
@@ -58,6 +62,13 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+
+        mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
         initUI();
 
@@ -128,6 +139,8 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         // Отправить на сервер при выходе об измененении статуса онлайн Users
         if (v.getId() == R.id.tv_sign_out) {
             FirebaseAuth.getInstance().signOut();
+            mGoogleSignInClient.signOut();
+
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
             ServerManager.getInstance().changeUserNetStatus(false);
             startActivity(new Intent(this, RegisterActivity.class));

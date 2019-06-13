@@ -51,8 +51,6 @@ import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
-import findit.sedi.viktor.com.findit.data_providers.data.Team;
-import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
@@ -152,9 +150,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
-        showMap();
-
-
         initLocationCallback();
 
         getLocation();
@@ -173,11 +168,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (mFragmentManager.findFragmentById(R.id.map_fragment) == null) {
                 mFragmentManager.beginTransaction()
                         .add(R.id.map_fragment, mGoogleMapFragment)
-                        .addToBackStack("null")
-                        .commit();
-            } else {
-                mFragmentManager.beginTransaction()
-                        .replace(R.id.map_fragment, mGoogleMapFragment)
                         .addToBackStack("null")
                         .commit();
             }
@@ -199,8 +189,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
         }
-
-
 
 
     }
@@ -257,7 +245,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
 
-
             for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
                 if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
 
@@ -293,7 +280,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                 // Синхронизация с сервером
                 ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
-
 
 
                 // Обновление информации на карте
