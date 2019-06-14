@@ -40,6 +40,7 @@ public class PreviewActivity extends Activity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+
         ManagersFactory.getInstance().setContext(this);
 
         mQrPointManager = ManagersFactory.getInstance().getQrPointManager();

@@ -760,6 +760,8 @@ public class CloudFirestoreManager {
     public void updateTournament(String id, String tag) {
 
         document = mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).document();
+
+
         document.update(TOURNAMENTS_PLAYERS_IDS, ManagersFactory.getInstance().getTournamentManager().getTournament(id).getPlayersIDs())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override

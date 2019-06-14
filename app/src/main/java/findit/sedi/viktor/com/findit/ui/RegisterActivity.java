@@ -158,14 +158,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
                         if (RegisterActivity.this.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
                             this.onComplete();
+                            mUserObserver.dispose();
                         }
 
                         Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
                                 Toast.LENGTH_SHORT).show();
                         Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
 
-                        if (user.getName() != null)
+                        if (user.getName() != null) {
                             startNextActivity();
+                            RegisterActivity.this.finish();
+                            mUserObserver.dispose();
+                        }
+
+
                     }
 
                     @Override
@@ -366,6 +372,9 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                                 Toast.LENGTH_SHORT).show();
                                         ServerManager.getInstance().updateUser(user.getEmail());
                                     }
+
+                                    mBooleanDisposableObserver.dispose();
+
                                 }
 
                                 @Override
