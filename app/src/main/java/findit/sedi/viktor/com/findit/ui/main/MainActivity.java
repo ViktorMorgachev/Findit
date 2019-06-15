@@ -201,31 +201,32 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 //checkInternetConnection(locationResult);
                 mLocationResult = locationResult;
 
-                for (Location location : locationResult.getLocations()) {
-                    // sLatLng = new LatLng(mLocationResult.getLastLocation().getLatitude(), mLocationResult.getLastLocation().getLatitude());
-                    // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
-                    sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
+                if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
+                    for (Location location : locationResult.getLocations()) {
+                        // sLatLng = new LatLng(mLocationResult.getLastLocation().getLatitude(), mLocationResult.getLastLocation().getLatitude());
+                        // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
+                        sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    //  updateMap(DEFAULT_ZOOM, "");
+                        //  updateMap(DEFAULT_ZOOM, "");
 
-                    // Изменяем координаты пользователя
+                        // Изменяем координаты пользователя
 
-                    ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+                        ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
 
-                    // Отправляем на сервер если расстояние изменилось более чем на 50м
+                        // Отправляем на сервер если расстояние изменилось более чем на 50м
 
-                    ServerManager.getInstance().updateUserOnServer("location");
+                        ServerManager.getInstance().updateUserOnServer("location");
 
-                    // Если находится на переднем плане фрагмент
-                    if (mGoogleMapFragment != null)
-                        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
-                            chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
-                    mLastLocation = sLatLng;
-                    // checkMapForPlaces();
+                        // Если находится на переднем плане фрагмент
+                        if (mGoogleMapFragment != null)
+                            if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
+                                chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
+                        mLastLocation = sLatLng;
+                        // checkMapForPlaces();
 
 
-                    break;
-                }
+                        break;
+                    }
 
             }
         };

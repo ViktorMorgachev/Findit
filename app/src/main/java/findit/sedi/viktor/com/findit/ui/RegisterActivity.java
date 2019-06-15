@@ -1,13 +1,12 @@
 package findit.sedi.viktor.com.findit.ui;
 
-import android.arch.lifecycle.Lifecycle;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SwitchCompat;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -33,17 +32,10 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-import org.reactivestreams.Subscriber;
-
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
-import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.interactors.KeyAccountOfType;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableObserver;
-
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -58,15 +50,14 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private ImageView mImageViewGoogleEnter;
     private TextInputEditText mEditName;
     private TextInputEditText mEditPasswordRepeat;
-    private DisposableObserver<User> mUserObserver;
-    private DisposableObserver<Boolean> mBooleanDisposableObserver;
-    private Subscriber<Boolean> mSubscriber;
     private SwitchCompat mSwitchCompat;
-    private GoogleSignInClient mGoogleSignInClient;
+
 
     // Logic
+    private GoogleSignInClient mGoogleSignInClient;
     private boolean isRegister;
     private FirebaseAuth mAuth;
+    private boolean googleApiAvailable = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,15 +80,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private boolean checkPlayServices() {
-        GoogleApiAvailability gApi = GoogleApiAvailability.getInstance();
-        int resultCode = gApi.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (gApi.isUserResolvableError(resultCode)) {
-                gApi.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Toast.makeText(this, getResources().getString(R.string.update_google_play_services), Toast.LENGTH_LONG).show();
-                finish();
+    public boolean isGooglePlayServicesAvailable(Activity activity) {
+        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+        int status = googleApiAvailability.isGooglePlayServicesAvailable(activity);
+        if (status != ConnectionResult.SUCCESS) {
+            if (googleApiAvailability.isUserResolvableError(status)) {
+                googleApiAvailability.getErrorDialog(activity, status, 2404).show();
             }
             return false;
         }
@@ -121,6 +109,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void updateUI(FirebaseUser currentUser, GoogleSignInAccount googleSignInAccount) {
 
+
+        googleApiAvailable = isGooglePlayServicesAvailable(this);
 
         // Если пользователь зарегестрированн  в системе, вытаскиваем из преференсов данные
         // То сразу переходим в
@@ -150,42 +140,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         }
 
 
-        mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
-                .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribeWith(new DisposableObserver<User>() {
-                    @Override
-                    public void onNext(User user) {
-
-                        if (RegisterActivity.this.getLifecycle().getCurrentState() == Lifecycle.State.DESTROYED) {
-                            this.onComplete();
-                            mUserObserver.dispose();
-                        }
-
-                        Toast.makeText(RegisterActivity.this, "Информация о пользователе сихронизирована",
-                                Toast.LENGTH_SHORT).show();
-                        Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
-
-                        if (user.getName() != null) {
-                            startNextActivity();
-                            RegisterActivity.this.finish();
-                            mUserObserver.dispose();
-                        }
-
-
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        e.printStackTrace();
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
-                    }
-                });
-
-
         if (currentUser != null) {
             ServerManager.getInstance().updateUser(currentUser.getEmail());
             return;
@@ -199,11 +153,11 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     }
 
-    private void startNextActivity() {
+    private void startNextActivity(Intent intent) {
 
-        checkPlayServices();
 
-        startActivity(new Intent(this, PreviewActivity.class));
+        startActivity(intent);
+
     }
 
     private void setUIListeners() {
@@ -233,6 +187,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     @Override
     public void onClick(View v) {
+
+
+        if (!googleApiAvailable) return;
+
         if (v.getId() == R.id.btn_register) {
 
             if (isRegister) {
@@ -259,6 +217,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void registerOrEnterUser() {
 
+
         if (isRegister) {
             registerUser();
         } else {
@@ -283,10 +242,17 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                             FirebaseUser user = mAuth.getCurrentUser();
                             ServerManager.getInstance().updateUser(user.getEmail());
 
+                            Intent intent = PreviewActivity.getIntent(RegisterActivity.this, KeyAccountOfType.KeysField.KEY_FIREBASE_EMAIL_ACCOUNT);
+                            startNextActivity(intent);
+
                         } else {
                             // If sign in fails, display a message to the user.
-                            Toast.makeText(RegisterActivity.this, "Ошибка аутентификации",
+                            Toast.makeText(RegisterActivity.this, "Ошибка аутентификации " + task.getException().getMessage(),
                                     Toast.LENGTH_SHORT).show();
+
+                            GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+                            googleApiAvailability.makeGooglePlayServicesAvailable(RegisterActivity.this);
+
                         }
 
                     }
@@ -301,6 +267,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         Toast.makeText(RegisterActivity.this, "Ошибка регистрации " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+                        googleApiAvailability.makeGooglePlayServicesAvailable(RegisterActivity.this);
                     }
                 })
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
@@ -309,9 +277,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             Toast.makeText(RegisterActivity.this, "Регистрация пройденна успешно", Toast.LENGTH_LONG).show();
+
                             // Создаём нового пользователя как на устройстве так и в Firebase и обращаемся с ним по ID, которое получим
                             FirebaseUser user = mAuth.getCurrentUser();
                             ServerManager.getInstance().createNewUser(user.getEmail(), mEditPassword.getText().toString(), mEditName.getText().toString());
+
+                            Intent intent = PreviewActivity.getIntent(RegisterActivity.this, KeyAccountOfType.KeysField.KEY_FIREBASE_EMAIL_ACCOUNT);
+                            startNextActivity(intent);
                         }
 
                     }
@@ -350,68 +322,40 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
         AuthCredential credential = GoogleAuthProvider.getCredential(acct.getIdToken(), null);
+
         mAuth.signInWithCredential(credential)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
 
-
-                            FirebaseUser user = mAuth.getCurrentUser();
-
-                            mBooleanDisposableObserver = new DisposableObserver<Boolean>() {
-                                @Override
-                                public void onNext(Boolean aBoolean) {
-
-                                    if (!aBoolean) {
-                                        Toast.makeText(RegisterActivity.this, "Регистрация успешно пройдена.",
-                                                Toast.LENGTH_SHORT).show();
-                                        ServerManager.getInstance().createNewUser(user.getEmail(), "byGoogle", user.getDisplayName());
-                                    } else {
-                                        Toast.makeText(RegisterActivity.this, "Аутентификация успешно пройдена.",
-                                                Toast.LENGTH_SHORT).show();
-                                        ServerManager.getInstance().updateUser(user.getEmail());
-                                    }
-
-                                    mBooleanDisposableObserver.dispose();
-
-                                }
-
-                                @Override
-                                public void onError(Throwable e) {
-
-                                }
-
-                                @Override
-                                public void onComplete() {
-
-                                }
-                            };
-
-                            // Смотрим есть ли такой пользователь на сервере с таким email, если нет, то регистрация, иначе аутентификация
-                            ServerManager.getInstance().checkProfile(user.getEmail(), mBooleanDisposableObserver);
+                            Intent intent = PreviewActivity.getIntent(RegisterActivity.this, KeyAccountOfType.KeysField.KEY_GOOGLE_ACCOUNT);
+                            startNextActivity(intent);
 
 
                         } else {
-                            Toast.makeText(RegisterActivity.this, "Ошибка аутентификации",
-                                    Toast.LENGTH_SHORT).show();
+
+                            mAuth.signOut();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Toast.makeText(RegisterActivity.this, "Ошибка аутентификации: " + task.getException().getMessage(),
+                                            Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                            GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
+                            googleApiAvailability.makeGooglePlayServicesAvailable(RegisterActivity.this);
+
+
+                            mGoogleSignInClient.signOut();
+
                         }
 
                     }
                 });
-    }
-
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mUserObserver != null && !mUserObserver.isDisposed()) {
-            mUserObserver.dispose();
-        }
-        if (mBooleanDisposableObserver != null && !mBooleanDisposableObserver.isDisposed()) {
-            mBooleanDisposableObserver.dispose();
-        }
-
     }
 
 

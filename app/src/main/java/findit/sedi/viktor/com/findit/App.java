@@ -7,7 +7,6 @@ import android.support.multidex.MultiDex;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-import androidx.work.Configuration;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 
@@ -40,6 +39,10 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+
+
+        ManagersFactory.getInstance().setContext(this);
+        
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
