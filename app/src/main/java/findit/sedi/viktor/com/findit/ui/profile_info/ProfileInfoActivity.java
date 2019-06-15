@@ -141,6 +141,14 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
             FirebaseAuth.getInstance().signOut();
             mGoogleSignInClient.signOut();
 
+            ManagersFactory managersFactory = ManagersFactory.getInstance();
+
+            managersFactory.getAccountManager().clearUser();
+            managersFactory.getTeamManager().clearTeams();
+            managersFactory.getTournamentManager().clearTournaments();
+            managersFactory.getQrPointManager().clearQrPoints();
+            managersFactory.getPlayersManager().clearPlayers();
+
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
             ServerManager.getInstance().changeUserNetStatus(false);
             startActivity(new Intent(this, RegisterActivity.class));

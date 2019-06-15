@@ -82,4 +82,8 @@ public class TournamentManager {
     public ArrayList<Tournament> getTournaments() {
         return mTournaments;
     }
+
+    public void clearTournaments() {
+        mTournaments.clear();
+    }
 }

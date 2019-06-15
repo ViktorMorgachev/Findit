@@ -61,6 +61,10 @@ public class AccountManager {
         // FirebaseUserStorage.getInstance().deleteUserInDatabase(mUser);
     }
 
+    public void clearUser() {
+        mUser = null;
+    }
+
 
     public User getUser() {
         return mUser;
