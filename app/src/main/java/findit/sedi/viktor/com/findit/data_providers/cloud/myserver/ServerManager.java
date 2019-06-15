@@ -94,9 +94,9 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().getTournaments();
     }
 
-    public void createNewUser(String email, String password, String name) {
+    public void createNewUser(String email, String password, String name, String photoUrl) {
 
-        CloudFirestoreManager.getInstance().createUser(email, password, name);
+        CloudFirestoreManager.getInstance().createUser(email, password, name, photoUrl);
 
     }
 

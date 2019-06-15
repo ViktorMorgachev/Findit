@@ -9,6 +9,7 @@ public class ManagersFactory {
     private TeamManager mTeamManager;
     private TournamentManager mTournamentManager;
     private PlayersManager mPlayersManager;
+    private GoogleAccountStore mGoogleAccountStore;
     private Context mContext;
 
 
@@ -32,6 +33,18 @@ public class ManagersFactory {
             else {
                 mAccountManager = new AccountManager();
                 return mAccountManager;
+            }
+        } else return null;
+
+    }
+
+    public GoogleAccountStore getGoogleStore() {
+        if (mContext != null) {
+            if (mGoogleAccountStore != null)
+                return mGoogleAccountStore;
+            else {
+                mGoogleAccountStore = new GoogleAccountStore();
+                return mGoogleAccountStore;
             }
         } else return null;
 

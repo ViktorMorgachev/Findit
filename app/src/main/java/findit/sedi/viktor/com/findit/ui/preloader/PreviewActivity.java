@@ -11,9 +11,6 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
@@ -24,28 +21,38 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
 import pl.droidsonroids.gif.GifImageView;
 
-import static findit.sedi.viktor.com.findit.interactors.KeyAccountOfType.KeysField.KEY_GOOGLE_ACCOUNT;
+import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_ACCOUNT_TYPE;
+import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_EMAIL;
+import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_PHOTO_URL;
+import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_USER_NAME;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 
 public class PreviewActivity extends AppCompatActivity {
 
 
+    //  User Data
+    private String email;
+    private String name;
+    private String photoUrl;
+
     private Handler mDataLoader = new Handler();
     private Thread mThread;
     private DisposableObserver<User> mUserObserver;
     private DisposableObserver<Boolean> mBooleanGoogleRegistrationObserver;
-    private static final String KEY_ACCOUNT_TYPE = "KEY_ACCOUNT_TYPE";
+
     private GifImageView mGifImageView;
-    private FirebaseAuth mAuth;
     private ProgressLoder mProgressLoder;
 
     // View
 
 
-    public static Intent getIntent(Context context, String accountType) {
+    public static Intent getIntent(Context context, String accountType, String email, String displayName, String photoUrl) {
         Intent intent = new Intent(context, PreviewActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_NO_HISTORY);
         intent.putExtra(KEY_ACCOUNT_TYPE, accountType);
+        intent.putExtra(KEY_EMAIL, email);
+        intent.putExtra(KEY_USER_NAME, displayName);
+        intent.putExtra(KEY_PHOTO_URL, photoUrl);
         return intent;
     }
 
@@ -55,7 +62,6 @@ public class PreviewActivity extends AppCompatActivity {
 
         Log.d(LOG_TAG, "PreviewActivity: onCreate()");
 
-        mAuth = FirebaseAuth.getInstance();
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -63,7 +69,11 @@ public class PreviewActivity extends AppCompatActivity {
 
         initUserObserver();
 
-        if (getIntent().getStringExtra(KEY_ACCOUNT_TYPE).equalsIgnoreCase(KEY_GOOGLE_ACCOUNT))
+        email = getIntent().getStringExtra(KEY_EMAIL);
+        photoUrl = getIntent().getStringExtra(KEY_PHOTO_URL);
+        name = getIntent().getStringExtra(KEY_USER_NAME);
+
+        if (getIntent().getStringExtra(KEY_ACCOUNT_TYPE).equalsIgnoreCase("byGoogle"))
             observeGoogleAuth();
 
 
@@ -80,8 +90,6 @@ public class PreviewActivity extends AppCompatActivity {
     private void observeGoogleAuth() {
 
 
-        FirebaseUser user = mAuth.getCurrentUser();
-
         mBooleanGoogleRegistrationObserver = new DisposableObserver<Boolean>() {
             @Override
             public void onNext(Boolean aBoolean) {
@@ -89,11 +97,19 @@ public class PreviewActivity extends AppCompatActivity {
                 if (!aBoolean) {
                     Toast.makeText(PreviewActivity.this, "Регистрация успешно пройдена.",
                             Toast.LENGTH_SHORT).show();
-                    ServerManager.getInstance().createNewUser(user.getEmail(), "byGoogle", user.getDisplayName());
+
+                    User user = new User();
+                    user.setName(name);
+                    user.setEmail(email);
+                    user.setPhotoUrl(photoUrl);
+
+                    ManagersFactory.getInstance().getGoogleStore().initUser(new User());
+
+                    ServerManager.getInstance().createNewUser(email, "byGoogle", name, photoUrl);
                 } else {
                     Toast.makeText(PreviewActivity.this, "Аутентификация успешно пройдена.",
                             Toast.LENGTH_SHORT).show();
-                    ServerManager.getInstance().updateUser(user.getEmail());
+                    ServerManager.getInstance().updateUser(email);
                 }
 
                 mBooleanGoogleRegistrationObserver.dispose();
@@ -112,7 +128,7 @@ public class PreviewActivity extends AppCompatActivity {
         };
 
         // Смотрим есть ли такой пользователь на сервере с таким email, если нет, то регистрация, иначе аутентификация
-        ServerManager.getInstance().checkProfile(user.getEmail(), mBooleanGoogleRegistrationObserver);
+        ServerManager.getInstance().checkProfile(email, mBooleanGoogleRegistrationObserver);
 
 
     }

@@ -8,7 +8,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -185,7 +184,7 @@ public class CloudFirestoreManager {
                         }
                     }
 
-                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail((FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail());
 
                 }
             });
@@ -216,7 +215,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
 
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
@@ -233,7 +232,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -248,7 +247,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -265,7 +264,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -280,7 +279,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -295,7 +294,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getEmail());
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -448,7 +447,7 @@ public class CloudFirestoreManager {
     }
 
 
-    public void createUser(String email, String password, String name) {
+    public void createUser(String email, String password, String name, String photoUrl) {
 
         // Create a new user with a first and last name
         // Инициализируем остальные значения по умолчанию
@@ -458,7 +457,7 @@ public class CloudFirestoreManager {
         user.put(USER_NET_STATUS, true);
         user.put(USER_GENDER, 0);
         user.put(USER_BONUS, 0);
-        user.put(USER_PHOTO, "");
+        user.put(USER_PHOTO, photoUrl);
         user.put(USER_LOCATION, new GeoPoint(0, 0));
         user.put(USER_ACCOUNT_TYPE, "Free");
         user.put(USER_NAME, name);

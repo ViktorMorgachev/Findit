@@ -15,8 +15,6 @@ import android.widget.Toast;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
@@ -45,7 +43,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
 
     //Logic
-    private FirebaseUser mFirebaseUser;
     private DisposableObserver<User> mUserObserver;
     private GoogleSignInClient mGoogleSignInClient;
 
@@ -59,8 +56,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         setContentView(R.layout.profile_layout);
-
-        mFirebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -89,7 +84,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mButtonSave = findViewById(R.id.btn_save);
         mEditTextName = findViewById(R.id.et_name);
 
-        mEditTextEmail.setText(mFirebaseUser.getEmail());
+        mEditTextEmail.setText(user.getEmail());
         mEditTextPassword.setText(user.getPassword());
         mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
         mEditTextName.setText(user.getName());
@@ -111,7 +106,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
                 .subscribeWith(new DisposableObserver<User>() {
                     @Override
                     public void onNext(User user) {
-                        mEditTextEmail.setText(mFirebaseUser.getEmail());
+                        mEditTextEmail.setText(user.getEmail());
                         mEditTextPassword.setText(user.getPassword());
                         mTextViewBonus.setText(getResources().getString(R.string.bonus) + ": " + String.valueOf((int) user.getBonus()));
                         mEditTextName.setText(user.getName());
@@ -138,7 +133,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         // Отправить на сервер при выходе об измененении статуса онлайн Users
         if (v.getId() == R.id.tv_sign_out) {
-            FirebaseAuth.getInstance().signOut();
             mGoogleSignInClient.signOut();
 
             ServerManager.getInstance().changeUserNetStatus(false);
