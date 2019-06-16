@@ -115,6 +115,9 @@ public class CloudFirestoreManager {
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
     public void updateUser(String tag) {
 
+        if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
+            return;
+
         Log.d(LOG_TAG, "User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
         document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());

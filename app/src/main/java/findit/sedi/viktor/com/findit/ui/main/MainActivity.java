@@ -67,6 +67,7 @@ import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_NET_STATUS;
 import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
 /**
@@ -215,10 +216,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                         // Отправляем на сервер если расстояние изменилось более чем на 50м
 
-                        ServerManager.getInstance().updateUserOnServer("location");
+                        ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
                         // Если находится на переднем плане фрагмент
-                        if (mGoogleMapFragment != null)
+                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null)
                             if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
                                 chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
                         mLastLocation = sLatLng;
@@ -504,11 +505,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             updateMap(DEFAULT_ZOOM, "");
 
             // Изменяем координаты пользователя
+
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
-
-            ServerManager.getInstance().updateUserOnServer("location");
-            ServerManager.getInstance().updateUserOnServer("net_status");
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_NET_STATUS);
         }
 
         ;

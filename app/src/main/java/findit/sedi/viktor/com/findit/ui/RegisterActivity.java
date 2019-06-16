@@ -3,16 +3,11 @@ package findit.sedi.viktor.com.findit.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.CompoundButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -33,15 +28,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     private static final int RC_SIGN_IN = 1;
 
     // View
-    private Button mButtonOk;
-    private TextView mTextViewEmail, mTextViewPassword, mTextViewPasswordRepeat, mTextViewName;
-    private TextInputEditText mEditEmail;
-    private TextInputEditText mEditPassword;
     private ImageView mImageViewGoogleEnter;
-    private TextInputEditText mEditName;
-    private TextInputEditText mEditPasswordRepeat;
-    private SwitchCompat mSwitchCompat;
-
 
     // Logic
     private GoogleSignInClient mGoogleSignInClient;
@@ -113,7 +100,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
             mImageViewGoogleEnter.setOnClickListener(this::onClick);
-            mButtonOk.setOnClickListener(this::onClick);
 
         }
 
@@ -134,26 +120,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void setUIListeners() {
-        mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                isRegister = isChecked;
-                if (isRegister) {
-                    mTextViewPasswordRepeat.setVisibility(View.VISIBLE);
-                    mEditPasswordRepeat.setVisibility(View.VISIBLE);
-                    mEditName.setVisibility(View.VISIBLE);
-                    mTextViewName.setVisibility(View.VISIBLE);
-                    mButtonOk.setText("Регистрация");
-                } else {
-                    mTextViewPasswordRepeat.setVisibility(View.GONE);
-                    mEditPasswordRepeat.setVisibility(View.GONE);
-                    mEditName.setVisibility(View.GONE);
-                    mTextViewName.setVisibility(View.GONE);
-                    mButtonOk.setText("Войти");
-                }
-            }
-        });
-
         mImageViewGoogleEnter.setOnClickListener(this::onClick);
 
     }
