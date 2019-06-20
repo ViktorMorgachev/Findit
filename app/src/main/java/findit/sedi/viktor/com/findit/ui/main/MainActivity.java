@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
                         // Если находится на переднем плане фрагмент
-                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null)
+                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null && !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
                             if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
                                 chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
                         mLastLocation = sLatLng;
@@ -509,7 +509,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
-            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_NET_STATUS);
         }
 
         ;

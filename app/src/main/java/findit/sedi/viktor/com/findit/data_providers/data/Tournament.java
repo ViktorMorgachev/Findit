@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
-import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateTournamentRequests;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateTournamentRequests.KeysField.KEY_UPDATE_PLAYERS;
 
@@ -144,8 +143,17 @@ public class Tournament {
 
     public void addPlayer(String id) {
 
-        getPlayersIDs().add(id);
 
+        // Защита от добавление два раза игрока к турниру
+        for (int i = 0; i < getPlayersIDs().size(); i++) {
+
+            if (getPlayersIDs().get(i).equalsIgnoreCase(id)) {
+                return;
+            }
+
+        }
+
+        getPlayersIDs().add(id);
         updateTournamentByTag(getID(), KEY_UPDATE_PLAYERS);
 
     }

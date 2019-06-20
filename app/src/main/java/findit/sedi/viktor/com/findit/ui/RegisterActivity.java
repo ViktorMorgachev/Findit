@@ -32,7 +32,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     // Logic
     private GoogleSignInClient mGoogleSignInClient;
-    private boolean isRegister;
     private boolean googleApiAvailable = false;
 
     @Override

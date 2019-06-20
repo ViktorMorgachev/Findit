@@ -46,5 +46,9 @@ public class RatingActivity extends AppCompatActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        mAdapter = null;
+    }
 }

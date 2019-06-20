@@ -118,6 +118,7 @@ public class CloudFirestoreManager {
         if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
             return;
 
+
         Log.d(LOG_TAG, "User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
         document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
@@ -187,7 +188,9 @@ public class CloudFirestoreManager {
                         }
                     }
 
-                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail());
+                    String email = ManagersFactory.getInstance().getAccountManager().getUser().getEmail();
+
+                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
 
                 }
             });
@@ -218,7 +221,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getAccountManager().getUser().getEmail()));
 
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
@@ -692,8 +695,6 @@ public class CloudFirestoreManager {
                             Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                         }
 
-                        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())
-                            FinditBus.getInstance().post(new UpdateAllQrPoints());
 
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());

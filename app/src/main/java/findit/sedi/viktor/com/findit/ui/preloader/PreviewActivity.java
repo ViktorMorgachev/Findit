@@ -26,6 +26,7 @@ import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.K
 import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_PHOTO_URL;
 import static findit.sedi.viktor.com.findit.interactors.KeyAccountRegistration.KeysField.KEY_USER_NAME;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_NET_STATUS;
 
 public class PreviewActivity extends AppCompatActivity {
 
@@ -146,11 +147,12 @@ public class PreviewActivity extends AppCompatActivity {
                             mUserObserver.dispose();
                         }
 
-                        Toast.makeText(PreviewActivity.this, "Информация о пользователе сихронизирована",
+                        Toast.makeText(PreviewActivity.this, "Информация о пользователе синхронизирована",
                                 Toast.LENGTH_SHORT).show();
                         Log.d(LOG_TAG, "RegisterActivity User  " + user.getName());
 
                         if (user.getName() != null) {
+                            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_NET_STATUS);
                             loadDataFromServer();
                             mUserObserver.dispose();
                         }

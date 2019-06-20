@@ -30,9 +30,20 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         // Добавляем в список себя чтобы видеть ещё свой рейтинг
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-        mPlayers.add(new Player(user.getBonus(), user.getName(), user.getPhotoUrl(),
-                user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),
-                user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender(), user.getSumOfFondedPoints(), user.getSumOfDiscoveredPoints()));
+        // Добавляем пользователя только  тогда, если его почта не существует в списке
+        boolean userExists = false;
+
+        for (int i = 0; i < mPlayers.size(); i++) {
+            if (user.getID().equalsIgnoreCase(mPlayers.get(i).getID())) {
+                userExists = true;
+                break;
+            }
+        }
+
+        if (!userExists)
+            mPlayers.add(new Player(user.getBonus(), user.getName(), user.getPhotoUrl(),
+                    user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),
+                    user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender(), user.getSumOfFondedPoints(), user.getSumOfDiscoveredPoints()));
 
 
         // Сортируем данные чв порядке уменьшения балов
@@ -118,7 +129,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             ((TextView) view.findViewById(R.id.tv_bonus_info)).setText
                     (App.instance.getResources().getString(R.string.bonus) + ": " + mPlayer.getTotalBonus());
 
-            if (mPlayer.isNet_status()) {
+
+            if (mPlayer.getID().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_online_24dp);
+            else if (mPlayer.isNet_status()) {
                 ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_online_24dp);
             } else
                 ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_offline_24dp);

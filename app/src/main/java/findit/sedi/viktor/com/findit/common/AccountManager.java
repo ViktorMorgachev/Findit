@@ -88,13 +88,15 @@ public class AccountManager {
 
     public void joinToTournament(String tournamentID, String teamID) {
 
-        mUser.setTeamID(teamID);
+        if (teamID != null)
+            mUser.setTeamID(teamID);
+
+
         mUser.setTournamentID(tournamentID);
 
-        // Добавим в к турниру к команде нового пользователя
 
+        // Добавим  к турниру s нового пользователя
         Tournament tournament = ManagersFactory.getInstance().getTournamentManager().getTournament(tournamentID);
-
         tournament.addPlayer(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
 

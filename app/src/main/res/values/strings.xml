@@ -67,4 +67,5 @@
     <string name="please_input_name">Пожалуйста укажите ваше имя или ник</string>
     <string name="registration_error">Ошибка регистрации</string>
     <string name="enter_with_using">Войти с помощью</string>
+    <string name="join_to_tournament">Присоединиться</string>
 </resources>

@@ -99,6 +99,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         public TextView totalPlayers;
         public RatingBar difficultyValue;
         public ImageView arrow;
+        private TextView joinToTournament;
         private LinearLayout mLinearLayout;
 
         // Data for child
@@ -120,11 +121,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             totalPlayers = v.findViewById(R.id.tv_total_players);
             nameOfTournament = v.findViewById(R.id.tv_tounament_name);
             difficulty = v.findViewById(R.id.tv_difficulty);
+            joinToTournament = v.findViewById(R.id.tv_join_to_tournament);
 
 
             arrow.setImageResource(R.drawable.ic_keyboard_arrow_down_24dp);
 
-            v.findViewById(R.id.cv_tournament).setOnClickListener(this);
+            joinToTournament.setOnClickListener(this);
+
             difficultyValue = v.findViewById(R.id.rt_dificulty);
 
         }
@@ -180,8 +183,14 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
 
             AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
-            alertDialog.setTitle("Присоединение к турниру");
-            alertDialog.setMessage("Вы хотите присоединиться к данной команде?");
+
+            if (teamID == null) {
+                alertDialog.setTitle("Присоединение к турниру");
+                alertDialog.setMessage("Вы хотите присоединиться к данному турниру?");
+            } else {
+                 // Добавить возможность выбора команды
+            }
+
             alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ДА",
                     new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
@@ -204,7 +213,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         @Override
         public void onClick(View v) {
             // Добавляем или удаляем детей и сначала скрываем
-            if (!isExpand && ManagersFactory.getInstance()
+
+            // Если нажали на присоединение к турниру и турнир не командный, то показ диалогового окошка для
+            // Подтверждения присоединения к турниру
+            if (v.getId() == R.id.tv_join_to_tournament) {
+                if (ManagersFactory.getInstance().getTournamentManager()
+                        .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
+                    showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null);
+                }
+            } else if (!isExpand && ManagersFactory.getInstance()
                     .getTournamentManager().getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.Teams)
                 showChilds();
             else if (isExpand) {
