@@ -221,7 +221,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getAccountManager().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
 
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
@@ -238,7 +238,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -253,7 +253,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -270,7 +270,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -285,7 +285,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -300,7 +300,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(Objects.requireNonNull(ManagersFactory.getInstance().getGoogleStore().getUser().getEmail()));
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -538,8 +538,6 @@ public class CloudFirestoreManager {
 
                                 Log.d(LOG_TAG, "initUser() User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
-                                changeUserNetStatus(true);
-
 
                                 break;
                             }
@@ -704,6 +702,7 @@ public class CloudFirestoreManager {
     }
 
     public void updateQrPlaces() {
+
 
         ManagersFactory.getInstance().getQrPointManager().clearQrPoints();
 

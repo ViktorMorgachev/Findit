@@ -44,6 +44,7 @@ import androidx.work.Constraints;
 import androidx.work.NetworkType;
 import androidx.work.PeriodicWorkRequest;
 import androidx.work.WorkManager;
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
@@ -63,11 +64,13 @@ import findit.sedi.viktor.com.findit.ui.profile_info.ProfileInfoActivity;
 import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
+import ru.terrakok.cicerone.Navigator;
+import ru.terrakok.cicerone.commands.Command;
+
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_NET_STATUS;
 import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
 /**
@@ -100,6 +103,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private QrPointManager mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
+    private Navigator mNavigator = new Navigator() {
+        @Override
+        public void applyCommands(Command[] commands) {
+
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         setContentView(R.layout.activity_main);
 
+
         Constraints constraints = new Constraints.Builder()
                 .setRequiredNetworkType(NetworkType.CONNECTED)
                 .build();
@@ -125,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
                         .addTag("periodic_work").setConstraints(constraints).build();
 
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -154,6 +164,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         initLocationCallback();
 
         getLocation();
+
+
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -166,13 +178,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             mGoogleMapFragment = GoogleMapFragment.getInstance();
             mCommonMapManager.addGoogleFragment(mGoogleMapFragment);
 
-            if (mFragmentManager.findFragmentById(R.id.map_fragment) == null) {
-                mFragmentManager.beginTransaction()
-                        .add(R.id.map_fragment, mGoogleMapFragment)
-                        .addToBackStack("null")
-                        .commit();
-            }
+            mGoogleMapFragment = GoogleMapFragment.getInstance();
+            mFragmentManager.beginTransaction()
+                    .replace(R.id.map_fragment, mGoogleMapFragment)
+                    .addToBackStack("")
+                    .commit();
         }
+
     }
 
 
@@ -185,11 +197,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         showMap();
 
+
         // Initialize FusedLocationClient
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
         }
+
+        App.instance.getNavigationHolder().setNavigator(mNavigator);
 
 
     }
@@ -219,7 +234,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
                         // Если находится на переднем плане фрагмент
-                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null && !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
+                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null &&
+                                ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                                !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
                             if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
                                 chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
                         mLastLocation = sLatLng;
@@ -263,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
 
 
-            Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong()), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Math.round(Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong())) + " м", Toast.LENGTH_LONG).show();
 
             // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
 
@@ -474,6 +491,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onPause() {
         super.onPause();
         Log.d(LOG_TAG, "Activity was paused");
+        App.instance.getNavigationHolder().removeNavigator();
     }
 
     @Override
@@ -485,6 +503,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         Log.d(LOG_TAG, "Activity was destroed");
         WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
@@ -505,10 +524,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             updateMap(DEFAULT_ZOOM, "");
 
             // Изменяем координаты пользователя
-
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
+
+            WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
         }
 
         ;

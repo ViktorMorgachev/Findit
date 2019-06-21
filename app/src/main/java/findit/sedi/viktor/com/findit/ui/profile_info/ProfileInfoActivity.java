@@ -25,6 +25,8 @@ import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.ui.RegisterActivity;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.observers.DisposableObserver;
+import ru.terrakok.cicerone.Navigator;
+import ru.terrakok.cicerone.commands.Command;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_PROFILE;
 
@@ -45,6 +47,12 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     //Logic
     private DisposableObserver<User> mUserObserver;
     private GoogleSignInClient mGoogleSignInClient;
+    private Navigator mNavigator = new Navigator() {
+        @Override
+        public void applyCommands(Command[] commands) {
+
+        }
+    };
 
 
     @Override
@@ -126,6 +134,8 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
                     }
                 });
 
+        App.instance.getNavigationHolder().setNavigator(mNavigator);
+
     }
 
     @Override
@@ -147,7 +157,8 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
 
-            startActivity(new Intent(this, RegisterActivity.class));
+
+            startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
         }
 
         if (v.getId() == R.id.btn_save) {
@@ -165,6 +176,11 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        App.instance.getNavigationHolder().removeNavigator();
+    }
 
     @Override
     protected void onDestroy() {

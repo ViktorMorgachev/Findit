@@ -9,6 +9,9 @@ import com.squareup.leakcanary.RefWatcher;
 
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
+import ru.terrakok.cicerone.Cicerone;
+import ru.terrakok.cicerone.NavigatorHolder;
+import ru.terrakok.cicerone.Router;
 
 public class App extends Application {
 
@@ -18,6 +21,7 @@ public class App extends Application {
 
     private RefWatcher refWatcher;
     public static App instance;
+    private Cicerone<Router> cicerone;
 
 
     private AppDatabase sUser_database;
@@ -39,7 +43,7 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
-
+        cicerone = Cicerone.create();
 
         ManagersFactory.getInstance().setContext(this);
         
@@ -54,6 +58,15 @@ public class App extends Application {
 
         ManagersFactory.getInstance().setContext(this);
 
+    }
+
+    public NavigatorHolder getNavigationHolder(){
+        return  cicerone.getNavigatorHolder();
+    }
+
+
+    public Router getRouter(){
+        return  cicerone.getRouter();
     }
 
     public void mustDie(Object object) {
