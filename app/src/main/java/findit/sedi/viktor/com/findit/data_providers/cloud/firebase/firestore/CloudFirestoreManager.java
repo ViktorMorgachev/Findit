@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
@@ -28,9 +27,11 @@ import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
+import findit.sedi.viktor.com.findit.presenter.IActionHelper;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
 import io.reactivex.observers.DisposableObserver;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
@@ -445,6 +446,9 @@ public class CloudFirestoreManager {
 
                                 Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                             }
+
+                            FinditBus.getInstance().post(new UpdateTournamentsEvent());
+
                         }
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
@@ -761,13 +765,15 @@ public class CloudFirestoreManager {
 
     public void updateTournament(String id, String tag) {
 
-        document = mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).document();
+        document = mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).document(id);
 
 
         document.update(TOURNAMENTS_PLAYERS_IDS, ManagersFactory.getInstance().getTournamentManager().getTournament(id).getPlayersIDs())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
+
+                        IActionHelper.getInstance().action();
 
                         ServerManager.getInstance().getTournaments();
 

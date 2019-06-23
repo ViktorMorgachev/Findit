@@ -47,8 +47,7 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <activity
-            android:name=".ui.RegisterActivity">
+        <activity android:name=".ui.RegisterActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,7 +66,9 @@
         <activity
             android:name=".ui.find_tainik.QuestTainikActivity"
             android:launchMode="singleTask" />
-        <activity android:name=".ui.tournament.TounamentActivity" />
+        <activity
+            android:name=".ui.tournament.TounamentActivity"
+            android:launchMode="singleTask" />
         <activity android:name=".ui.rating.RatingActivity" />
         <activity
             android:name=".ui.find_tainik.NearbyTainikActivity"

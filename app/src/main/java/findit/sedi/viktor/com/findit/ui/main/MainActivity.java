@@ -50,6 +50,7 @@ import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
@@ -66,7 +67,6 @@ import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Command;
-
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
@@ -146,6 +146,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         });
 
 
+        DialogManager.getInstance().setActivity(this);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -196,8 +198,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         Log.d(LOG_TAG, "Activity was resumed");
-
-
 
 
         // Initialize FusedLocationClient

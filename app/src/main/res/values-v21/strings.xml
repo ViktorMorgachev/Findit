@@ -13,4 +13,6 @@
     <string name="registration_error">Ошибка регистрации</string>
     <string name="enter_with_using">Войти с помощью</string>
     <string name="join_to_tournament">Присоединиться</string>
+    <string name="join_to_tournament_question">Вы хотите присоединиться к турниру?</string>
+    <string name="success_joining_to_tournament">Вы в турнире</string>
 </resources>

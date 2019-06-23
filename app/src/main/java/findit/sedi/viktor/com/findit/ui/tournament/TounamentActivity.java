@@ -1,5 +1,6 @@
 package findit.sedi.viktor.com.findit.ui.tournament;
 
+import android.arch.lifecycle.Lifecycle;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -7,8 +8,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
 
+import com.squareup.otto.Subscribe;
+
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
+import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
+import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
 import findit.sedi.viktor.com.findit.ui.tournament.data_provider.MyAdapter;
 
 public class TounamentActivity extends AppCompatActivity {
@@ -25,6 +31,7 @@ public class TounamentActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        DialogManager.getInstance().setActivity(this);
         ManagersFactory.getInstance().setContext(this);
 
         setContentView(R.layout.recycler_layout);
@@ -38,10 +45,23 @@ public class TounamentActivity extends AppCompatActivity {
         mAdapter = new MyAdapter(this, ManagersFactory.getInstance().getTournamentManager().getTournaments());
         recyclerView.setAdapter(mAdapter);
 
+        FinditBus.getInstance().register(this);
 
     }
 
-    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        FinditBus.getInstance().unregister(this);
+    }
 
 
+    @Subscribe
+    public void updatePlayerLocation(UpdateTournamentsEvent updateTournamentsEvent) {
+
+        if (this.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+            mAdapter.notifyDataSetChanged();
+        }
+
+    }
 }

@@ -88,8 +88,8 @@
 
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_weight="1"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:orientation="vertical">
 
 
@@ -119,22 +119,21 @@
                 <TextView
                     android:id="@+id/tv_join_to_tournament"
                     android:layout_width="0dp"
-                    android:gravity="center"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:text="@string/join_to_tournament"
                     android:textColor="@android:color/holo_blue_dark" />
 
+                <ImageView
+                    android:id="@+id/iv_arrow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    app:srcCompat="@drawable/ic_keyboard_arrow_down_24dp" />
 
             </LinearLayout>
-
-
-            <ImageView
-                android:id="@+id/iv_arrow"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right" />
 
 
         </LinearLayout>

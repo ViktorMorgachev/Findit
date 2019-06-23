@@ -1,10 +1,8 @@
 package findit.sedi.viktor.com.findit.ui.tournament.data_provider;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +20,10 @@ import java.util.List;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
+import findit.sedi.viktor.com.findit.presenter.IActionHelper;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -37,6 +38,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mContext = context;
         this.inflater = LayoutInflater.from(context);
     }
+
 
     // Create new views (invoked by the layout manager)
     @Override
@@ -127,6 +129,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             arrow.setImageResource(R.drawable.ic_keyboard_arrow_down_24dp);
 
             joinToTournament.setOnClickListener(this);
+            arrow.setOnClickListener(this);
 
             difficultyValue = v.findViewById(R.id.rt_dificulty);
 
@@ -182,29 +185,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private void showDialog(String tournamentID, String teamID) {
 
 
-            AlertDialog alertDialog = new AlertDialog.Builder(mContext).create();
+            IAction iAction = () -> ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
 
-            if (teamID == null) {
-                alertDialog.setTitle("Присоединение к турниру");
-                alertDialog.setMessage("Вы хотите присоединиться к данному турниру?");
-            } else {
-                 // Добавить возможность выбора команды
-            }
+            IActionHelper.getInstance().setIAction(() -> {
+                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null, null, null, "ОК", null, true);
+            });
 
-            alertDialog.setButton(AlertDialog.BUTTON_POSITIVE, "ДА",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "НЕТ",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-            alertDialog.show();
+            DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false);
 
 
         }
@@ -216,17 +203,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             // Если нажали на присоединение к турниру и турнир не командный, то показ диалогового окошка для
             // Подтверждения присоединения к турниру
-            if (v.getId() == R.id.tv_join_to_tournament) {
-                if (ManagersFactory.getInstance().getTournamentManager()
-                        .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
-                    showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null);
-                }
-            } else if (!isExpand && ManagersFactory.getInstance()
-                    .getTournamentManager().getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.Teams)
-                showChilds();
-            else if (isExpand) {
-                hideChilds();
+
+            switch (v.getId()) {
+                case R.id.tv_join_to_tournament:
+                    if (ManagersFactory.getInstance().getTournamentManager()
+                            .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
+                        showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null);
+                    }
+                    break;
+                case R.id.iv_arrow:
+                    if (!isExpand && ManagersFactory.getInstance().getTournamentManager()
+                            .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.Teams)
+                        showChilds();
+                    else if (isExpand) {
+                        hideChilds();
+                    }
+                    break;
             }
+
         }
 
         private String filterData(int RDataId, String text) throws Resources.NotFoundException {
