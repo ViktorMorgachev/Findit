@@ -157,7 +157,6 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
 
-
             startActivity(new Intent(getApplicationContext(), RegisterActivity.class));
         }
 

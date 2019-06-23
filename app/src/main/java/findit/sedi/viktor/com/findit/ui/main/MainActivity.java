@@ -166,6 +166,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         getLocation();
 
 
+        showMap();
+
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -180,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
             mGoogleMapFragment = GoogleMapFragment.getInstance();
             mFragmentManager.beginTransaction()
-                    .replace(R.id.map_fragment, mGoogleMapFragment)
+                    .add(R.id.map_fragment, mGoogleMapFragment)
                     .addToBackStack("")
                     .commit();
         }
@@ -195,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Log.d(LOG_TAG, "Activity was resumed");
 
-        showMap();
+
 
 
         // Initialize FusedLocationClient
