@@ -137,6 +137,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         .addTag("periodic_work").setConstraints(constraints).build();
 
 
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -530,7 +532,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
-            WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
+
 
         }
 

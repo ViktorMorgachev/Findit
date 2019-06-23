@@ -317,7 +317,10 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                            Log.d(LOG_TAG, task + "Обновление турниров => " + task.getResult());
+
+
+
 
                         }
                     })
@@ -694,7 +697,7 @@ public class CloudFirestoreManager {
                                     document.getId())
                             );
 
-                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            Log.d(LOG_TAG, document.getId() + "getQrPlaces() => " + document.getData());
                         }
 
 
