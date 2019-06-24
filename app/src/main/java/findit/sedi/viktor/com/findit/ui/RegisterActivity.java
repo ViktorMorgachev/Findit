@@ -2,6 +2,7 @@ package findit.sedi.viktor.com.findit.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -18,14 +19,19 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.UpdateAvailability;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
-    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 201;
-    private static final int RC_SIGN_IN = 1;
+    private static final int RC_UPDATE_APP = 201;
+    private static final int RC_SIGN_IN = 202;
 
     // View
     private ImageView mImageViewGoogleEnter;
@@ -33,6 +39,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     // Logic
     private GoogleSignInClient mGoogleSignInClient;
     private boolean googleApiAvailable = false;
+    private AppUpdateManager mAppUpdateManager;
+    private InstallStateUpdatedListener mInstallStateUpdatedListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +51,29 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
+        mAppUpdateManager = AppUpdateManagerFactory.create(this);
+
+
+        mAppUpdateManager.getAppUpdateInfo()
+                .addOnFailureListener(e -> {
+
+                })
+                .addOnSuccessListener(appUpdateInfo -> {
+                    if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                            && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+
+                        mInstallStateUpdatedListener = state -> {
+                        };
+
+                        mAppUpdateManager.registerListener(mInstallStateUpdatedListener);
+
+                        try {
+                            mAppUpdateManager.startUpdateFlowForResult(appUpdateInfo, AppUpdateType.FLEXIBLE, this, RC_UPDATE_APP);
+                        } catch (IntentSender.SendIntentException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
@@ -113,6 +144,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
     private void startNextActivity(Intent intent) {
 
+        if (mInstallStateUpdatedListener != null)
+            mAppUpdateManager.unregisterListener(mInstallStateUpdatedListener);
 
         startActivity(intent);
 
@@ -154,6 +187,12 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             handleSignInResult(task);
+        }
+
+        if (requestCode == RC_UPDATE_APP) {
+            if (resultCode == RESULT_OK) {
+
+            }
         }
     }
 

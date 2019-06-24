@@ -521,6 +521,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     }
 
+
+
     @Override
     public void mapReady() {
 
