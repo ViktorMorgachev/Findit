@@ -272,7 +272,7 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
+                            Log.d(LOG_TAG, task + "Updated user bonus => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -281,6 +281,22 @@ public class CloudFirestoreManager {
                             e.printStackTrace();
                         }
                     });
+
+            document.update(USER_TOTAL_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getTotalBonus())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            Log.d(LOG_TAG, task + "Updated user total bonus => " + task.getResult());
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
+
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_FONDED_QR_POINTS)) {
             document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -697,6 +713,8 @@ public class CloudFirestoreManager {
                                     document.getId())
                             );
 
+                            updateQrPlaces();
+
                             Log.d(LOG_TAG, document.getId() + "getQrPlaces() => " + document.getData());
                         }
 
@@ -748,7 +766,7 @@ public class CloudFirestoreManager {
                                     document.getId())
                             );
 
-                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            Log.d(LOG_TAG, document.getId() + "updateQrPlaces()  => " + document.getData());
                         }
 
                         if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())

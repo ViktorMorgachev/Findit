@@ -60,15 +60,17 @@ public class TipTainikFragment extends Fragment implements View.OnClickListener 
         mButtonBonus = view.findViewById(R.id.btn_bonuses);
         mImageView.setVisibility(View.GONE);
         mTextViewTip = view.findViewById(R.id.tv_tip);
+        mTextViewDiscribe = view.findViewById(R.id.tv_discribe);
         mButtonBonus.setText(String.valueOf(getArguments().getInt(KEY_BONUS)));
 
 
         if (getArguments().getBoolean(KEY_SUCCESS) == false) {
             mTextViewTip.setText("");
+            mTextViewTip.setVisibility(View.GONE);
             mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_some_tips));
-        }
+        } else mTextViewTip.setText(mTextViewTip.getText().toString() + ": " + mQrPoint.getTip());
 
-        mTextViewTipForNext.setText(getResources().getString(R.string.next_tainik) + " " + mQrPoint.getTipForNextQrPoint());
+        mTextViewTipForNext.setText(getResources().getString(R.string.next_tainik) + ": " + mQrPoint.getTipForNextQrPoint());
 
 
         initView();

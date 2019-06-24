@@ -46,6 +46,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     // Logic
     private MarkerOptions mMarkerOptionsMe = new MarkerOptions();
+
+
+
     private List<MarkerOptions> mMarkerQrPoints = new ArrayList<>();
 
     private MarkerOptions mMarkerOptions;
@@ -57,6 +60,10 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
             instance = new GoogleMapFragment();
         }
         return instance;
+    }
+
+    public List<MarkerOptions> getMarkerQrPoints() {
+        return mMarkerQrPoints;
     }
 
 

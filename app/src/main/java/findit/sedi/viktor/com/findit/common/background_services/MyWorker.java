@@ -35,7 +35,6 @@ public class MyWorker extends Worker {
 
             if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
                 CloudFirestoreManager.getInstance().updateQrPlaces();
-
                 CloudFirestoreManager.getInstance().updateTeams();
         }
 

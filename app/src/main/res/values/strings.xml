@@ -60,7 +60,7 @@
     <string name="fonded">Нашёл тайников</string>
     <string name="discovered">Открыл тайников</string>
     <string name="next_tainik">Следующий тайник</string>
-    <string name="tip_for_current">Тайник находится...</string>
+    <string name="tip_for_current">Тайник находится</string>
     <string name="sorry_but_you_get_some_tips">Нужно пройти все квесты, чтобы получить тайник, заработанное число баллов:</string>
     <string name="count_of_bonus">Количество бонусов</string>
     <string name="tv_name">Ваше имя</string>

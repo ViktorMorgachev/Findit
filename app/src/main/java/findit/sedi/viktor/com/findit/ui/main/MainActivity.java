@@ -137,8 +137,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         .addTag("periodic_work").setConstraints(constraints).build();
 
 
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
-
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -172,6 +170,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         showMap();
 
+
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -184,11 +183,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             mGoogleMapFragment = GoogleMapFragment.getInstance();
             mCommonMapManager.addGoogleFragment(mGoogleMapFragment);
 
+
             mGoogleMapFragment = GoogleMapFragment.getInstance();
-            mFragmentManager.beginTransaction()
-                    .add(R.id.map_fragment, mGoogleMapFragment)
-                    .addToBackStack("")
-                    .commit();
+
+
+            if (mFragmentManager.getFragments().size() == 0) {
+                mFragmentManager.beginTransaction()
+                        .add(R.id.map_fragment, mGoogleMapFragment)
+                        .commit();
+            } else {
+                mFragmentManager.beginTransaction()
+                        .replace(R.id.map_fragment, mGoogleMapFragment)
+                        .commit();
+            }
         }
 
     }
@@ -201,8 +208,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Log.d(LOG_TAG, "Activity was resumed");
 
-
-        // Initialize FusedLocationClient
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
@@ -241,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null &&
                                 ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
                                 !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
-                            if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
+                            if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && mGoogleMapFragment.getMarkerQrPoints().size() > 0)
                                 chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
                         mLastLocation = sLatLng;
                         // checkMapForPlaces();
@@ -374,6 +379,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     }
                 break;
         }
+
+
         getLocation();
     }
 
@@ -388,6 +395,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
 
         }
+
+
         // Один раз получаем пестоположение
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
@@ -410,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     }
                 });
 
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
         mFusedLocationClient.requestLocationUpdates(getLocationRequest(), mLocationCallback, null);
     }
 
@@ -512,6 +522,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        mGoogleMapFragment = null;
     }
 
     // Будем обновлять по ID только не обходимую точку
@@ -520,7 +531,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         CommonMapManager.getInstance().updatePoint(ID, mark);
 
     }
-
 
 
     @Override
@@ -533,7 +543,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
-
 
 
 

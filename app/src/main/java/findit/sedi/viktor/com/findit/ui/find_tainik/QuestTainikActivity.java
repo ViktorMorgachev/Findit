@@ -43,6 +43,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
 
         mFragmentManager = getSupportFragmentManager();
 
+
         showFragment();
 
     }
@@ -70,7 +71,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
 
         bonus = (int) (bonus + mQrPoint.getQuestBonus());
 
-        mUser.addBonus(bonus);
+        ManagersFactory.getInstance().getAccountManager().getUser().addBonus(mQrPoint.getQuestBonus());
 
         ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS);
 
@@ -103,24 +104,17 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
             return;
         }
 
-
-        mFragment = mFragmentManager.findFragmentById(R.id.fragment);
-        if (mFragment == null) {
-            mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count), Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
+        mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count), Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
+        if (mFragmentManager.getFragments().size() == 0) {
             mFragmentManager.beginTransaction()
-                    .addToBackStack(null)
                     .add(R.id.fragment, mFragment)
                     .commit();
-
-
         } else {
-            mFragment = QuestTainikFragment.newInstance(mArrayListAnswers.get(count),
-                    Objects.requireNonNull(mQrPoint.getQuests().get(mArrayListAnswers.get(count))));
             mFragmentManager.beginTransaction()
-                    .addToBackStack(null)
                     .replace(R.id.fragment, mFragment)
                     .commit();
         }
+
 
         count++;
 
@@ -129,21 +123,12 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     private void showResultAndTipFragmant(boolean success) {
 
 
-            if (mFragment == null) {
-                mFragment = TipTainikFragment.newInstance(mQrPoint.getID(), bonus, success);
-                mFragmentManager.beginTransaction()
-                        .add(R.id.fragment, mFragment)
-                        .commit();
+        mFragment = TipTainikFragment.newInstance(mQrPoint.getID(), bonus, success);
+        mFragmentManager.beginTransaction()
+                .replace(R.id.fragment, mFragment)
+                .commit();
 
-
-            } else {
-                mFragment = TipTainikFragment.newInstance(mQrPoint.getID(), bonus, success);
-                mFragmentManager.beginTransaction()
-                        .addToBackStack(null)
-                        .replace(R.id.fragment, mFragment)
-                        .commit();
-            }
-        }
+    }
 
 
 }
