@@ -58,7 +58,9 @@
         <activity
             android:name=".ui.profile_info.ProfileInfoActivity"
             android:launchMode="singleTask"></activity>
-        <activity android:name=".ui.main.MainActivity"></activity>
+        <activity
+            android:name=".ui.main.MainActivity"
+            android:launchMode="singleTask"></activity>
         <activity
             android:name=".ui.preloader.PreviewActivity"
             android:noHistory="true"></activity>

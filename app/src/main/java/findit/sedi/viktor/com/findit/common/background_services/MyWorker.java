@@ -33,8 +33,9 @@ public class MyWorker extends Worker {
         // Так же всё это будет работать только при наличии интернета
         if (true) {
 
-            if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
-                CloudFirestoreManager.getInstance().updateQrPlaces();
+            if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                    !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
+                CloudFirestoreManager.getInstance().getQrPlaces();
                 CloudFirestoreManager.getInstance().updateTeams();
         }
 

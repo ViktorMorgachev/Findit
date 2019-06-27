@@ -73,7 +73,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMapView = (MapView) rootView.findViewById(R.id.map_view);
         mMapView.onCreate(savedInstanceState);
 
-        MapsInitializer.initialize(getContext());
+
 
 
         Toast.makeText(getContext(), "GoogleMap was onCreateView", Toast.LENGTH_LONG).show();
@@ -96,6 +96,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 }
             });
 
+            MapsInitializer.initialize(getContext());
 
         }
 
@@ -108,6 +109,8 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     }
 
+
+
     @Override
     public void onResume() {
         super.onResume();
@@ -118,23 +121,15 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     @Override
     public void onPause() {
         super.onPause();
-
         Log.d(LOG_TAG, "Google map  was paused");
-        mMapView.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
         Log.d(LOG_TAG, "Google map  was destroed");
-        mMapView.onDestroy();
     }
 
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mMapView.onLowMemory();
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -150,7 +145,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     public void deletePoints() {
         mMarkerQrPoints.clear();
-
     }
 
 

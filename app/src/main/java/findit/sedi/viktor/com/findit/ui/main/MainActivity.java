@@ -59,7 +59,6 @@ import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
-import findit.sedi.viktor.com.findit.ui.main.fragments.maps.GoogleMapFragment;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
 import findit.sedi.viktor.com.findit.ui.profile_info.ProfileInfoActivity;
 import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
@@ -97,7 +96,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private static final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     public static LatLng sLatLng;
     private List<MarkerOptions> mMarkerOptions = new ArrayList<>();
-    private GoogleMapFragment mGoogleMapFragment;
     private CommonMapManager mCommonMapManager;
     private LatLng mLastLocation;
     private QrPointManager mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
@@ -158,6 +156,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mCommonMapManager = CommonMapManager.getInstance();
         mCommonMapManager.setServiceType(CommonMapManager.ServiceType.GOOGLE);
         mCommonMapManager.setContext(this);
+        mCommonMapManager.initMap();
+
 
 
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
@@ -179,26 +179,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
     private void showMap() {
-        if (mCommonMapManager.getServiceType().equals(CommonMapManager.ServiceType.GOOGLE)) {
-            mGoogleMapFragment = GoogleMapFragment.getInstance();
-            mCommonMapManager.addGoogleFragment(mGoogleMapFragment);
 
+        Log.d(LOG_TAG, "showMap()");
 
-            mGoogleMapFragment = GoogleMapFragment.getInstance();
-
-
-            if (mFragmentManager.getFragments().size() == 0) {
+        if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
+            if (mFragmentManager.findFragmentById(R.id.map_fragment) != null) {
                 mFragmentManager.beginTransaction()
-                        .add(R.id.map_fragment, mGoogleMapFragment)
+                        .replace(R.id.map_fragment, mCommonMapManager.getGoogleMap())
                         .commit();
             } else {
                 mFragmentManager.beginTransaction()
-                        .replace(R.id.map_fragment, mGoogleMapFragment)
+                        .add(R.id.map_fragment, mCommonMapManager.getGoogleMap())
                         .commit();
             }
         }
 
     }
+
 
 
     @Override
@@ -212,6 +209,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
         }
+
+
+        showMap();
 
         App.instance.getNavigationHolder().setNavigator(mNavigator);
 
@@ -243,11 +243,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                         ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
                         // Если находится на переднем плане фрагмент
-                        if (mGoogleMapFragment != null && ManagersFactory.getInstance().getAccountManager().getUser() != null &&
-                                ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
-                                !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
-                            if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && mGoogleMapFragment.getMarkerQrPoints().size() > 0)
-                                chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
+                        if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
+                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null &&
+                                    ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                                    !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
+
+                                if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && mCommonMapManager.getGoogleMap().getMarkerQrPoints().size() > 0)
+                                    chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
+                        }
                         mLastLocation = sLatLng;
                         // checkMapForPlaces();
 
@@ -266,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (ID.equalsIgnoreCase(""))
             return;
 
-        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
 
             QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
@@ -335,7 +337,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
                 }
 
-            }
 
         }
 
@@ -396,8 +397,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
+        //TODO Если карта не отображена то ничего не делаем
 
-        // Один раз получаем пестоположение
+
+        // Один раз получаем местоположение
         mFusedLocationClient.getLastLocation()
                 .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                     @Override
@@ -482,20 +485,23 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Subscribe
     public void updatePlayerLocation(UpdatePlayersLocations updatePlayersLocations) {
 
-        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+        if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
             mCommonMapManager.updatePlayers();
             Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
         }
 
     }
 
+
     @Subscribe
     public void updateQrPointsOnMap(UpdateAllQrPoints updateAllQrPoints) {
 
-        if (mGoogleMapFragment.getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
+        if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
+            if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
-            Toast.makeText(this, "QrPoints updated", Toast.LENGTH_SHORT).show();
-            mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
+                Toast.makeText(this, "QrPoints updated on map", Toast.LENGTH_SHORT).show();
+                mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
+            }
         }
 
     }
@@ -522,7 +528,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
-        mGoogleMapFragment = null;
+
     }
 
     // Будем обновлять по ID только не обходимую точку
@@ -539,12 +545,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (sLatLng != null) {
             updateMap(DEFAULT_ZOOM, "");
 
+            Log.d(LOG_TAG, "Google map was ready");
+
             // Изменяем координаты пользователя
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
-
+            //updateQrPointsOnMap();
 
         }
 

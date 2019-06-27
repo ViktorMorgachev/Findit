@@ -30,7 +30,6 @@ import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
-import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
 import io.reactivex.observers.DisposableObserver;
 
@@ -336,8 +335,6 @@ public class CloudFirestoreManager {
                             Log.d(LOG_TAG, task + "Обновление турниров => " + task.getResult());
 
 
-
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -607,10 +604,9 @@ public class CloudFirestoreManager {
                                     document.getLong(USER_SUM_OF_FONDED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS),
                                     document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS)));
 
-                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            Log.d(LOG_TAG, document.getId() + "getPlayers() => " + document.getData());
                         }
 
-                        FinditBus.getInstance().post(new UpdatePlayersLocations());
 
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
@@ -657,10 +653,9 @@ public class CloudFirestoreManager {
 
                             );
 
-                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                            Log.d(LOG_TAG, document.getId() + "updatePlayers() => " + document.getData());
                         }
 
-                        FinditBus.getInstance().post(new UpdatePlayersLocations());
 
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
@@ -678,56 +673,6 @@ public class CloudFirestoreManager {
     }
 
     public void getQrPlaces() {
-
-        mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).get()
-                .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-
-
-                            // Ставим ограничение, если не равна нашему турниру, то откллоняем
-                            if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
-                                continue;
-
-                            GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
-
-                            // Обновляем значение по ID что эти точки уже нашли другие пользователи
-                            // Карта при обновлени автоматически подхватит измененения
-
-                            ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
-                                    document.getLong(QRPOINT_BONUS),
-                                    document.getBoolean(QRPOINT_TYPE),
-                                    document.getString(QRPOINT_MARK),
-                                    document.getLong(QRPOINT_QUEST_BONUS),
-                                    (HashMap<String, ArrayList<String>>) document.get(QRPOINT_QUESTS),
-                                    document.getString(QRPOINT_TIP_FOR_NEXT),
-                                    document.getString(QRPOINT_TIP_FOR_CURRENT),
-                                    document.getString(QRPOINT_TOURNAMENT_ID),
-                                    document.getBoolean(QRPOINT_IS_MAIN),
-                                    document.getString(QRPOINT_TIP_PHOTO),
-                                    geoPoint.getLatitude(),
-                                    geoPoint.getLongitude(),
-                                    document.getLong(QRPOINT_DISTANCE),
-                                    document.getLong(QRPOINT_DIFFICULTY),
-                                    document.getId())
-                            );
-
-                            updateQrPlaces();
-
-                            Log.d(LOG_TAG, document.getId() + "getQrPlaces() => " + document.getData());
-                        }
-
-
-                    } else {
-                        Log.w(LOG_TAG, "Error getting documents.", task.getException());
-                    }
-                });
-
-    }
-
-    public void updateQrPlaces() {
-
 
         ManagersFactory.getInstance().getQrPointManager().clearQrPoints();
 
@@ -766,11 +711,10 @@ public class CloudFirestoreManager {
                                     document.getId())
                             );
 
-                            Log.d(LOG_TAG, document.getId() + "updateQrPlaces()  => " + document.getData());
+                            Log.d(LOG_TAG, document.getId() + "getQrPlaces()  => " + document.getData());
                         }
 
-                        if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty())
-                            FinditBus.getInstance().post(new UpdateAllQrPoints());
+                        FinditBus.getInstance().post(new UpdateAllQrPoints());
 
                     } else {
                         Log.w(LOG_TAG, "Error getting documents.", task.getException());
@@ -778,6 +722,7 @@ public class CloudFirestoreManager {
                 });
 
     }
+
 
     public void resetQrPlaceBonus(String code) {
         document = mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).document(code);
