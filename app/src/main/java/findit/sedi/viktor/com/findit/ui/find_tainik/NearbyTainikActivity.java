@@ -35,6 +35,7 @@ public class NearbyTainikActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_bonus);
 
 
+
         readIntentExtras();
 
 

@@ -84,14 +84,6 @@ public class CommonMapManager {
     }
 
 
-    public void addPoint(LatLng latLong, int ic_map_1, IAction action) {
-
-
-        if (mServiceType == ServiceType.GOOGLE) {
-            mGoogleMapFragment.addPoint(latLong, ic_map_1, action);
-        }
-
-    }
 
 
     public void clearMap() {
@@ -134,6 +126,7 @@ public class CommonMapManager {
 
         if (mServiceType == ServiceType.GOOGLE) {
             mGoogleMapFragment.clearQrPoints();
+            mGoogleMapFragment.clearClickableQrPoints();
             mGoogleMapFragment.initPoints(places);
         }
 
@@ -172,6 +165,7 @@ public class CommonMapManager {
             return null;
 
     }
+
 
 
     public enum ServiceType {

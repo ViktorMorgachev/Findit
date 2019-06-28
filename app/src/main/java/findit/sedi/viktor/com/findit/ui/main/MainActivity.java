@@ -24,6 +24,11 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
+
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
@@ -37,13 +42,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private List<MarkerOptions> mMarkerOptions = new ArrayList<>();
     private CommonMapManager mCommonMapManager;
     private LatLng mLastLocation;
+    private HashSet<String> mDiscoveredPointID = new HashSet<>();
     private QrPointManager mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
@@ -159,7 +162,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mCommonMapManager.initMap();
 
 
-
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
 
@@ -195,7 +197,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
     }
-
 
 
     @Override
@@ -270,72 +271,78 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             return;
 
 
+        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
-            QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
-            User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
+        for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
+            if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
 
-            for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
-                if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-
-                    Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
-                    return;
-                }
+                Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
+                return;
             }
+        }
 
-            for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
-                if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                    Toast.makeText(getApplicationContext(), "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", Toast.LENGTH_LONG).show();
-                    return;
+        for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
+            if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+                if (!mDiscoveredPointID.contains(qrPoint.getID())) {
+                    DialogManager.getInstance().showDialog(this, "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null);
+                    // Добавляем в список найденных тайников тут в активности чтобы это сообщение больше не показывать
+                    mDiscoveredPointID.add(qrPoint.getID());
                 }
+                return;
             }
+        }
 
 
-            Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Math.round(Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong())) + " м", Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Math.round(Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong())) + " м", Toast.LENGTH_LONG).show();
 
-            // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
+        // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
 
-            if (qrPoint.getMark().equalsIgnoreCase("none")) {
+        if (qrPoint.getMark().equalsIgnoreCase("none")) {
 
+            // Запускаем активность и отправляем ID в неё
+            Intent intent = new Intent(this, NearbyTainikActivity.class);
+            intent.putExtra(POINT_ID, qrPoint.getID());
+            startActivity(intent);
+
+
+            // Помечаем у себя в списке QrPoints что она detecteds
+            ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID).setMark("discovered");
+
+            // Одновременно меняем статус на сервере что на это место набрели
+            ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
+
+            // Синхронизация с сервером
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+
+
+            // Обновление информации на карте
+            updatePoint(qrPoint.getID(), "discovered");
+
+            return;
+
+
+        } else { // Иначе его обнаруживал кто-то другой
+            // Проверям обнаруживали ли мы ранее это точку?
+
+            if (qrPoint.getMark().equalsIgnoreCase("fond")) {
+                Toast.makeText(getApplicationContext(), "Кто-то уже нашёл данный тайник", Toast.LENGTH_LONG).show();
+                return;
+            } else {
+                // Одновременно меняем статус что мы тут побывали
+                ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
+                ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+
+
+                // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
                 // Запускаем активность и отправляем ID в неё
                 Intent intent = new Intent(this, NearbyTainikActivity.class);
                 intent.putExtra(POINT_ID, qrPoint.getID());
                 startActivity(intent);
 
-                // Помечаем у себя в списке QrPoints что она detecteds
-                ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID).setMark("discovered");
 
-                // Одновременно меняем статус на сервере что на это место набрели
-                ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
-
-                // Синхронизация с сервером
-                ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
-
-
-                // Обновление информации на карте
-                updatePoint(qrPoint.getID(), "discovered");
-
-                return;
-
-
-            } else { // Иначе его обнаруживал кто-то другой
-                // Проверям обнаруживали ли мы ранее это точку?
-
-                if (qrPoint.getMark().equalsIgnoreCase("fond")) {
-                    Toast.makeText(getApplicationContext(), "Кто-то уже нашёл данный тайник", Toast.LENGTH_LONG).show();
-                    return;
-                } else {
-                    // Одновременно меняем статус что мы тут побывали
-                    ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
-                    ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
-
-                    // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
-                    // Запускаем активность и отправляем ID в неё
-                    Intent intent = new Intent(this, NearbyTainikActivity.class);
-                    intent.putExtra(POINT_ID, qrPoint.getID());
-                    startActivity(intent);
-
-                }
+            }
 
 
         }
@@ -556,9 +563,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
-        ;
         //    CommonMapManager.getInstance().initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
 
+    }
+
+    @Override
+    public void QrPointClicked(String QrPointID) {
+
+
+        Intent intent = new Intent(this, NearbyTainikActivity.class);
+        intent.putExtra(POINT_ID, QrPointID);
+        startActivity(intent);
     }
 
     @Override

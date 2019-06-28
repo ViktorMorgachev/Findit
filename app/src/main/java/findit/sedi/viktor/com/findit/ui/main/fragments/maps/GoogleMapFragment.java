@@ -14,21 +14,22 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.firebase.firestore.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
@@ -42,11 +43,12 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     // Views
     private MapView mMapView;
     private static GoogleMap mMap;
-    private IAction mIAction;
+    private User user;
+    private QrPoint mQrPoint;
 
     // Logic
     private MarkerOptions mMarkerOptionsMe = new MarkerOptions();
-
+    private Set<LatLng> mClickableQrPoints = new HashSet<>();
 
 
     private List<MarkerOptions> mMarkerQrPoints = new ArrayList<>();
@@ -74,8 +76,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMapView.onCreate(savedInstanceState);
 
 
-
-
         Toast.makeText(getContext(), "GoogleMap was onCreateView", Toast.LENGTH_LONG).show();
 
         if (mMapView != null) {
@@ -87,16 +87,18 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 @Override
                 public void onMapReady(GoogleMap googleMap) {
                     mMap = googleMap;
+                    mMap.setOnMarkerClickListener(GoogleMapFragment.this);
                     mMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
-                                    getContext(), R.raw.google_map_style));
+                                    Objects.requireNonNull(getContext()), R.raw.google_map_style));
 
                     mCallBackClickListener.mapReady();
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationServices.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
                 }
             });
 
-            MapsInitializer.initialize(getContext());
+
+            MapsInitializer.initialize(Objects.requireNonNull(getContext()));
 
         }
 
@@ -108,7 +110,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     public void onCameraMove() {
 
     }
-
 
 
     @Override
@@ -211,30 +212,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     }
 
-    public void addPoint(LatLng latLng, int drawable, IAction action) {
-
-        mIAction = action;
-
-        mMarkerOptions = new MarkerOptions();
-        mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), drawable));
-        mMarkerOptions.position(latLng);
-        mMarkerQrPoints.add(mMarkerOptions);
-
-
-        updateMap();
-
-    }
-
-    public void addPointOnMap(LatLng latLong, String msg, int drawable) {
-
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.icon(BitmapDescriptorFactory.fromResource(drawable));
-        markerOptions.position(latLong);
-        mMarkerQrPoints.add(markerOptions);
-
-        updateMap();
-
-    }
 
   /*  public void deletePoint(LatLngpoint) {
 
@@ -251,13 +228,24 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     @Override
     public boolean onMarkerClick(Marker marker) {
 
+        // Если пользователь на расстоянии не дальше чем 300 м от точки, и её позиция указана в списке коорлинат, mClickableQrPoint
+
+        user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+        if ((Util.getInstance().getDistance(marker.getPosition(), new LatLng(user.getLatitude(), user.getLongtude())) < 300) &&
+                mClickableQrPoints.contains(marker.getPosition())) {
+
+            // Хак, получение идентификатора точки по местоположению
+            mCallBackClickListener.QrPointClicked(ManagersFactory.getInstance().getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition()));
+
+        }
+
         return true;
     }
 
     public void clearMap() {
 
         mMarkerQrPoints.clear();
-        mIAction = null;
 
         updateMap();
     }
@@ -286,7 +274,17 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                         break;
                 }
 
+                // Если идентификатор присутствует в списке обнаруженых точек на карте пользователя, то инициальзация слушателя нажатия на QrPoint
+
+                user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+                if (user.getDiscoveredQrPointIDs() != null && user.getDiscoveredQrPointIDs().contains(places.get(i).getID())) {
+                    mClickableQrPoints.add(places.get(i).getLatLong());
+                }
+
+
             }
+
 
             mMarkerOptions.position(places.get(i).getLatLong());
             mMarkerOptions.title(String.valueOf(places.get(i).getID()));
@@ -300,6 +298,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     }
 
     // В надежде что  пустые icon можно инициализировать
+    // Только при условии что тайник новый этот метод срабатывает
     public void updatePoint(String id, String mark) {
 
         QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id);
@@ -310,6 +309,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                 if (mark.equalsIgnoreCase("fond")) {
                     mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_close_24dp));
                 } else if (mark.equalsIgnoreCase("discovered")) {
+
                     switch ((int) qrPoint.getDifficulty()) {
                         case 1:
                             mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_1_24dp));
@@ -321,6 +321,12 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                             mMarkerOptions.icon(Util.getInstance().bitmapDescriptorFromVector(getContext(), R.drawable.ic_fonded_place_difficult_3_24dp));
                             break;
                     }
+
+
+                    // Назначаем слушатель нажатия на кнопку
+                    mClickableQrPoints.add(qrPoint.getLatLong());
+
+
                 }
                 return;
             }
@@ -332,5 +338,9 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
     public void clearQrPoints() {
         mMarkerQrPoints.clear();
+    }
+
+    public void clearClickableQrPoints() {
+        mClickableQrPoints.clear();
     }
 }

@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlacesStorage;
-import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
-import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
-import findit.sedi.viktor.com.findit.presenter.otto.events.PlaceAboutEvent;
 
 public class QrPointManager {
 
@@ -103,5 +100,15 @@ public class QrPointManager {
 
     public void clearQrPoints() {
         mQrPoints.clear();
+    }
+
+    public String getQrPlaceIDByLatLong(LatLng position) {
+
+        for (int i = 0; i < mQrPoints.size(); i++) {
+            if (mQrPoints.get(i).getLatLong().equals(position))
+                return mQrPoints.get(i).getID();
+        }
+        return null;
+
     }
 }
