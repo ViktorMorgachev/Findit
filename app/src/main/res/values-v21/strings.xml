@@ -15,4 +15,6 @@
     <string name="join_to_tournament">Присоединиться</string>
     <string name="join_to_tournament_question">Вы хотите присоединиться к турниру?</string>
     <string name="success_joining_to_tournament">Вы в турнире</string>
+    <string name="channel_name">channel_name</string>
+    <string name="channel_descrioption">channel_description</string>
 </resources>
