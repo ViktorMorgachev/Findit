@@ -2,7 +2,7 @@ package findit.sedi.viktor.com.findit.data_providers.data;
 
 import com.google.firebase.firestore.GeoPoint;
 
-public class Player {
+public class Player implements Comparable<Player> {
 
     private long bonus;
     private String name;
@@ -125,5 +125,10 @@ public class Player {
 
     public long getSumOFDiscoveredFinds() {
         return sumOFDiscoveredFinds;
+    }
+
+    @Override
+    public int compareTo(Player player) {
+        return Long.compare(player.getTotalBonus(), getTotalBonus());
     }
 }

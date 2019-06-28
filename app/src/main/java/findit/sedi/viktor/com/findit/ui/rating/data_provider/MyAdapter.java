@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
@@ -45,8 +46,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     user.getID(), user.isNetStatus(), user.getTournamentID(), user.getTeamID(),
                     user.getTotalBonus(), user.getLatitude(), user.getLongtude(), user.getGender(), user.getSumOfFondedPoints(), user.getSumOfDiscoveredPoints()));
 
-
-        // Сортируем данные чв порядке уменьшения балов
+        Collections.sort(mPlayers);
 
 
         this.inflater = LayoutInflater.from(context);
