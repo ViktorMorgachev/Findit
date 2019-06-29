@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.otto.Subscribe;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -121,8 +122,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         super.onCreate(savedInstanceState);
 
-        Toast.makeText(this, "Activity was Created,  Player: " + ManagersFactory.getInstance().getAccountManager().getUser().getName(), Toast.LENGTH_LONG).show();
-
 
         FinditBus.getInstance().register(this);
 
@@ -153,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         navigationView.setNavigationItemSelectedListener(this);
 
 
+
+
         mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
 
 
@@ -172,13 +173,15 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         showMap();
 
-
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
 
 
     }
+
+
 
     private void showMap() {
 
@@ -205,6 +208,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         Log.d(LOG_TAG, "Activity was resumed");
+
+
 
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
@@ -429,7 +434,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                     }
                 });
 
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
         mFusedLocationClient.requestLocationUpdates(getLocationRequest(), mLocationCallback, null);
     }
 

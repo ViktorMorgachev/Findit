@@ -11,7 +11,6 @@ import findit.sedi.viktor.com.findit.R;
 
 public class NotificatorManager {
 
-    private Context mContext;
 
     private NotificationCompat.Builder mBuilder;
     private NotificationManagerCompat mNotificationManagerCompat;
@@ -22,11 +21,12 @@ public class NotificatorManager {
     }
 
 
-    private void showCompatibilityNotification(String message, int icon, String CNANNEL_ID, String title) {
+
+    public void showCompatibilityNotification(Context context, String message, int icon, String CNANNEL_ID, String title) {
 
 
-        mBuilder = new NotificationCompat.Builder(mContext, CNANNEL_ID);
-        mNotificationManagerCompat = NotificationManagerCompat.from(mContext);
+        mBuilder = new NotificationCompat.Builder(context, CNANNEL_ID);
+        mNotificationManagerCompat = NotificationManagerCompat.from(context);
 
 
         mBuilder.setSmallIcon(icon);
@@ -41,14 +41,14 @@ public class NotificatorManager {
 
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence channelName = mContext.getResources().getString(R.string.channel_name);
-            String description = mContext.getResources().getString(R.string.channel_descrioption);
-            NotificationChannel notificationChannel = new NotificationChannel(CNANNEL_ID, channelName, NotificationManager.IMPORTANCE_DEFAULT);
+            CharSequence channelName = context.getResources().getString(R.string.channel_name);
+            String description = context.getResources().getString(R.string.channel_descrioption);
+            NotificationChannel notificationChannel = new NotificationChannel(CNANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.setDescription(description);
             mBuilder.setChannelId(CNANNEL_ID);
         }
 
-        mNotificationManagerCompat.notify(1, mBuilder.build());
+       mNotificationManagerCompat.notify(1, mBuilder.build());
 
     }
 

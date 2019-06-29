@@ -11,6 +11,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import java.util.Calendar;
+
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
@@ -248,6 +250,7 @@ public class PreviewActivity extends AppCompatActivity {
                     mDataLoader.post(new Runnable() {
                         @Override
                         public void run() {
+
                             Toast.makeText(PreviewActivity.this, "Данные загруженны, " + ManagersFactory.getInstance().getQrPointManager().getQrPlaces().size() + "\n" + "Открытие карты", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(PreviewActivity.this, MainActivity.class));
 
@@ -261,6 +264,8 @@ public class PreviewActivity extends AppCompatActivity {
         }
 
     }
+
+
 
 
     @Override
