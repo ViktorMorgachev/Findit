@@ -3,9 +3,11 @@ package findit.sedi.viktor.com.findit.ui.main;
 import android.Manifest;
 import android.annotation.TargetApi;
 import android.arch.lifecycle.Lifecycle;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -37,14 +39,11 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import findit.sedi.viktor.com.findit.App;
@@ -57,6 +56,7 @@ import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -88,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     // TODO снова запускаем лишь тогда когда игра активна
     private PeriodicWorkRequest mPeriodicWorkRequest;
     private TextView mNavTextViewName;
+    private NotificatorManager mNotificatorManager;
+    private Context mContext;
 
 
     //Values
@@ -98,7 +100,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private final int REQUEST_LOCATION_PERMISSION = 134;
     private static final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
     public static LatLng sLatLng;
-    private List<MarkerOptions> mMarkerOptions = new ArrayList<>();
     private CommonMapManager mCommonMapManager;
     private LatLng mLastLocation;
     private HashSet<String> mDiscoveredPointID = new HashSet<>();
@@ -123,6 +124,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onCreate(savedInstanceState);
 
 
+        mContext = this;
+
+
         FinditBus.getInstance().register(this);
 
         setContentView(R.layout.activity_main);
@@ -134,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         mPeriodicWorkRequest =
                 new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
-                        .addTag("periodic_work").setConstraints(constraints).build();
+                        .addTag("periodic_work").build();
 
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
@@ -150,8 +154,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
-
 
 
         mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
@@ -171,16 +173,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         getLocation();
 
 
-        showMap();
-
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
 
 
     }
-
 
 
     private void showMap() {
@@ -199,6 +197,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         }
 
+
+        mAsyncTask.execute();
+
+        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
+
     }
 
 
@@ -208,8 +211,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         Log.d(LOG_TAG, "Activity was resumed");
-
-
 
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
@@ -586,4 +587,80 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onBackPressed();
         Log.d(LOG_TAG, "Activity on backpressed");
     }
+
+
+    private AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Log.d(LOG_TAG, "AsynkTask is working");
+                getDataFromServer();
+            }
+        }
+
+
+        public void getDataFromServer() {
+
+            if (true) {
+
+                if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                        !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+                    ServerManager.getInstance().getQrPlaces();
+                    checkActiveTournaments();
+                }
+
+                ServerManager.getInstance().getTournaments();
+                ServerManager.getInstance().updateTeams();
+            }
+
+        }
+
+        public void checkActiveTournaments() {
+
+            final Calendar systemCalendar = Calendar.getInstance();
+            Calendar tournamentCalendar = Calendar.getInstance();
+            // Если пользователь в турнире, то показывать что турнир скоро начнётся
+            // События: Турнир начался, турнир закончился, создан новый турнир
+            // Если появился новый турнир, как-то отслеживать, то показывать оповещение, что появился новый турнир
+
+            for (int i = 0; i < ManagersFactory.getInstance().getTournamentManager().getTournaments().size(); i++) {
+
+                tournamentCalendar.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDateFrom().getSeconds() * 1000);
+
+                mNotificatorManager = new NotificatorManager();
+
+                if (systemCalendar.before(tournamentCalendar))
+                    mNotificatorManager
+                            .showCompatibilityNotification(mContext,
+                                    mContext.getResources().getString(R.string.soon_will_starting_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
+                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
+                                    null, mContext.getResources().getString(R.string.channel_name),
+                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, TounamentActivity.class));
+                else if (systemCalendar.equals(tournamentCalendar)) {
+                    mNotificatorManager
+                            .showCompatibilityNotification(mContext,
+                                    mContext.getResources().getString(R.string.now_started_tournament)+ " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
+                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
+                                    null, mContext.getResources().getString(R.string.channel_name),
+                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, MainActivity.class));
+                } else {
+                    mNotificatorManager
+                            .showCompatibilityNotification(mContext,
+                                    "Турнир прошёл " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
+                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
+                                    null, mContext.getResources().getString(R.string.channel_name),
+                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, MainActivity.class));
+                }
+            }
+
+
+        }
+
+    };
 }

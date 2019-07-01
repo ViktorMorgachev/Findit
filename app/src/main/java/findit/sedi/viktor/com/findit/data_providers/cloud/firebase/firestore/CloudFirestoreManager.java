@@ -460,7 +460,7 @@ public class CloudFirestoreManager {
                                         )
                                 );
 
-                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
+                                Log.d(LOG_TAG, document.getId() + "getTournaments() => " + document.getData());
                             }
 
                             FinditBus.getInstance().post(new UpdateTournamentsEvent());

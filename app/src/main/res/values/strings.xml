@@ -73,4 +73,5 @@
     <string name="channel_name">channel_name</string>
     <string name="channel_descrioption">channel_description</string>
     <string name="soon_will_starting_tournament">Готовимся к началу турнира</string>
+    <string name="now_started_tournament">Турнир стартовал</string>
 </resources>

@@ -133,4 +133,8 @@ public class ServerManager {
         CloudFirestoreManager.getInstance().checkProfile(email, booleanDisposableObserver);
 
     }
+
+    public void updateTeams() {
+        CloudFirestoreManager.getInstance().updateTeams();
+    }
 }
