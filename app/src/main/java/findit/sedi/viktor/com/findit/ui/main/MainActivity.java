@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
@@ -26,11 +25,6 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.work.Constraints;
-import androidx.work.NetworkType;
-import androidx.work.PeriodicWorkRequest;
-import androidx.work.WorkManager;
-
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
@@ -42,21 +36,18 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.otto.Subscribe;
 
-import java.util.Calendar;
 import java.util.HashSet;
-import java.util.concurrent.TimeUnit;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.common.Util;
-import findit.sedi.viktor.com.findit.common.background_services.MyWorker;
+import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -86,9 +77,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private GoogleMap mMap;
     private FloatingActionButton mFloatingActionButton;
     // TODO снова запускаем лишь тогда когда игра активна
-    private PeriodicWorkRequest mPeriodicWorkRequest;
     private TextView mNavTextViewName;
-    private NotificatorManager mNotificatorManager;
     private Context mContext;
 
 
@@ -132,15 +121,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         setContentView(R.layout.activity_main);
 
 
-        Constraints constraints = new Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
-                .build();
-
-        mPeriodicWorkRequest =
-                new PeriodicWorkRequest.Builder(MyWorker.class, 6000, TimeUnit.SECONDS)
-                        .addTag("periodic_work").build();
-
-
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -174,7 +154,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
-        //WorkManager.getInstance().getWorkInfosForUniqueWorkLiveData();
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
 
 
@@ -197,10 +176,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         }
 
+        startService(new Intent(MainActivity.this, MyService.class));
 
-        mAsyncTask.execute();
-
-        WorkManager.getInstance().enqueue(mPeriodicWorkRequest);
 
     }
 
@@ -538,7 +515,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         super.onDestroy();
 
         Log.d(LOG_TAG, "Activity was destroed");
-        WorkManager.getInstance().cancelAllWork();
         FinditBus.getInstance().unregister(this);
         mFusedLocationClient.removeLocationUpdates(mLocationCallback);
 
@@ -565,7 +541,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
+
             //updateQrPointsOnMap();
+
 
         }
 
@@ -589,78 +567,4 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
 
-    private AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            while (true) {
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                Log.d(LOG_TAG, "AsynkTask is working");
-                getDataFromServer();
-            }
-        }
-
-
-        public void getDataFromServer() {
-
-            if (true) {
-
-                if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
-                        !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
-                    ServerManager.getInstance().getQrPlaces();
-                    checkActiveTournaments();
-                }
-
-                ServerManager.getInstance().getTournaments();
-                ServerManager.getInstance().updateTeams();
-            }
-
-        }
-
-        public void checkActiveTournaments() {
-
-            final Calendar systemCalendar = Calendar.getInstance();
-            Calendar tournamentCalendar = Calendar.getInstance();
-            // Если пользователь в турнире, то показывать что турнир скоро начнётся
-            // События: Турнир начался, турнир закончился, создан новый турнир
-            // Если появился новый турнир, как-то отслеживать, то показывать оповещение, что появился новый турнир
-
-            for (int i = 0; i < ManagersFactory.getInstance().getTournamentManager().getTournaments().size(); i++) {
-
-                tournamentCalendar.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDateFrom().getSeconds() * 1000);
-
-                mNotificatorManager = new NotificatorManager();
-
-                if (systemCalendar.before(tournamentCalendar))
-                    mNotificatorManager
-                            .showCompatibilityNotification(mContext,
-                                    mContext.getResources().getString(R.string.soon_will_starting_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
-                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
-                                    null, mContext.getResources().getString(R.string.channel_name),
-                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, TounamentActivity.class));
-                else if (systemCalendar.equals(tournamentCalendar)) {
-                    mNotificatorManager
-                            .showCompatibilityNotification(mContext,
-                                    mContext.getResources().getString(R.string.now_started_tournament)+ " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
-                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
-                                    null, mContext.getResources().getString(R.string.channel_name),
-                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, MainActivity.class));
-                } else {
-                    mNotificatorManager
-                            .showCompatibilityNotification(mContext,
-                                    "Турнир прошёл " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
-                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
-                                    null, mContext.getResources().getString(R.string.channel_name),
-                                    mContext.getResources().getString(R.string.channel_descrioption), new Intent(mContext, MainActivity.class));
-                }
-            }
-
-
-        }
-
-    };
 }

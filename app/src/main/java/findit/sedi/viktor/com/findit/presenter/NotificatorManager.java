@@ -13,7 +13,7 @@ public class NotificatorManager {
 
 
     private NotificationCompat.Builder mBuilder;
-    private NotificationManager mNotificatorManager;
+    private NotificationManager mNotificationManager;
 
 
     public NotificatorManager() {
@@ -25,7 +25,7 @@ public class NotificatorManager {
 
 
         mBuilder = new NotificationCompat.Builder(context, CNANNEL_ID);
-        mNotificatorManager =
+        mNotificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
 
@@ -50,13 +50,13 @@ public class NotificatorManager {
 
             CharSequence chanelName = channelName;
             String description = channelDescription;
-            NotificationChannel notificationChannel = new NotificationChannel(CNANNEL_ID, channelName, NotificationManager.IMPORTANCE_HIGH);
+            NotificationChannel notificationChannel = new NotificationChannel(CNANNEL_ID, chanelName, NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.setDescription(description);
             notificationChannel.enableVibration(true);
-            mNotificatorManager.createNotificationChannel(notificationChannel);
+            mNotificationManager.createNotificationChannel(notificationChannel);
         }
 
-        mNotificatorManager.notify(1, mBuilder.build());
+        mNotificationManager.notify(1, mBuilder.build());
 
     }
 

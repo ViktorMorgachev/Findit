@@ -82,6 +82,7 @@
             android:launchMode="singleTask" />
 
 
+        <service android:name=".common.background_services.MyService" />
     </application>
 
 
