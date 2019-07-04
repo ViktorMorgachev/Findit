@@ -8,6 +8,7 @@ import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 import ru.terrakok.cicerone.Cicerone;
 import ru.terrakok.cicerone.NavigatorHolder;
@@ -45,8 +46,10 @@ public class App extends Application {
         instance = this;
         cicerone = Cicerone.create();
 
+        Prefs.getInstance().setContext(getApplicationContext());
+
         ManagersFactory.getInstance().setContext(this);
-        
+
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
@@ -60,13 +63,13 @@ public class App extends Application {
 
     }
 
-    public NavigatorHolder getNavigationHolder(){
-        return  cicerone.getNavigatorHolder();
+    public NavigatorHolder getNavigationHolder() {
+        return cicerone.getNavigatorHolder();
     }
 
 
-    public Router getRouter(){
-        return  cicerone.getRouter();
+    public Router getRouter() {
+        return cicerone.getRouter();
     }
 
     public void mustDie(Object object) {

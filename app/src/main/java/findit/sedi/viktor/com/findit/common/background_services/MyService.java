@@ -16,7 +16,9 @@ import java.util.Calendar;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
@@ -28,6 +30,9 @@ public class MyService extends Service {
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
     private NotificatorManager mNotificatorManager;
+    private final Calendar tournamentCalendarBegin = Calendar.getInstance();
+    private final Calendar tournamentCalendarEnd = Calendar.getInstance();
+    private final Calendar systemCalendar = Calendar.getInstance();
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -112,8 +117,6 @@ public class MyService extends Service {
 
         public void checkActiveTournaments() {
 
-            final Calendar systemCalendar = Calendar.getInstance();
-            Calendar tournamentCalendar = Calendar.getInstance();
 
             // Если пользователь в турнире, то показывать что турнир скоро начнётся
             // События: Турнир начался, турнир закончился, создан новый турнир
@@ -121,7 +124,8 @@ public class MyService extends Service {
 
             for (int i = 0; i < ManagersFactory.getInstance().getTournamentManager().getTournaments().size(); i++) {
 
-                tournamentCalendar.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDateFrom().getSeconds() * 1000);
+                tournamentCalendarBegin.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDateFrom().getSeconds() * 1000);
+                tournamentCalendarEnd.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDateTo().getSeconds() * 1000);
 
                 mNotificatorManager = new NotificatorManager();
 
@@ -130,7 +134,10 @@ public class MyService extends Service {
                 // Если нет, то оповещаем, иначе не оповещаем
                 // Привязка по преференсам будет
 
-                if (systemCalendar.before(tournamentCalendar))
+                if (systemCalendar.before(tournamentCalendarBegin) &&
+                        !Prefs.getInstance().getStringValue(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT).equalsIgnoreCase(KeyPrefs.KeysField.KEY_SOON_TOURNAMENT)) {
+
+
                     mNotificatorManager
                             .showCompatibilityNotification(getApplicationContext(),
                                     getApplicationContext().getResources().getString(R.string.soon_will_starting_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
@@ -138,20 +145,21 @@ public class MyService extends Service {
                                     null, getApplicationContext().getResources().getString(R.string.channel_name),
                                     getApplicationContext().getResources().getString(R.string.channel_descrioption), new Intent(getApplicationContext(), TounamentActivity.class));
 
-                else if (systemCalendar.equals(tournamentCalendar)) { //TODO  Если время в пределах времени начала и конца турнира
+                    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_SOON_TOURNAMENT);
+
+
+                } else if ((systemCalendar.equals(tournamentCalendarBegin) || (systemCalendar.after(tournamentCalendarBegin) && systemCalendar.before(tournamentCalendarEnd)) &&
+                        !Prefs.getInstance().getStringValue(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT).equalsIgnoreCase(KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT))) {
+                    //TODO  Если время в пределах времени начала и конца турнира
                     mNotificatorManager
                             .showCompatibilityNotification(getApplicationContext(),
                                     getApplicationContext().getResources().getString(R.string.now_started_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
                                     R.drawable.ic_stars_24dp, "CHANNEL_ID",
                                     null, getApplicationContext().getResources().getString(R.string.channel_name),
                                     getApplicationContext().getResources().getString(R.string.channel_descrioption), new Intent(getApplicationContext(), MainActivity.class));
-                } else { // TODO Если время больше чем конец турнира,
-                    mNotificatorManager
-                            .showCompatibilityNotification(getApplicationContext(),
-                                    "Турнир прошёл" + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
-                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
-                                    null, getApplicationContext().getResources().getString(R.string.channel_name),
-                                    getApplicationContext().getResources().getString(R.string.channel_descrioption), new Intent(getApplicationContext(), MainActivity.class));
+
+                    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT);
+
                 }
 
                 // Отправляем информацию о оповещении пользователя в Перференсы, Тип: Прошёл турнир, Начался, Скоро турнир, и его ID, сохраняем мапу
