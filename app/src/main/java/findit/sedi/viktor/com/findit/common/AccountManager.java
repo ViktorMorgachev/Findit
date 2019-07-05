@@ -12,6 +12,7 @@ import io.reactivex.observers.DisposableObserver;
 import io.reactivex.subjects.PublishSubject;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateTournamentRequests.KeysField.KEY_UPDATE_PLAYERS;
 
 
 // Подпишем на измененения самого обьекта
@@ -99,8 +100,9 @@ public class AccountManager {
         Tournament tournament = ManagersFactory.getInstance().getTournamentManager().getTournament(tournamentID);
         tournament.addPlayer(ManagersFactory.getInstance().getAccountManager().getUser().getID());
 
+        ServerManager.getInstance().updateTournament(tournamentID, KEY_UPDATE_PLAYERS);
 
-        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_TOURNAMENT);
+
 
     }
 }

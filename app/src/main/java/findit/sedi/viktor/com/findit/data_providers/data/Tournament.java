@@ -154,7 +154,6 @@ public class Tournament {
         }
 
         getPlayersIDs().add(id);
-        updateTournamentByTag(getID(), KEY_UPDATE_PLAYERS);
 
     }
 

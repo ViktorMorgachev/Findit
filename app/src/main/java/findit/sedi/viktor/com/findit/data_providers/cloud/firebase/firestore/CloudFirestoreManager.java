@@ -27,6 +27,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
+import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
@@ -743,6 +744,8 @@ public class CloudFirestoreManager {
                         ServerManager.getInstance().getTournaments();
 
                         IActionHelper.getInstance().action();
+
+                        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_TOURNAMENT);
 
 
                         Log.d(LOG_TAG, task + " => " + task.getResult());
