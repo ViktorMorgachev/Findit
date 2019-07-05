@@ -68,6 +68,8 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
 
         DialogManager.getInstance().setActivity(this);
+
+
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()

@@ -28,7 +28,6 @@ import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
-import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
@@ -740,11 +739,11 @@ public class CloudFirestoreManager {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
 
-                        // Хак рабочий, тут мы кидаем сообщение и показываем диалоговое окно
-                        // И список подстказак, где спрятанн тайник
-                        IActionHelper.getInstance().action();
 
                         ServerManager.getInstance().getTournaments();
+
+                        IActionHelper.getInstance().action();
+
 
                         Log.d(LOG_TAG, task + " => " + task.getResult());
                     }

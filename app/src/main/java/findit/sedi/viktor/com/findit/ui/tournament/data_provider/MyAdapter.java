@@ -1,6 +1,7 @@
 package findit.sedi.viktor.com.findit.ui.tournament.data_provider;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,7 @@ import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
+import findit.sedi.viktor.com.findit.ui.show_first_tips.ShowTipsActivity;
 
 public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
@@ -188,7 +190,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             IAction iAction = () -> ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
 
             IActionHelper.getInstance().setIAction(() -> {
-                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null, null, null, "ОК", null, true, true);
+                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null,
+                        () -> mContext.startActivity(new Intent(mContext, ShowTipsActivity.class)), "OK", null, null, true, false);
             });
 
             DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false, false);

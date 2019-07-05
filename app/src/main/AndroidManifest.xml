@@ -54,7 +54,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.about_place.PlaceAboutActivity"></activity>
         <activity
             android:name=".ui.profile_info.ProfileInfoActivity"
             android:launchMode="singleTask"></activity>
@@ -79,6 +78,9 @@
             android:theme="@style/Theme.AppCompat.Light.Dialog.Alert" />
         <activity
             android:name=".ui.finds_activity.FindsActivity"
+            android:launchMode="singleTask" />
+        <activity
+            android:name=".ui.show_first_tips.ShowTipsActivity"
             android:launchMode="singleTask" />
 
 
