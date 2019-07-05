@@ -48,6 +48,7 @@ import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -84,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     //Values
     private FusedLocationProviderClient mFusedLocationClient;
     private final int DEFAULT_ZOOM = 15;
+    private NotificatorManager mNotificatorManager;
     private LocationResult mLocationResult;
     private LocationCallback mLocationCallback;
     private final int REQUEST_LOCATION_PERMISSION = 134;
@@ -284,6 +286,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (qrPoint.getMark().equalsIgnoreCase("none")) {
 
+
+            if (mNotificatorManager == null) {
+                mNotificatorManager = new NotificatorManager();
+            }
+
+
+            if (mNotificatorManager != null)
+                mNotificatorManager.showCompatibilityNotification(this,
+                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
+                        null, getResources().getString(R.string.channel_name), getResources().getString(R.string.channel_descrioption), null);
+
+
             // Запускаем активность и отправляем ID в неё
             Intent intent = new Intent(this, NearbyTainikActivity.class);
             intent.putExtra(POINT_ID, qrPoint.getID());
@@ -317,6 +331,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
                 ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
 
+
+                if (mNotificatorManager == null) {
+                    mNotificatorManager = new NotificatorManager();
+                }
+
+                mNotificatorManager.showCompatibilityNotification(this,
+                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
+                        null, getResources().getString(R.string.channel_name), getResources().getString(R.string.channel_descrioption), null);
 
                 // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
                 // Запускаем активность и отправляем ID в неё

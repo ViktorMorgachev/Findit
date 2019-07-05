@@ -5,6 +5,8 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationCompat;
@@ -31,6 +33,9 @@ public class NotificatorManager {
 
         mBuilder.setSmallIcon(icon);
 
+        Uri uri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        mBuilder.setSound(uri);
+
         if (title != null)
             mBuilder.setContentTitle(title);
 
@@ -39,8 +44,6 @@ public class NotificatorManager {
 
         mBuilder.setUsesChronometer(true);
 
-
-        mBuilder.setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
         if (intent != null) {
             mBuilder.setContentIntent(PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT));
@@ -53,8 +56,13 @@ public class NotificatorManager {
             NotificationChannel notificationChannel = new NotificationChannel(CNANNEL_ID, chanelName, NotificationManager.IMPORTANCE_HIGH);
             notificationChannel.setDescription(description);
             notificationChannel.enableVibration(true);
+            notificationChannel.enableLights(true);
+            notificationChannel.setShowBadge(true);
+            mBuilder.setColorized(true);
+
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
+
 
         mNotificationManager.notify(1, mBuilder.build());
 

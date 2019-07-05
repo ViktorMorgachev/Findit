@@ -2,6 +2,7 @@ package findit.sedi.viktor.com.findit.data_providers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 public class Prefs {
     private static final Prefs ourInstance = new Prefs();
@@ -20,6 +21,11 @@ public class Prefs {
 
     public void setContext(Context context) {
         mContext = context;
+        initSharedPreferences();
+    }
+
+    private void initSharedPreferences() {
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
     }
 
     private Prefs() {
@@ -46,11 +52,11 @@ public class Prefs {
 
         if (mSharedPreferences.contains(key)) {
             if (!mSharedPreferences.getString(key, "").equals("")) {
-                return mSharedPreferences.getString(key, null);
+                return mSharedPreferences.getString(key, "");
             }
         }
 
-        return null;
+        return "";
 
     }
 

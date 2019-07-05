@@ -3,6 +3,8 @@ package findit.sedi.viktor.com.findit.common.dialogs;
 import android.app.Activity;
 import android.support.v7.app.AlertDialog;
 
+import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 
 public class DialogManager {
@@ -12,6 +14,7 @@ public class DialogManager {
 
     private Activity mActivity;
     private AlertDialog mAlertDialog;
+    NotificatorManager notificatorManager;
 
     public static DialogManager getInstance() {
         return ourInstance;
@@ -28,7 +31,7 @@ public class DialogManager {
         mActivity = activity;
     }
 
-    public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable) {
+    public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
 
 
         mAlertDialog = new AlertDialog.Builder(mActivity).create();
@@ -55,6 +58,15 @@ public class DialogManager {
         if (buttonCancel != null)
             mAlertDialog.setButton(AlertDialog.BUTTON_NEGATIVE, buttonCancel,
                     (dialog, which) -> dialog.dismiss());
+
+        if (showNotification) {
+            if (notificatorManager == null)
+                notificatorManager = new NotificatorManager();
+
+            notificatorManager.showCompatibilityNotification(mActivity.getApplicationContext(), message,
+                    R.drawable.ic_tournament_24dp, "CHANNEL_ID", tiitle, mActivity.getApplicationContext().getResources().getString(R.string.channel_name),
+                    mActivity.getApplicationContext().getResources().getString(R.string.channel_descrioption), null);
+        }
 
         mAlertDialog.show();
 

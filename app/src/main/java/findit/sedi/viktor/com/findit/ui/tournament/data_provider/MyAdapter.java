@@ -171,7 +171,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                                 Toast.makeText(mContext, "Вы уже в данном турнире", Toast.LENGTH_SHORT).show();
                             else
                                 Toast.makeText(mContext, "Вы не можете менять турнир и команду", Toast.LENGTH_SHORT).show();
-                        } else showDialog(TournamentID, teamID);
+                        } else showDialog(TournamentID, teamID, false);
 
 
                     }
@@ -182,16 +182,16 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             }
         }
 
-        private void showDialog(String tournamentID, String teamID) {
+        private void showDialog(String tournamentID, String teamID, boolean showNotification) {
 
 
             IAction iAction = () -> ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
 
             IActionHelper.getInstance().setIAction(() -> {
-                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null, null, null, "ОК", null, true);
+                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null, null, null, "ОК", null, true, true);
             });
 
-            DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false);
+            DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false, false);
 
 
         }
@@ -208,7 +208,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                 case R.id.tv_join_to_tournament:
                     if (ManagersFactory.getInstance().getTournamentManager()
                             .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
-                        showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null);
+                        showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null, false);
                     }
                     break;
                 case R.id.iv_arrow:

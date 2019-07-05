@@ -56,7 +56,7 @@ public class MyService extends Service {
 
             CharSequence chanelName = "channelName";
             String description = "channelDescription";
-            NotificationChannel notificationChannel = new NotificationChannel("CNANNEL_ID", chanelName, NotificationManager.IMPORTANCE_DEFAULT);
+            NotificationChannel notificationChannel = new NotificationChannel("CNANNEL_ID", chanelName, NotificationManager.IMPORTANCE_NONE);
             notificationChannel.setDescription(description);
             mNotificationManager.createNotificationChannel(notificationChannel);
         }
@@ -150,7 +150,7 @@ public class MyService extends Service {
 
                 } else if ((systemCalendar.equals(tournamentCalendarBegin) || (systemCalendar.after(tournamentCalendarBegin) && systemCalendar.before(tournamentCalendarEnd)) &&
                         !Prefs.getInstance().getStringValue(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT).equalsIgnoreCase(KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT))) {
-                    //TODO  Если время в пределах времени начала и конца турнира
+                    // Если время в пределах времени начала и конца турнира
                     mNotificatorManager
                             .showCompatibilityNotification(getApplicationContext(),
                                     getApplicationContext().getResources().getString(R.string.now_started_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),

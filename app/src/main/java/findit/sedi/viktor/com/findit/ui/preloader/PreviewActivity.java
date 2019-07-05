@@ -251,7 +251,7 @@ public class PreviewActivity extends AppCompatActivity {
                         @Override
                         public void run() {
 
-                            Toast.makeText(PreviewActivity.this, "Данные загруженны, " + ManagersFactory.getInstance().getQrPointManager().getQrPlaces().size() + "\n" + "Открытие карты", Toast.LENGTH_LONG).show();
+                            Toast.makeText(PreviewActivity.this, "Данные загруженны, " + "\n" + "Открытие карты", Toast.LENGTH_LONG).show();
                             startActivity(new Intent(PreviewActivity.this, MainActivity.class));
 
                         }
