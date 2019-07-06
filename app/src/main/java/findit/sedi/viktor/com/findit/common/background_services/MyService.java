@@ -12,10 +12,15 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.Calendar;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.QrPointManager;
+import findit.sedi.viktor.com.findit.common.interfaces.ILocationListener;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
@@ -24,12 +29,17 @@ import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
 
-public class MyService extends Service {
+
+public class MyService extends Service implements ILocationListener {
 
     private NotificationManager mNotificationManager;
     private NotificationCompat.Builder mBuilder;
     private NotificatorManager mNotificatorManager;
+    private LocationManager mLocationManager;
+    private LatLng mLatLng;
+    private QrPointManager mQrPointManager;
     private final Calendar tournamentCalendarBegin = Calendar.getInstance();
     private final Calendar tournamentCalendarEnd = Calendar.getInstance();
     private final Calendar systemCalendar = Calendar.getInstance();
@@ -45,9 +55,12 @@ public class MyService extends Service {
         super.onCreate();
 
 
+        mLocationManager = LocationManager.getInstance();
+        mLocationManager.subscribe(this);
         mBuilder = new NotificationCompat.Builder(getApplicationContext(), "CNANNEL_ID");
         mBuilder.setSmallIcon(R.drawable.ic_launcher_background);
         mBuilder.setAutoCancel(true);
+        mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
 
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -70,6 +83,7 @@ public class MyService extends Service {
         startService(intent);
 
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -176,5 +190,34 @@ public class MyService extends Service {
     public void onDestroy() {
         super.onDestroy();
         mAsyncTask.cancel(true);
+        mLocationManager.unsubscribe(this);
+
     }
+
+    @Override
+    public void updateLocation(LatLng latLng) {
+
+
+        Log.i(LOG_TAG, "MyService Locations was updated");
+
+        mLatLng = latLng;
+
+        if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
+
+            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(latLng.latitude, latLng.longitude);
+
+            // Отправляем на сервер если расстояние изменилось более чем на 50м
+
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
+
+
+            String nearbyQrPointID = mQrPointManager.getNearbyOfQrPlaced(latLng);
+            mQrPointManager.checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
+
+
+        }
+
+    }
+
+
 }

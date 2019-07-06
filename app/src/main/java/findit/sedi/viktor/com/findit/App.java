@@ -8,8 +8,8 @@ import android.support.multidex.MultiDex;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 import ru.terrakok.cicerone.Cicerone;
@@ -51,6 +51,7 @@ public class App extends Application {
         Prefs.getInstance().setContext(getApplicationContext());
 
         ManagersFactory.getInstance().setContext(this);
+        LocationManager.getInstance().setContext(getApplicationContext());
 
 
         if (LeakCanary.isInAnalyzerProcess(this)) {

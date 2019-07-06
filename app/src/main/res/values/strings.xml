@@ -76,4 +76,5 @@
     <string name="now_started_tournament">Турнир стартовал</string>
     <string name="interternet_not_available_tittle">Не найден интернет</string>
     <string name="interternet_not_available_message">Пожауйста подключите интернет и нажмите ОК</string>
+    <string name="location_permission_denied_please_grant">Пожалуйста дайте доступ на использование местоположение в настройках приложения</string>
 </resources>

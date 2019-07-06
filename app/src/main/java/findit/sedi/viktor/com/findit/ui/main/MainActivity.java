@@ -25,30 +25,20 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationListener;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationResult;
-import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.squareup.otto.Subscribe;
-
-import java.util.HashSet;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
-import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
+import findit.sedi.viktor.com.findit.common.interfaces.ILocationListener;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
-import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
-import findit.sedi.viktor.com.findit.data_providers.data.User;
-import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -63,7 +53,6 @@ import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Command;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
-import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_DISCOVERED_QR_POINTS;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
 import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
@@ -71,7 +60,7 @@ import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.
  * Главная активность которая будет управлять другими активностями возможно с помощью Cicerone
  */
 
-public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener, MapsFragmentListener {
+public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener, MapsFragmentListener, ILocationListener {
 
 
     //Widgets
@@ -80,22 +69,20 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     // TODO снова запускаем лишь тогда когда игра активна
     private TextView mNavTextViewName;
     private Context mContext;
+    private LocationManager mLocationManager;
+    private FragmentManager mFragmentManager = getSupportFragmentManager();
 
 
     //Values
-    private FusedLocationProviderClient mFusedLocationClient;
+
     private final int DEFAULT_ZOOM = 15;
-    private NotificatorManager mNotificatorManager;
-    private LocationResult mLocationResult;
-    private LocationCallback mLocationCallback;
+
     private final int REQUEST_LOCATION_PERMISSION = 134;
     private static final String[] permissions = {Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION};
-    public static LatLng sLatLng;
+    public LatLng sLatLng;
     private CommonMapManager mCommonMapManager;
-    private LatLng mLastLocation;
-    private HashSet<String> mDiscoveredPointID = new HashSet<>();
     private QrPointManager mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
-    private FragmentManager mFragmentManager = getSupportFragmentManager();
+
 
     private Navigator mNavigator = new Navigator() {
         @Override
@@ -107,21 +94,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        super.onCreate(savedInstanceState);
-
 
         mContext = this;
 
+        setContentView(R.layout.activity_main);
 
         FinditBus.getInstance().register(this);
 
-        setContentView(R.layout.activity_main);
 
+        mLocationManager = LocationManager.getInstance();
+        mLocationManager.subscribe(this);
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -147,13 +135,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mCommonMapManager.initMap();
 
 
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-
-
-        initLocationCallback();
-
         getLocation();
-
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -195,162 +177,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
         }
 
-
         showMap();
 
         App.instance.getNavigationHolder().setNavigator(mNavigator);
-
-
-    }
-
-
-    private void initLocationCallback() {
-        mLocationCallback = new LocationCallback() {
-            @Override
-            public void onLocationResult(LocationResult locationResult) {
-                //checkInternetConnection(locationResult);
-                mLocationResult = locationResult;
-
-                if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                    for (Location location : locationResult.getLocations()) {
-                        // sLatLng = new LatLng(mLocationResult.getLastLocation().getLatitude(), mLocationResult.getLastLocation().getLatitude());
-                        // Проверка расстояния между точками и соответтсующее оповешение в виде тоста
-                        sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-                        //  updateMap(DEFAULT_ZOOM, "");
-
-                        // Изменяем координаты пользователя
-
-                        ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
-
-                        // Отправляем на сервер если расстояние изменилось более чем на 50м
-
-                        ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
-
-                        // Если находится на переднем плане фрагмент
-                        if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
-                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null &&
-                                    ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
-                                    !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
-
-                                if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && mCommonMapManager.getGoogleMap().getMarkerQrPoints().size() > 0)
-                                    chechNearbyQrPlace(mQrPointManager.getNearbyOfQrPlaced(sLatLng));
-                        }
-                        mLastLocation = sLatLng;
-                        // checkMapForPlaces();
-
-
-                        break;
-                    }
-
-            }
-        };
-    }
-
-
-    // Сюда попадают тольеко те указатели, которые относятся к нашему турниру
-    public void chechNearbyQrPlace(String ID) {
-
-        if (ID.equalsIgnoreCase(""))
-            return;
-
-
-        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
-
-
-        for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
-            if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-
-                Toast.makeText(getApplicationContext(), "Вы его находили ранее", Toast.LENGTH_LONG).show();
-                return;
-            }
-        }
-
-        for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
-            if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
-                if (!mDiscoveredPointID.contains(qrPoint.getID())) {
-                    DialogManager.getInstance().showDialog("Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
-                    // Добавляем в список найденных тайников тут в активности чтобы это сообщение больше не показывать
-                    mDiscoveredPointID.add(qrPoint.getID());
-                }
-                return;
-            }
-        }
-
-
-        Toast.makeText(getApplicationContext(), "Расстояние до тайника: " + Math.round(Util.getInstance().getDistance(sLatLng, qrPoint.getLatLong())) + " м", Toast.LENGTH_LONG).show();
-
-        // Если тайник новый и мы его не обнаруживали и не находили,  то показывает диалоговое окно
-
-        if (qrPoint.getMark().equalsIgnoreCase("none")) {
-
-
-            if (mNotificatorManager == null) {
-                mNotificatorManager = new NotificatorManager();
-            }
-
-
-            if (mNotificatorManager != null)
-                mNotificatorManager.showCompatibilityNotification(this,
-                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
-                        null, getResources().getString(R.string.channel_name), getResources().getString(R.string.channel_descrioption), null);
-
-
-            // Запускаем активность и отправляем ID в неё
-            Intent intent = new Intent(this, NearbyTainikActivity.class);
-            intent.putExtra(POINT_ID, qrPoint.getID());
-            startActivity(intent);
-
-
-            // Помечаем у себя в списке QrPoints что она detecteds
-            ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID).setMark("discovered");
-
-            // Одновременно меняем статус на сервере что на это место набрели
-            ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
-
-            // Синхронизация с сервером
-            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
-
-
-            // Обновление информации на карте
-            updatePoint(qrPoint.getID(), "discovered");
-
-            return;
-
-
-        } else { // Иначе его обнаруживал кто-то другой
-            // Проверям обнаруживали ли мы ранее это точку?
-
-            if (qrPoint.getMark().equalsIgnoreCase("fond")) {
-                Toast.makeText(getApplicationContext(), "Кто-то уже нашёл данный тайник", Toast.LENGTH_LONG).show();
-                return;
-            } else {
-                // Одновременно меняем статус что мы тут побывали
-                ServerManager.getInstance().sendCode(qrPoint.getID(), "discovered");
-                ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
-
-
-                if (mNotificatorManager == null) {
-                    mNotificatorManager = new NotificatorManager();
-                }
-
-                mNotificatorManager.showCompatibilityNotification(this,
-                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
-                        null, getResources().getString(R.string.channel_name), getResources().getString(R.string.channel_descrioption), null);
-
-                // Значит набрели на знак вопроса, который кто-то уже его обнаруживал
-                // Запускаем активность и отправляем ID в неё
-                Intent intent = new Intent(this, NearbyTainikActivity.class);
-                intent.putExtra(POINT_ID, qrPoint.getID());
-                startActivity(intent);
-
-
-            }
-
-
-        }
-
 
     }
 
@@ -392,8 +221,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 break;
         }
 
-
-        getLocation();
     }
 
 
@@ -408,41 +235,19 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
-        //TODO Если карта не отображена то ничего не делаем
+        mLocationManager.getLocation(() -> {
+            sLatLng = mLocationManager.getLatLng();
+            if (CommonMapManager.getInstance().getGoogleMap() != null && CommonMapManager.getInstance().getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
+                updateMap(DEFAULT_ZOOM, "");
+
+            // Изменяем координаты пользователя
+            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+            // Отправляем на сервер
+
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
+        });
 
 
-        // Один раз получаем местоположение
-        mFusedLocationClient.getLastLocation()
-                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                    @Override
-                    public void onSuccess(Location location) {
-                        // Got last known location. In some rare situations this can be null.
-                        if (location != null) {
-
-                            sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-                            updateMap(DEFAULT_ZOOM, "");
-
-                            // Изменяем координаты пользователя
-                            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
-                            // Отправляем на сервер
-
-                            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
-
-                        }
-                    }
-                });
-
-
-        mFusedLocationClient.requestLocationUpdates(getLocationRequest(), mLocationCallback, null);
-    }
-
-    private LocationRequest getLocationRequest() {
-        LocationRequest locationRequest = new LocationRequest();
-        locationRequest.setInterval(8000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        return locationRequest;
     }
 
 
@@ -537,7 +342,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Log.d(LOG_TAG, "Activity was destroed");
         FinditBus.getInstance().unregister(this);
-        mFusedLocationClient.removeLocationUpdates(mLocationCallback);
+        mLocationManager.unsubscribe(this);
 
     }
 
@@ -552,6 +357,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void mapReady() {
 
+
         if (sLatLng != null) {
             updateMap(DEFAULT_ZOOM, "");
 
@@ -561,9 +367,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
-
-
-            //updateQrPointsOnMap();
 
 
         }
@@ -588,4 +391,33 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     }
 
 
+    @Override
+    public void updateLocation(LatLng latLng) {
+
+        Log.i(LOG_TAG, "MainActivity Locations was updated");
+
+        if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
+
+            ManagersFactory.getInstance().getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
+
+            // Отправляем на сервер если расстояние изменилось более чем на 50м
+
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
+
+            // Если находится на переднем плане фрагмент
+            if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
+                if (ManagersFactory.getInstance().getAccountManager().getUser() != null &&
+                        ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                        !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(""))
+
+                    if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED && mCommonMapManager.getGoogleMap().getMarkerQrPoints().size() > 0) {
+                        String nearbyQrPointID = mQrPointManager.getNearbyOfQrPlaced(sLatLng);
+                        mQrPointManager.checkNearbyQrPlaces(mContext, nearbyQrPointID, latLng, () -> updatePoint(nearbyQrPointID, "discovered"));
+                    }
+
+            }
+
+        }
+
+    }
 }
