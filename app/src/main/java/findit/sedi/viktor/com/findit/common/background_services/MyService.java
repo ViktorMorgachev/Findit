@@ -60,6 +60,7 @@ public class MyService extends Service implements ILocationListener {
         mBuilder = new NotificationCompat.Builder(getApplicationContext(), "CNANNEL_ID");
         mBuilder.setSmallIcon(R.drawable.ic_launcher_background);
         mBuilder.setAutoCancel(true);
+
         mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
 
 
@@ -211,8 +212,14 @@ public class MyService extends Service implements ILocationListener {
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);
 
 
-            String nearbyQrPointID = mQrPointManager.getNearbyOfQrPlaced(latLng);
-            mQrPointManager.checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
+            if (!ManagersFactory.getInstance().getQrPointManager().getQrPlaces().isEmpty() &&
+                    ManagersFactory.getInstance().getAccountManager().getUser() != null &&
+                    ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
+                    !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+
+                String nearbyQrPointID = mQrPointManager.getNearbyOfQrPlaced(latLng);
+                mQrPointManager.checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
+            }
 
 
         }

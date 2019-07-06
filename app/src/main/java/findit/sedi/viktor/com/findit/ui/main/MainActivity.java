@@ -160,6 +160,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         }
 
+        mLocationManager.unsubscribe(this);
         startService(new Intent(MainActivity.this, MyService.class));
 
     }
