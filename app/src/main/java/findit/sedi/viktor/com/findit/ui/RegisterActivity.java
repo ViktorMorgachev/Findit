@@ -25,7 +25,9 @@ import com.google.android.play.core.install.InstallStateUpdatedListener;
 import com.google.android.play.core.install.model.AppUpdateType;
 import com.google.android.play.core.install.model.UpdateAvailability;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.ui.preloader.PreviewActivity;
 
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
@@ -39,8 +41,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
     // Logic
     private GoogleSignInClient mGoogleSignInClient;
     private boolean googleApiAvailable = false;
+    private Intent restartIntent;
     private AppUpdateManager mAppUpdateManager;
     private InstallStateUpdatedListener mInstallStateUpdatedListener;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +56,8 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         mAppUpdateManager = AppUpdateManagerFactory.create(this);
+        DialogManager.getInstance().setContext(this);
+        restartIntent = getIntent();
 
 
         mAppUpdateManager.getAppUpdateInfo()
@@ -76,13 +82,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 });
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 
     }
+
 
     public boolean isGooglePlayServicesAvailable(Activity activity) {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
@@ -121,7 +127,6 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             setContentView(R.layout.register_layout);
 
-            Toast.makeText(this, "Не зарегестрированный", Toast.LENGTH_LONG).show();
 
             mImageViewGoogleEnter = findViewById(R.id.iv_google_enter);
 
@@ -135,8 +140,16 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
 
         if (googleSignInAccount != null) {
-            finditAuthWithGoogle(googleSignInAccount);
-            return;
+
+            if (!App.instance.hasNet()) {
+                DialogManager.getInstance().showDialog(getResources().getString(R.string.interternet_not_available_message),
+                        getResources().getString(R.string.interternet_not_available_tittle),  () -> {
+                            startActivity(restartIntent);
+                        }, "OK", null, null, false, false);
+                return;
+            } else
+                finditAuthWithGoogle(googleSignInAccount);
+
         }
 
 
@@ -165,7 +178,13 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
         if (v.getId() == R.id.iv_google_enter) {
 
-            signIn();
+            if (!App.instance.hasNet()) {
+                DialogManager.getInstance().showDialog(getResources().getString(R.string.interternet_not_available_message),
+                        getResources().getString(R.string.interternet_not_available_tittle), this::signIn, "OK", null, null, false, false);
+                return;
+            } else {
+                signIn();
+            }
         }
     }
 

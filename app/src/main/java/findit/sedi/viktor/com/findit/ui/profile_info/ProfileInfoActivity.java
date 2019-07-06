@@ -19,6 +19,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
@@ -67,11 +68,10 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         setContentView(R.layout.profile_layout);
 
 
-        DialogManager.getInstance().setActivity(this);
+        DialogManager.getInstance().setContext(this);
 
 
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
 
@@ -147,12 +147,14 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
 
         // Отправить на сервер при выходе об измененении статуса онлайн Users
         if (v.getId() == R.id.tv_sign_out) {
+
+
             mGoogleSignInClient.signOut();
 
+            stopService(new Intent(this, MyService.class));
+
             ServerManager.getInstance().changeUserNetStatus(false);
-
             ManagersFactory managersFactory = ManagersFactory.getInstance();
-
             managersFactory.getAccountManager().clearUser();
             managersFactory.getTeamManager().clearTeams();
             managersFactory.getTournamentManager().clearTournaments();

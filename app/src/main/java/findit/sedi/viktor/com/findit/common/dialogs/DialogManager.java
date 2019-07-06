@@ -1,6 +1,7 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
 import android.app.Activity;
+import android.content.Context;
 import android.support.v7.app.AlertDialog;
 
 import findit.sedi.viktor.com.findit.R;
@@ -12,7 +13,7 @@ public class DialogManager {
     private static final DialogManager ourInstance = new DialogManager();
 
 
-    private Activity mActivity;
+    private Context mContext;
     private AlertDialog mAlertDialog;
     NotificatorManager notificatorManager;
 
@@ -23,18 +24,18 @@ public class DialogManager {
     private DialogManager() {
     }
 
-    public Activity getActivity() {
-        return mActivity;
+    public Context getContext() {
+        return mContext;
     }
 
-    public void setActivity(Activity activity) {
-        mActivity = activity;
+    public void setContext(Context activity) {
+        mContext = activity;
     }
 
     public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
 
 
-        mAlertDialog = new AlertDialog.Builder(mActivity).create();
+        mAlertDialog = new AlertDialog.Builder(mContext).create();
 
         if (tiitle != null) {
             mAlertDialog.setTitle(tiitle);
@@ -63,16 +64,14 @@ public class DialogManager {
             if (notificatorManager == null)
                 notificatorManager = new NotificatorManager();
 
-            notificatorManager.showCompatibilityNotification(mActivity.getApplicationContext(), message,
-                    R.drawable.ic_tournament_24dp, "CHANNEL_ID", tiitle, mActivity.getApplicationContext().getResources().getString(R.string.channel_name),
-                    mActivity.getApplicationContext().getResources().getString(R.string.channel_descrioption), null);
+            notificatorManager.showCompatibilityNotification(mContext.getApplicationContext(), message,
+                    R.drawable.ic_tournament_24dp, "CHANNEL_ID", tiitle, mContext.getApplicationContext().getResources().getString(R.string.channel_name),
+                    mContext.getApplicationContext().getResources().getString(R.string.channel_descrioption), null);
         }
 
         mAlertDialog.show();
 
     }
 
-    public void showDialog(Activity activity, String message, String tiitle, IAction iAction) {
 
-    }
 }

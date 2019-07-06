@@ -2,12 +2,14 @@ package findit.sedi.viktor.com.findit;
 
 import android.app.Application;
 import android.content.Context;
+import android.net.ConnectivityManager;
 import android.support.multidex.MultiDex;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 import ru.terrakok.cicerone.Cicerone;
@@ -76,5 +78,10 @@ public class App extends Application {
         if (refWatcher != null) {
             refWatcher.watch(object);
         }
+    }
+
+    public boolean hasNet() {
+        ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        return manager.getActiveNetworkInfo() != null && manager.getActiveNetworkInfo().isConnectedOrConnecting();
     }
 }

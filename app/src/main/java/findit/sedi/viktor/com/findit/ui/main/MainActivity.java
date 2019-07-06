@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         });
 
 
-        DialogManager.getInstance().setActivity(this);
+        DialogManager.getInstance().setContext(this);
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -179,7 +179,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         startService(new Intent(MainActivity.this, MyService.class));
-
 
     }
 
@@ -271,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
             if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
                 if (!mDiscoveredPointID.contains(qrPoint.getID())) {
-                    DialogManager.getInstance().showDialog(this, "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null);
+                    DialogManager.getInstance().showDialog("Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
                     // Добавляем в список найденных тайников тут в активности чтобы это сообщение больше не показывать
                     mDiscoveredPointID.add(qrPoint.getID());
                 }

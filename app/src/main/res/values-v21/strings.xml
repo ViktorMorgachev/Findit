@@ -19,4 +19,6 @@
     <string name="channel_descrioption">channel_description</string>
     <string name="soon_will_starting_tournament">Готовимся к началу турнира</string>
     <string name="now_started_tournament">Турнир стартовал</string>
+    <string name="interternet_not_available_tittle">Не найден интернет</string>
+    <string name="interternet_not_available_message">Пожауйста подключите интернет и нажмите ОК</string>
 </resources>

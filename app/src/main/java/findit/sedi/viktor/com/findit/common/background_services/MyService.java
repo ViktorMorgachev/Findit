@@ -84,6 +84,7 @@ public class MyService extends Service {
         protected Void doInBackground(Void... voids) {
 
             while (true) {
+                if (isCancelled()) return null;
 
                 Log.d(LOG_TAG, "AsynkTask is working");
                 getDataFromServer();
@@ -170,4 +171,10 @@ public class MyService extends Service {
         }
 
     };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mAsyncTask.cancel(true);
+    }
 }

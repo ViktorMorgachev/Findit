@@ -31,7 +31,7 @@ public class TounamentActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        DialogManager.getInstance().setActivity(this);
+        DialogManager.getInstance().setContext(this);
         ManagersFactory.getInstance().setContext(this);
 
         setContentView(R.layout.recycler_layout);
