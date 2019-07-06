@@ -89,6 +89,8 @@ public class TipTainikFragment extends Fragment implements View.OnClickListener 
     @Override
     public void onClick(View v) {
 
+        // Тут нам нужно убрать слушатель с карты
+
         mCallBackClickListener.onBackPress();
 
     }

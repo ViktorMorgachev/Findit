@@ -170,17 +170,15 @@ public class QrPointManager {
                 mNotificatorManager = new NotificatorManager();
             }
 
-
-            if (mNotificatorManager != null)
-                mNotificatorManager.showCompatibilityNotification(context,
-                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
-                        null, context.getResources().getString(R.string.channel_name), context.getResources().getString(R.string.channel_descrioption), null);
-
-
             // Запускаем активность и отправляем ID в неё
             Intent intent = new Intent(context, NearbyTainikActivity.class);
             intent.putExtra(POINT_ID, qrPoint.getID());
             context.startActivity(intent);
+
+            if (mNotificatorManager != null)
+                mNotificatorManager.showCompatibilityNotification(context,
+                        "Вы набрели на место где спрятан тайник", R.drawable.ic_explore_24dp, "CHANNEL_ID",
+                        null, context.getResources().getString(R.string.channel_name), context.getResources().getString(R.string.channel_descrioption), intent);
 
 
             // Помечаем у себя в списке QrPoints что она detecteds

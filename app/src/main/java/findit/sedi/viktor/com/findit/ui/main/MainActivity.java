@@ -109,7 +109,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         mLocationManager = LocationManager.getInstance();
-        mLocationManager.subscribe(this);
 
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -170,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onResume() {
         super.onResume();
 
+        mLocationManager.subscribe(this);
 
         Log.d(LOG_TAG, "Activity was resumed");
 
@@ -317,7 +317,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
                 Toast.makeText(this, "QrPoints updated on map", Toast.LENGTH_SHORT).show();
-                mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
+                if (sLatLng != null)
+                    mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
             }
         }
 
@@ -334,6 +335,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onStop() {
         super.onStop();
+        mLocationManager.unsubscribe(this);
         Log.d(LOG_TAG, "Activity was stoped");
     }
 
@@ -343,7 +345,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Log.d(LOG_TAG, "Activity was destroed");
         FinditBus.getInstance().unregister(this);
-        mLocationManager.unsubscribe(this);
+
 
     }
 
@@ -396,6 +398,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     public void updateLocation(LatLng latLng) {
 
         Log.i(LOG_TAG, "MainActivity Locations was updated");
+
+        sLatLng = latLng;
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
 

@@ -669,7 +669,12 @@ public class CloudFirestoreManager {
 
 
         document = mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).document(id);
-        document.update(QRPOINT_MARK, mark);
+        document.update(QRPOINT_MARK, mark).addOnCompleteListener(new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                getQrPlaces();
+            }
+        });
 
     }
 

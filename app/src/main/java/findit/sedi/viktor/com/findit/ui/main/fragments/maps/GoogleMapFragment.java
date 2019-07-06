@@ -235,7 +235,13 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         if ((Util.getInstance().getDistance(marker.getPosition(), new LatLng(user.getLatitude(), user.getLongtude())) < 300) &&
                 mClickableQrPoints.contains(marker.getPosition())) {
 
+
+            // Если бонусы за ответы отсутствуют
             // Хак, получение идентификатора точки по местоположению
+            String qrPointID = ManagersFactory.getInstance().getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition());
+
+
+            if (qrPointID != null)
             mCallBackClickListener.QrPointClicked(ManagersFactory.getInstance().getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition()));
 
         }
