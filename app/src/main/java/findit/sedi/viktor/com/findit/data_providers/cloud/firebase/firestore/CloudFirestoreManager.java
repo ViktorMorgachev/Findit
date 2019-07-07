@@ -1,7 +1,7 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 
 import com.google.android.gms.tasks.OnCompleteListener;

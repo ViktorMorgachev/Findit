@@ -92,14 +92,14 @@
             android:text="@string/gender"
             android:textSize="20dp" />
 
-        <android.support.v7.widget.AppCompatSpinner
+        <androidx.appcompat.widget.AppCompatSpinner
             android:id="@+id/sp_gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/Gender"
             android:gravity="center_horizontal">
 
-        </android.support.v7.widget.AppCompatSpinner>
+        </androidx.appcompat.widget.AppCompatSpinner>
 
 
     </LinearLayout>

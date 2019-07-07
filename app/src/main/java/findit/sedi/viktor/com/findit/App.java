@@ -3,7 +3,7 @@ package findit.sedi.viktor.com.findit;
 import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
-import android.support.multidex.MultiDex;
+import androidx.multidex.MultiDex;
 
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;

@@ -1,7 +1,7 @@
 package findit.sedi.viktor.com.findit.data_providers.data;
 
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
+import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
 
 import com.google.firebase.firestore.GeoPoint;
 

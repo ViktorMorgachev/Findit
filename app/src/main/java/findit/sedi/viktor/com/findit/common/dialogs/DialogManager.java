@@ -1,8 +1,7 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
