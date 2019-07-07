@@ -1,6 +1,7 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
 import android.content.Context;
+
 import androidx.appcompat.app.AlertDialog;
 
 import findit.sedi.viktor.com.findit.R;
@@ -50,7 +51,9 @@ public class DialogManager {
             mAlertDialog.setButton(AlertDialog.BUTTON_POSITIVE, buttonOk,
                     (dialog, which) -> {
 
-                        iAction.action();
+
+                        if (iAction != null)
+                            iAction.action();
 
                         dialog.dismiss();
                     });

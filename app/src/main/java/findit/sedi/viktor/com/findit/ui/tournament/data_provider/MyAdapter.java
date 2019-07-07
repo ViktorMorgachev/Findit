@@ -219,6 +219,9 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     final Calendar tournamentCalendarBegin = Calendar.getInstance();
                     final Calendar systemCalendar = Calendar.getInstance();
 
+                    tournamentCalendarBegin.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().
+                            getTournament(TournamentID).getDateFrom().getSeconds() * 1000);
+
                     if (systemCalendar.equals(tournamentCalendarBegin) || systemCalendar.after(tournamentCalendarBegin) ) {
 
                         DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.the_tournament_is_already_active),
@@ -226,8 +229,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                         return;
                     }
 
-                    tournamentCalendarBegin.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().
-                            getTournament(TournamentID).getDateFrom().getSeconds() * 1000);
+
 
                     // Если уже принадлежим турниру
                     if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
