@@ -88,6 +88,9 @@
 
 
         <service android:name=".common.background_services.MyService" />
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="dbe4af175079336375013a889dbb38bae26e49c8" />
     </application>
 
 

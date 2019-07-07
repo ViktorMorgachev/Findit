@@ -2,21 +2,11 @@ package findit.sedi.viktor.com.findit.ui.main;
 
 import android.Manifest;
 import android.annotation.TargetApi;
-import androidx.lifecycle.Lifecycle;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.core.content.ContextCompat;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,9 +15,21 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.Lifecycle;
+
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
 import com.squareup.otto.Subscribe;
 
 import findit.sedi.viktor.com.findit.App;
@@ -39,6 +41,7 @@ import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.common.interfaces.ILocationListener;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
+import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
@@ -49,6 +52,7 @@ import findit.sedi.viktor.com.findit.ui.profile_info.ProfileInfoActivity;
 import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
+import io.fabric.sdk.android.Fabric;
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Command;
 
@@ -92,6 +96,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     };
 
 
+    public void forceCrash() {
+        throw new RuntimeException("This is a crash");
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,11 +110,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
+       // Fabric.with(this, new Crashlytics());
+
         mContext = this;
 
         setContentView(R.layout.activity_main);
 
         FinditBus.getInstance().register(this);
+
 
 
         mLocationManager = LocationManager.getInstance();
@@ -133,12 +145,24 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         mCommonMapManager.setContext(this);
         mCommonMapManager.initMap();
 
+        logUser();
+
 
         getLocation();
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
 
+
+    }
+
+    private void logUser() {
+
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+        Crashlytics.setUserIdentifier(user.getID());
+        Crashlytics.setUserEmail(user.getEmail());
+        Crashlytics.setUserName(user.getName());
 
     }
 
