@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Prefs {
     private static final Prefs ourInstance = new Prefs();
 
@@ -46,6 +49,22 @@ public class Prefs {
             mSharedPreferences.edit().putInt(key, (Integer) value).apply();
         }
 
+    }
+
+    public void addStringValue(String key, String value) {
+
+        Set<String> strings = mSharedPreferences.getStringSet(key, new HashSet<>());
+
+        assert strings != null;
+        if (!strings.contains(value))
+            strings.add(value);
+
+        mSharedPreferences.edit().putStringSet(key, strings).apply();
+
+    }
+
+    public HashSet<String> getStringSetByKey(String key) {
+        return (HashSet<String>) mSharedPreferences.getStringSet(key, new HashSet<>());
     }
 
     public String getStringValue(String key) {

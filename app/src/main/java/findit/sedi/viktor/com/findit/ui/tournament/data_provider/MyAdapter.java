@@ -3,8 +3,6 @@ package findit.sedi.viktor.com.findit.ui.tournament.data_provider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,12 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import findit.sedi.viktor.com.findit.App;
@@ -209,9 +211,36 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             switch (v.getId()) {
                 case R.id.tv_join_to_tournament:
-                    if (ManagersFactory.getInstance().getTournamentManager()
-                            .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
-                        showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null, false);
+
+                    String TournamentID = filterData(R.string.id, tournamentID.getText().toString());
+                    String teamID = "";
+
+                    // Проверка, можно ли войти или уже турнир начался? Уже поздно?
+                    final Calendar tournamentCalendarBegin = Calendar.getInstance();
+                    final Calendar systemCalendar = Calendar.getInstance();
+
+                    if (systemCalendar.equals(tournamentCalendarBegin) || systemCalendar.after(tournamentCalendarBegin) ) {
+
+                        DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.the_tournament_is_already_active),
+                                null, null, "OK", null, null, true, false);
+                        return;
+                    }
+
+                    tournamentCalendarBegin.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().
+                            getTournament(TournamentID).getDateFrom().getSeconds() * 1000);
+
+                    // Если уже принадлежим турниру
+                    if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+                        if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
+                            Toast.makeText(mContext, "Вы уже в данном турнире", Toast.LENGTH_SHORT).show();
+                        else
+                            Toast.makeText(mContext, "Вы не можете менять турнир и команду", Toast.LENGTH_SHORT).show();
+                    } else {
+
+                        if (ManagersFactory.getInstance().getTournamentManager()
+                                .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
+                            showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null, false);
+                        }
                     }
                     break;
                 case R.id.iv_arrow:

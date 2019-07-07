@@ -96,9 +96,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     };
 
 
-    public void forceCrash() {
-        throw new RuntimeException("This is a crash");
-    }
 
 
     @Override
@@ -159,7 +156,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private void logUser() {
 
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
-
         Crashlytics.setUserIdentifier(user.getID());
         Crashlytics.setUserEmail(user.getEmail());
         Crashlytics.setUserName(user.getName());

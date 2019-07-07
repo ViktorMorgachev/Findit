@@ -77,4 +77,6 @@
     <string name="interternet_not_available_tittle">Не найден интернет</string>
     <string name="interternet_not_available_message">Пожауйста подключите интернет и нажмите ОК</string>
     <string name="location_permission_denied_please_grant">Пожалуйста дайте доступ на использование местоположение в настройках приложения</string>
+    <string name="sorry_but_you_get_bonus">Выуже получили бонусы за ответы</string>
+    <string name="the_tournament_is_already_active">Регистрация на турнир уже закрыта</string>
 </resources>

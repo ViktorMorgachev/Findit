@@ -2,8 +2,6 @@ package findit.sedi.viktor.com.findit.ui.find_tainik.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +9,14 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
+import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
 
 public class TipTainikFragment extends Fragment implements View.OnClickListener {
 
@@ -63,6 +66,18 @@ public class TipTainikFragment extends Fragment implements View.OnClickListener 
         mTextViewDiscribe = view.findViewById(R.id.tv_discribe);
         mButtonBonus.setText(String.valueOf(getArguments().getInt(KEY_BONUS)));
 
+        // Отправляем в преференсы, информацию о  том что мы уже ответили на все вопросы, отправим ID тайника
+
+        Prefs prefs = Prefs.getInstance();
+        prefs.setContext(getContext());
+
+
+        if (!prefs.getStringSetByKey(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT).contains(mQrPoint.getID()))
+            Prefs.getInstance().addStringValue(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT, mQrPoint.getID());
+        else {
+            mButtonBonus.setVisibility(View.GONE);
+            mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_bonus));
+        }
 
         if (getArguments().getBoolean(KEY_SUCCESS) == false) {
             mTextViewTip.setText("");

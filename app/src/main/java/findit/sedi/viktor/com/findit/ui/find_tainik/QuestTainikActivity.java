@@ -3,20 +3,23 @@ package findit.sedi.viktor.com.findit.ui.find_tainik;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
-import androidx.appcompat.app.AppCompatActivity;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
+import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.QuestTainikFragment;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.TipTainikFragment;
 
@@ -28,6 +31,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     private Fragment mFragment;
     private FragmentManager mFragmentManager;
     private QrPoint mQrPoint;
+    private Prefs mPrefs;
     private User mUser = ManagersFactory.getInstance().getAccountManager().getUser();
     static int count = 0;
     public int bonus = 0;
@@ -38,6 +42,9 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(LAYOUT_RES_ID);
+
+        mPrefs = Prefs.getInstance();
+        mPrefs.setContext(this);
 
         readIntentExtras();
 
@@ -71,9 +78,10 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
 
         bonus = (int) (bonus + mQrPoint.getQuestBonus());
 
-        ManagersFactory.getInstance().getAccountManager().getUser().addBonus(mQrPoint.getQuestBonus());
-
-        ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS);
+        if (!mPrefs.getStringSetByKey(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT).contains(mQrPoint.getID())) {
+            ManagersFactory.getInstance().getAccountManager().getUser().addBonus(mQrPoint.getQuestBonus());
+            ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS);
+        }
 
         showFragment();
 

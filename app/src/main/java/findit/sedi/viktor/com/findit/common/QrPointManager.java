@@ -136,6 +136,8 @@ public class QrPointManager {
 
 
         QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
+        if (qrPoint == null)
+            return;
         User user = ManagersFactory.getInstance().getAccountManager().getUser();
 
 
