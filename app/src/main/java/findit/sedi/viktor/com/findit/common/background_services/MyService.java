@@ -58,7 +58,7 @@ public class MyService extends Service implements ILocationListener {
         mLocationManager = LocationManager.getInstance();
         mLocationManager.subscribe(this);
         mBuilder = new NotificationCompat.Builder(getApplicationContext(), "CNANNEL_ID");
-        mBuilder.setSmallIcon(R.drawable.ic_launcher_background);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setAutoCancel(true);
 
         mQrPointManager = ManagersFactory.getInstance().getQrPointManager();

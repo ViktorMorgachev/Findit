@@ -30,7 +30,7 @@ public class HideNotificationService extends Service {
         Log.i("Test", "HideNotificationService: onCreate()");
 
         mBuilder = new NotificationCompat.Builder(getApplicationContext(), "CNANNEL_ID");
-        mBuilder.setSmallIcon(R.drawable.ic_launcher_background);
+        mBuilder.setSmallIcon(R.mipmap.ic_launcher);
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
