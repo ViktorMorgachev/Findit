@@ -76,7 +76,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMapView.onCreate(savedInstanceState);
 
 
-        Toast.makeText(getContext(), "GoogleMap was onCreateView", Toast.LENGTH_LONG).show();
 
         if (mMapView != null) {
 

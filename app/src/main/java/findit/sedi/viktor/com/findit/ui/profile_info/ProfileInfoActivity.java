@@ -2,16 +2,19 @@ package findit.sedi.viktor.com.findit.ui.profile_info;
 
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.bumptech.glide.Glide;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -44,6 +47,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     private EditText mEditTextPassword;
     private EditText mEditTextPhone;
     private Button mButtonSave;
+    private ImageView mImageView;
 
 
     //Logic
@@ -95,6 +99,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mEditTextPassword = findViewById(R.id.et_password);
         mButtonSave = findViewById(R.id.btn_save);
         mEditTextName = findViewById(R.id.et_name);
+        mImageView = findViewById(R.id.iv_profile);
 
         mEditTextEmail.setText(user.getEmail());
         mEditTextPassword.setText(user.getPassword());
@@ -102,6 +107,8 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mEditTextName.setText(user.getName());
         mEditTextPhone.setText(user.getPhone());
         mSpinnerGender.setSelection((int) user.getGender());
+
+        Glide.with(this).load(user.getPhotoUrl()).into(mImageView);
 
 
         mTextViewSignOut.setOnClickListener(this::onClick);

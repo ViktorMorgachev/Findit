@@ -1,14 +1,17 @@
 package findit.sedi.viktor.com.findit.ui.rating.data_provider;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -88,6 +91,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private TextView mTextViewRatingPosition;
         private TextView mTextViewPlayersName;
         public ImageView arrow;
+        private ImageView mImageViewPhoto;
         private LinearLayout mLinearLayout;
 
 
@@ -105,7 +109,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             mTextViewPlayersName = v.findViewById(R.id.tv_profile_name);
             mTextViewRatingPosition = v.findViewById(R.id.tv_rating_number);
             mTextViewTotalBonus = v.findViewById(R.id.tv_profile_bonus);
-
+            mImageViewPhoto = v.findViewById(R.id.iv_photo);
 
             arrow.setImageResource(R.drawable.ic_keyboard_arrow_down_24dp);
 
@@ -121,9 +125,13 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             LayoutInflater layoutInflater = LayoutInflater.from(mLinearLayout.getContext());
 
+
             // в LinearLayout вставляем нащ View и инициализизируем и показываем значение
 
             View view = layoutInflater.inflate(R.layout.item_card_players_rating_child, mLinearLayout);
+
+            Glide.with(layoutInflater.getContext()).load(mPlayer.getPhotoUrl()).into((ImageView) view.findViewById(R.id.iv_photo));
+
 
             ((TextView) view.findViewById(R.id.tv_profile_name_child)).setText(mPlayer.getName());
             ((TextView) view.findViewById(R.id.tv_bonus_info)).setText

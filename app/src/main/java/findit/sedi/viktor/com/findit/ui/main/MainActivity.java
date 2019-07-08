@@ -52,7 +52,6 @@ import findit.sedi.viktor.com.findit.ui.profile_info.ProfileInfoActivity;
 import findit.sedi.viktor.com.findit.ui.rating.RatingActivity;
 import findit.sedi.viktor.com.findit.ui.scanner_code.QRCodeCameraActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
-import io.fabric.sdk.android.Fabric;
 import ru.terrakok.cicerone.Navigator;
 import ru.terrakok.cicerone.commands.Command;
 
@@ -96,8 +95,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     };
 
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -107,14 +104,11 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-
-
         mContext = this;
 
         setContentView(R.layout.activity_main);
 
         FinditBus.getInstance().register(this);
-
 
 
         mLocationManager = LocationManager.getInstance();
@@ -274,7 +268,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     @Override
     public void onLocationChanged(Location location) {
-        Toast.makeText(this, "Location changed", Toast.LENGTH_LONG).show();
+        //   Toast.makeText(this, "Location changed", Toast.LENGTH_LONG).show();
         sLatLng = new LatLng(location.getLatitude(), location.getLongitude());
         mCommonMapManager.zoomTo(sLatLng, DEFAULT_ZOOM);
     }
@@ -314,6 +308,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+
         drawer.closeDrawer(GravityCompat.START);
 
         return false;
@@ -324,7 +319,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
             mCommonMapManager.updatePlayers();
-            Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
+           // Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
         }
 
     }
@@ -336,7 +331,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
             if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
 
-                Toast.makeText(this, "QrPoints updated on map", Toast.LENGTH_SHORT).show();
+                //  Toast.makeText(this, "QrPoints updated on map", Toast.LENGTH_SHORT).show();
                 if (sLatLng != null)
                     mCommonMapManager.initPoints(ManagersFactory.getInstance().getQrPointManager().getQrPlaces());
             }
