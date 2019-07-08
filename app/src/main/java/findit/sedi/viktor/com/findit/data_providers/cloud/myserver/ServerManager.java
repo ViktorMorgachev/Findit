@@ -37,7 +37,7 @@ public class ServerManager {
         ServerManager.getInstance().updateQrPointByID(id, mark);
 
         // Если игра командная то команде добавляем бонусы
-        if (ManagersFactory.getInstance().getTournamentManager().getTournament(user.getTournamentID()).getTournamentType() == Tournament.TournamentType.Teams){
+        if (ManagersFactory.getInstance().getTournamentManager().getTournament(user.getTournamentID()).getTournamentType() == Tournament.TournamentType.Teams) {
             Team team = ManagersFactory.getInstance().getTeamManager().getTeam(user.getTeamID());
         }
 
@@ -45,15 +45,16 @@ public class ServerManager {
         // У себя помечаем в БД что место либо найденно, либо обнаруженно,  по ID, добавив его в список обнаруженных тайников или найденных
         // В зависимост и от тега
         if (mark.equalsIgnoreCase("discovered")) {
-           user.getDiscoveredQrPointIDs().add(id);
-           updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
+            user.getDiscoveredQrPointIDs().add(id);
+            updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
         } else if (mark.equalsIgnoreCase("fond")) {
             user.addBonus(ManagersFactory.getInstance().getAccountManager().getUser().getBonus() + ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_BONUS);
             // Добавляем в списко обнаруженных, удаляем из списка найденных (переносим его)
-            updateUserOnServer(KEY_UPDATE_FONDED_QR_POINTS);
             user.getFondedQrPointsIDs().add(id);
             user.getDiscoveredQrPointIDs().remove(id);
+            updateUserOnServer(KEY_UPDATE_FONDED_QR_POINTS);
+            updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
         }
 
 

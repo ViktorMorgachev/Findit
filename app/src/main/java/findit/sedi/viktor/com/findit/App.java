@@ -55,7 +55,7 @@ public class App extends Application {
 
         ManagersFactory.getInstance().setContext(this);
         LocationManager.getInstance().setContext(getApplicationContext());
-
+        Fabric.with(this, new Crashlytics());
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
             // This process is dedicated to LeakCanary for heap analysis.
@@ -63,7 +63,7 @@ public class App extends Application {
             return;
         }
         // LeakCanary.install(this);
-        refWatcher = LeakCanary.install(this);
+       // refWatcher = LeakCanary.install(this);
 
         ManagersFactory.getInstance().setContext(this);
 

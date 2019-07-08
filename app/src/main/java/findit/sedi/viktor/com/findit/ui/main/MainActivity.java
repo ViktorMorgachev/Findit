@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
 
-       // Fabric.with(this, new Crashlytics());
+
 
         mContext = this;
 
