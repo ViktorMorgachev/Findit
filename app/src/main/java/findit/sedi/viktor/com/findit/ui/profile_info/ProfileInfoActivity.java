@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -108,7 +109,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mEditTextPhone.setText(user.getPhone());
         mSpinnerGender.setSelection((int) user.getGender());
 
-        Glide.with(this).load(user.getPhotoUrl()).into(mImageView);
+        Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageView);
 
 
         mTextViewSignOut.setOnClickListener(this::onClick);

@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -130,7 +131,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             View view = layoutInflater.inflate(R.layout.item_card_players_rating_child, mLinearLayout);
 
-            Glide.with(layoutInflater.getContext()).load(mPlayer.getPhotoUrl()).into((ImageView) view.findViewById(R.id.iv_photo));
+            Glide
+                    .with(layoutInflater.getContext())
+                    .load(mPlayer.getPhotoUrl())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into((ImageView) view.findViewById(R.id.iv_photo));
 
 
             ((TextView) view.findViewById(R.id.tv_profile_name_child)).setText(mPlayer.getName());

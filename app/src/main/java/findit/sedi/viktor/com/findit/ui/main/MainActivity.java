@@ -12,6 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,6 +25,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.maps.GoogleMap;
@@ -72,6 +75,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     // TODO снова запускаем лишь тогда когда игра активна
     private TextView mNavTextViewName;
     private Context mContext;
+    private ImageView mImageViewIcon;
     private LocationManager mLocationManager;
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
@@ -129,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
 
         mNavTextViewName = navigationView.getHeaderView(0).findViewById(R.id.tv_profile_name);
+        mImageViewIcon = navigationView.getHeaderView(0).findViewById(R.id.profile_icon);
 
 
         mCommonMapManager = CommonMapManager.getInstance();
@@ -187,6 +192,9 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         Log.d(LOG_TAG, "Activity was resumed");
 
+        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+
+        Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageViewIcon);
 
         if (ManagersFactory.getInstance().getAccountManager().getUser() != null) {
             mNavTextViewName.setText(ManagersFactory.getInstance().getAccountManager().getUser().getName());
@@ -319,7 +327,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (mCommonMapManager.getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED) {
             mCommonMapManager.updatePlayers();
-           // Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, "Players locations updated", Toast.LENGTH_SHORT).show();
         }
 
     }
