@@ -2,12 +2,12 @@ package findit.sedi.viktor.com.findit.ui.main.fragments.maps;
 
 import android.content.Context;
 import android.os.Bundle;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -25,8 +25,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.Util;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
@@ -76,7 +76,6 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
         mMapView.onCreate(savedInstanceState);
 
 
-
         if (mMapView != null) {
 
             mMapView.onCreate(null);  //Don't forget to call onCreate after get the mapView!
@@ -89,9 +88,10 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                     mMap.setOnMarkerClickListener(GoogleMapFragment.this);
                     mMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
-                                    Objects.requireNonNull(getContext()), R.raw.google_map_style));
+                                    Objects.requireNonNull(getContext().getApplicationContext()), R.raw.google_map_style));
 
-                    mCallBackClickListener.mapReady();
+                    if (mCallBackClickListener != null)
+                        mCallBackClickListener.mapReady();
                     // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LocationServices.me().getLocation().toLatLng(), MainActivity2.MAXIMUM_ZOOMLEVEL_GOOGLE));
                 }
             });
@@ -229,7 +229,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
         // Если пользователь на расстоянии не дальше чем 300 м от точки, и её позиция указана в списке коорлинат, mClickableQrPoint
 
-        user = ManagersFactory.getInstance().getAccountManager().getUser();
+        user = App.instance.getAccountManager().getUser();
 
         if ((Util.getInstance().getDistance(marker.getPosition(), new LatLng(user.getLatitude(), user.getLongtude())) < 300) &&
                 mClickableQrPoints.contains(marker.getPosition())) {
@@ -237,11 +237,11 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
             // Если бонусы за ответы отсутствуют
             // Хак, получение идентификатора точки по местоположению
-            String qrPointID = ManagersFactory.getInstance().getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition());
+            String qrPointID = App.instance.getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition());
 
 
             if (qrPointID != null)
-            mCallBackClickListener.QrPointClicked(ManagersFactory.getInstance().getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition()));
+                mCallBackClickListener.QrPointClicked(App.instance.getQrPointManager().getQrPlaceIDByLatLong(marker.getPosition()));
 
         }
 
@@ -281,7 +281,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
 
                 // Если идентификатор присутствует в списке обнаруженых точек на карте пользователя, то инициальзация слушателя нажатия на QrPoint
 
-                user = ManagersFactory.getInstance().getAccountManager().getUser();
+                user = App.instance.getAccountManager().getUser();
 
                 if (user.getDiscoveredQrPointIDs() != null && user.getDiscoveredQrPointIDs().contains(places.get(i).getID())) {
                     mClickableQrPoints.add(places.get(i).getLatLong());
@@ -306,7 +306,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
     // Только при условии что тайник новый этот метод срабатывает
     public void updatePoint(String id, String mark) {
 
-        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id);
+        QrPoint qrPoint = App.instance.getQrPointManager().getQrPlaceByID(id);
 
         // Ищем точку у которой идентификатор необходимый
         for (int i = 0; i < mMarkerQrPoints.size(); i++) {

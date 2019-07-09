@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.ui.rating.data_provider.MyAdapter;
 
 // Нужно попытаться обновлять активность при её необходимости а лучше всего
@@ -29,7 +29,6 @@ public class RatingActivity extends AppCompatActivity {
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        ManagersFactory.getInstance().setContext(this);
 
         setContentView(R.layout.recycler_layout);
 
@@ -39,7 +38,7 @@ public class RatingActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MyAdapter(this, ManagersFactory.getInstance().getPlayersManager().getPlayers());
+        mAdapter = new MyAdapter(this, App.instance.getPlayersManager().getPlayers());
 
         recyclerView.setAdapter(mAdapter);
 

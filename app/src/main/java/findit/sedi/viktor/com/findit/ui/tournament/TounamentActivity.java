@@ -1,17 +1,18 @@
 package findit.sedi.viktor.com.findit.ui.tournament;
 
-import androidx.lifecycle.Lifecycle;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.Window;
 import android.view.WindowManager;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.Lifecycle;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.squareup.otto.Subscribe;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
@@ -32,7 +33,6 @@ public class TounamentActivity extends AppCompatActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         DialogManager.getInstance().setContext(this);
-        ManagersFactory.getInstance().setContext(this);
 
         setContentView(R.layout.recycler_layout);
 
@@ -42,7 +42,7 @@ public class TounamentActivity extends AppCompatActivity {
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MyAdapter(this, ManagersFactory.getInstance().getTournamentManager().getTournaments());
+        mAdapter = new MyAdapter(this, App.instance.getTournamentManager().getTournaments());
         recyclerView.setAdapter(mAdapter);
 
         FinditBus.getInstance().register(this);

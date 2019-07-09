@@ -22,7 +22,6 @@ import java.util.List;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
@@ -154,11 +153,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                 View view = layoutInflater.inflate(R.layout.item_card_tournament_child, mLinearLayout);
 
-                ((TextView) view.findViewById(R.id.tv_count_of_players)).setText(App.instance.getResources().getString(R.string.count_of_players) + ": " + ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI)).getPlayersIds().size());
+                ((TextView) view.findViewById(R.id.tv_count_of_players)).setText(App.instance.getResources().getString(R.string.count_of_players) + ": " + App.instance.getTeamManager().getTeam(teamsIDs.get(finalI)).getPlayersIds().size());
                 ((TextView) view.findViewById(R.id.tv_name)).setText
-                        (App.instance.getResources().getString(R.string.name) + ": " + (ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI).trim()).getName()));
+                        (App.instance.getResources().getString(R.string.name) + ": " + (App.instance.getTeamManager().getTeam(teamsIDs.get(finalI).trim()).getName()));
                 ((TextView) view.findViewById(R.id.tv_count_of_bonus)).setText(App.instance.getResources().getString(R.string.count_of_bonus) + ": "
-                        + ManagersFactory.getInstance().getTeamManager().getTeam(teamsIDs.get(finalI)).getBonus());
+                        + App.instance.getTeamManager().getTeam(teamsIDs.get(finalI)).getBonus());
 
                 view.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -170,8 +169,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
 
                         // Если уже принадлежим турниру
-                        if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
-                            if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
+                        if (App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+                            if (App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
                                 Toast.makeText(mContext, "Вы уже в данном турнире", Toast.LENGTH_SHORT).show();
                             else
                                 Toast.makeText(mContext, "Вы не можете менять турнир и команду", Toast.LENGTH_SHORT).show();
@@ -189,7 +188,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private void showDialog(String tournamentID, String teamID, boolean showNotification) {
 
 
-            IAction iAction = () -> ManagersFactory.getInstance().getAccountManager().joinToTournament(tournamentID, teamID);
+            IAction iAction = () -> App.instance.getAccountManager().joinToTournament(tournamentID, teamID);
 
             IActionHelper.getInstance().setIAction(() -> {
                 DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null,
@@ -219,7 +218,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     final Calendar tournamentCalendarBegin = Calendar.getInstance();
                     final Calendar systemCalendar = Calendar.getInstance();
 
-                    tournamentCalendarBegin.setTimeInMillis(ManagersFactory.getInstance().getTournamentManager().
+                    tournamentCalendarBegin.setTimeInMillis(App.instance.getTournamentManager().
                             getTournament(TournamentID).getDateFrom().getSeconds() * 1000);
 
                     if (systemCalendar.equals(tournamentCalendarBegin) || systemCalendar.after(tournamentCalendarBegin) ) {
@@ -232,21 +231,21 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
 
                     // Если уже принадлежим турниру
-                    if (!ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
-                        if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
+                    if (!App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+                        if (App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase(TournamentID))
                             Toast.makeText(mContext, "Вы уже в данном турнире", Toast.LENGTH_SHORT).show();
                         else
                             Toast.makeText(mContext, "Вы не можете менять турнир и команду", Toast.LENGTH_SHORT).show();
                     } else {
 
-                        if (ManagersFactory.getInstance().getTournamentManager()
+                        if (App.instance.getTournamentManager()
                                 .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.One_By_One) {
                             showDialog(filterData(R.string.id, tournamentID.getText().toString().trim()), null, false);
                         }
                     }
                     break;
                 case R.id.iv_arrow:
-                    if (!isExpand && ManagersFactory.getInstance().getTournamentManager()
+                    if (!isExpand && App.instance.getTournamentManager()
                             .getTournament(filterData(R.string.id, tournamentID.getText().toString().trim())).getTournamentType() == Tournament.TournamentType.Teams)
                         showChilds();
                     else if (isExpand) {

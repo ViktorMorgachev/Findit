@@ -35,7 +35,7 @@ public class DialogManager {
     public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
 
 
-        mAlertDialog = new AlertDialog.Builder(mContext).create();
+        mAlertDialog = new AlertDialog.Builder(mContext.getApplicationContext()).create();
 
         if (tiitle != null) {
             mAlertDialog.setTitle(tiitle);
@@ -70,6 +70,7 @@ public class DialogManager {
                     R.drawable.ic_tournament_24dp, "CHANNEL_ID", tiitle, mContext.getApplicationContext().getResources().getString(R.string.channel_name),
                     mContext.getApplicationContext().getResources().getString(R.string.channel_descrioption), null);
         }
+
 
         mAlertDialog.show();
 

@@ -9,8 +9,8 @@ import android.view.WindowManager;
 
 import java.util.ArrayList;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 
 public class ShowTipsActivity extends AppCompatActivity {
@@ -40,8 +40,8 @@ public class ShowTipsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(mAdapter);
 
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
-        mAdapter.setItems((ArrayList<String>) ManagersFactory.getInstance().getTournamentManager().getTournament(user.getTournamentID()).getTips());
+        User user = App.instance.getAccountManager().getUser();
+        mAdapter.setItems((ArrayList<String>) App.instance.getTournamentManager().getTournament(user.getTournamentID()).getTips());
 
 
     }

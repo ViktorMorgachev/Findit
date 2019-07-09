@@ -12,12 +12,13 @@ import androidx.fragment.app.FragmentManager;
 import java.util.ArrayList;
 import java.util.Objects;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.exceptions.CrashlicsExceptionHelper;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
 import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
 import findit.sedi.viktor.com.findit.ui.find_tainik.fragments.QuestTainikFragment;
@@ -32,7 +33,6 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     private FragmentManager mFragmentManager;
     private QrPoint mQrPoint;
     private Prefs mPrefs;
-    private User mUser = ManagersFactory.getInstance().getAccountManager().getUser();
     static int count = 0;
     public int bonus = 0;
     private ArrayList<String> mArrayListAnswers = new ArrayList<>();
@@ -63,10 +63,28 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
     }
 
     private void readIntentExtras() {
+
         if (getIntent().getExtras() != null) {
             String mQrPointID = getIntent().getExtras().getString(POINT_ID);
-            mQrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(mQrPointID);
 
+
+            mQrPoint = App.instance.getQrPointManager().getQrPlaceByID(mQrPointID);
+
+
+            if (mQrPoint.getQuests() == null) {
+
+                CrashlicsExceptionHelper crashlicsExceptionHelper = new CrashlicsExceptionHelper();
+
+                crashlicsExceptionHelper.setInformation("Size of QrPoints: " +
+                        App.instance.getQrPointManager().getQrPlaces().size() + "\n" +
+                        "QrPointID: " + mQrPointID);
+
+                try {
+                    throw  crashlicsExceptionHelper;
+                } catch (CrashlicsExceptionHelper crashlicsExceptionHelper1) {
+                    crashlicsExceptionHelper1.printStackTrace();
+                }
+            }
             mArrayListAnswers.addAll(mQrPoint.getQuests().keySet());
         }
 
@@ -79,7 +97,7 @@ public class QuestTainikActivity extends AppCompatActivity implements QuestTaini
         bonus = (int) (bonus + mQrPoint.getQuestBonus());
 
         if (!mPrefs.getStringSetByKey(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT).contains(mQrPoint.getID())) {
-            ManagersFactory.getInstance().getAccountManager().getUser().addBonus(mQrPoint.getQuestBonus());
+            App.instance.getAccountManager().getUser().addBonus(mQrPoint.getQuestBonus());
             ServerManager.getInstance().updateUserOnServer(KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS);
         }
 

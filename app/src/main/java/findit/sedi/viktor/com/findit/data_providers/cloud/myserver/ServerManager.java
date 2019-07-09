@@ -1,5 +1,6 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.myserver;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.CloudFirestoreManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
@@ -30,15 +31,15 @@ public class ServerManager {
 
         // Отправляем событие для получения Бонусов, которое нашёл пользлователь,  а точнее прибавляем его бонусы беря из БД меток
         // по ID которое он отправил и прибавляем к его бонусам и после этого удаляем это Place из БД
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        User user = App.instance.getAccountManager().getUser();
 
 
         //Меняем на сервере статус точки по её ID
         ServerManager.getInstance().updateQrPointByID(id, mark);
 
         // Если игра командная то команде добавляем бонусы
-        if (ManagersFactory.getInstance().getTournamentManager().getTournament(user.getTournamentID()).getTournamentType() == Tournament.TournamentType.Teams) {
-            Team team = ManagersFactory.getInstance().getTeamManager().getTeam(user.getTeamID());
+        if (App.instance.getTournamentManager().getTournament(user.getTournamentID()).getTournamentType() == Tournament.TournamentType.Teams) {
+            Team team = App.instance.getTeamManager().getTeam(user.getTeamID());
         }
 
 
@@ -49,7 +50,7 @@ public class ServerManager {
             updateUserOnServer(KEY_UPDATE_DISCOVERED_QR_POINTS);
         } else if (mark.equalsIgnoreCase("fond")) {
             user.addBonus(ManagersFactory.getInstance().getAccountManager().getUser().getBonus() + ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(id).getBonus());
-            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_BONUS);
+            updateUserOnServer(KEY_UPDATE_BONUS);
             // Добавляем в списко обнаруженных, удаляем из списка найденных (переносим его)
             user.getFondedQrPointsIDs().add(id);
             user.getDiscoveredQrPointIDs().remove(id);

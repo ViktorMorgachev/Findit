@@ -3,14 +3,21 @@ package findit.sedi.viktor.com.findit;
 import android.app.Application;
 import android.content.Context;
 import android.net.ConnectivityManager;
+
 import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import findit.sedi.viktor.com.findit.common.AccountManager;
+import findit.sedi.viktor.com.findit.common.GoogleAccountStore;
 import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
+import findit.sedi.viktor.com.findit.common.PlayersManager;
+import findit.sedi.viktor.com.findit.common.QrPointManager;
+import findit.sedi.viktor.com.findit.common.TeamManager;
+import findit.sedi.viktor.com.findit.common.TournamentManager;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 import io.fabric.sdk.android.Fabric;
@@ -27,6 +34,16 @@ public class App extends Application {
     private RefWatcher refWatcher;
     public static App instance;
     private Cicerone<Router> cicerone;
+    private AccountManager mAccountManager;
+    private QrPointManager mQrPointManager;
+    private LocationManager mLocationManager;
+    private PlayersManager mPlayersManager;
+    private TournamentManager mTournamentManager;
+    private TeamManager mTeamManager;
+
+
+    private GoogleAccountStore mGoogleAccountStore;
+    private ManagersFactory mManagersFactory;
 
 
     private AppDatabase sUser_database;
@@ -44,6 +61,10 @@ public class App extends Application {
         MultiDex.install(base);
     }
 
+    public void setGoogleAccountStore(GoogleAccountStore googleAccountStore) {
+        mGoogleAccountStore = googleAccountStore;
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -53,8 +74,12 @@ public class App extends Application {
 
         Prefs.getInstance().setContext(getApplicationContext());
 
-        ManagersFactory.getInstance().setContext(this);
-        LocationManager.getInstance().setContext(getApplicationContext());
+        mManagersFactory = ManagersFactory.getInstance();
+        mManagersFactory.setContext(this);
+
+        initManagers();
+
+
         Fabric.with(this, new Crashlytics());
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -63,10 +88,22 @@ public class App extends Application {
             return;
         }
         // LeakCanary.install(this);
-       // refWatcher = LeakCanary.install(this);
+        // refWatcher = LeakCanary.install(this);
 
         ManagersFactory.getInstance().setContext(this);
 
+    }
+
+    private void initManagers() {
+        mLocationManager = LocationManager.getInstance();
+        mLocationManager.setContext(this);
+
+        mAccountManager = mManagersFactory.getAccountManager();
+        mPlayersManager = mManagersFactory.getPlayersManager();
+        mQrPointManager = mManagersFactory.getQrPointManager();
+        mTeamManager = mManagersFactory.getTeamManager();
+        mGoogleAccountStore = mManagersFactory.getGoogleStore();
+        mTournamentManager = mManagersFactory.getTournamentManager();
     }
 
     public NavigatorHolder getNavigationHolder() {
@@ -87,5 +124,35 @@ public class App extends Application {
     public boolean hasNet() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         return manager.getActiveNetworkInfo() != null && manager.getActiveNetworkInfo().isConnectedOrConnecting();
+    }
+
+    public AccountManager getAccountManager() {
+        return mAccountManager;
+    }
+
+    public QrPointManager getQrPointManager() {
+        return mQrPointManager;
+    }
+
+    public LocationManager getLocationManager() {
+        return mLocationManager;
+    }
+
+    public PlayersManager getPlayersManager() {
+        return mPlayersManager;
+    }
+
+    public TournamentManager getTournamentManager() {
+        return mTournamentManager;
+    }
+
+    public TeamManager getTeamManager() {
+        return mTeamManager;
+    }
+
+
+    public GoogleAccountStore getGoogleStore() {
+        return mGoogleAccountStore;
+
     }
 }

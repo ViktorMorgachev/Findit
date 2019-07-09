@@ -23,8 +23,8 @@ import com.google.android.gms.vision.barcode.BarcodeDetector;
 
 import java.io.IOException;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 
@@ -70,7 +70,7 @@ public class QRCodeCameraActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Toast.makeText(QRCodeCameraActivity.this, "Вы получили  " +
-                        ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(code).getBonus() + " бонусов", Toast.LENGTH_LONG).show();
+                        App.instance.getQrPointManager().getQrPlaceByID(code).getBonus() + " бонусов", Toast.LENGTH_LONG).show();
 
 
 

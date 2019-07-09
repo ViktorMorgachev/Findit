@@ -1,8 +1,9 @@
 package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -19,7 +20,6 @@ import java.util.List;
 import java.util.Map;
 
 import findit.sedi.viktor.com.findit.App;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
@@ -116,13 +116,13 @@ public class CloudFirestoreManager {
     // Нужно будет доработать конструкцию, заменив строки на Enum Или KeyCommonPath
     public void updateUser(String tag) {
 
-        if (ManagersFactory.getInstance().getAccountManager().getUser() == null)
+        if (App.instance.getAccountManager().getUser() == null)
             return;
 
 
-        Log.d(LOG_TAG, "User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        Log.d(LOG_TAG, "User " + App.instance.getAccountManager().getUser().getID());
 
-        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(App.instance.getAccountManager().getUser().getID());
         // Логика такова, работа во втором потоке, он запускает другие потоки,
         // Сам засыпает на 1 секунду, если обновления успешны у всех трёх потоков, то останавливаем сами себя и отплавляем событие на обновление
         // Данных
@@ -135,7 +135,7 @@ public class CloudFirestoreManager {
                     final int[] succesResult = {0};
 
 
-                    document.update(USER_NAME, ManagersFactory.getInstance().getAccountManager().getUser().getName())
+                    document.update(USER_NAME, App.instance.getAccountManager().getUser().getName())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -150,7 +150,7 @@ public class CloudFirestoreManager {
                                 }
                             });
 
-                    document.update(USER_PHONE, ManagersFactory.getInstance().getAccountManager().getUser().getPhone())
+                    document.update(USER_PHONE, App.instance.getAccountManager().getUser().getPhone())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -165,7 +165,7 @@ public class CloudFirestoreManager {
                                 }
                             });
 
-                    document.update(USER_GENDER, ManagersFactory.getInstance().getAccountManager().getUser().getGender())
+                    document.update(USER_GENDER, App.instance.getAccountManager().getUser().getGender())
                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
@@ -189,9 +189,9 @@ public class CloudFirestoreManager {
                         }
                     }
 
-                    String email = ManagersFactory.getInstance().getAccountManager().getUser().getEmail();
+                    String email = App.instance.getAccountManager().getUser().getEmail();
 
-                    ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
+                    App.instance.getAccountManager().updateUserByEmail(email);
 
                 }
             });
@@ -200,7 +200,7 @@ public class CloudFirestoreManager {
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_LOCATION)) {
 
 
-            document.update(USER_LOCATION, ManagersFactory.getInstance().getAccountManager().getUser().getGeopoint())
+            document.update(USER_LOCATION, App.instance.getAccountManager().getUser().getGeopoint())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -222,7 +222,7 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
 
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
@@ -235,11 +235,11 @@ public class CloudFirestoreManager {
                     });
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_DISCOVERED_QR_POINTS)) {
 
-            document.update(USER_DISCOVERED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getDiscoveredQrPointIDs())
+            document.update(USER_DISCOVERED_QR_POINTS, App.instance.getAccountManager().getUser().getDiscoveredQrPointIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -250,11 +250,11 @@ public class CloudFirestoreManager {
                         }
                     });
 
-            document.update(USER_SUM_OF_DISCOVERED_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getSumOfFondedPoints() + 1)
+            document.update(USER_SUM_OF_DISCOVERED_POINTS, App.instance.getAccountManager().getUser().getSumOfFondedPoints() + 1)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -267,11 +267,11 @@ public class CloudFirestoreManager {
 
 
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_BONUS)) {
-            document.update(USER_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getBonus())
+            document.update(USER_BONUS, App.instance.getAccountManager().getUser().getBonus())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + "Updated user bonus => " + task.getResult());
                         }
                     })
@@ -282,11 +282,11 @@ public class CloudFirestoreManager {
                         }
                     });
 
-            document.update(USER_TOTAL_BONUS, ManagersFactory.getInstance().getAccountManager().getUser().getTotalBonus())
+            document.update(USER_TOTAL_BONUS, App.instance.getAccountManager().getUser().getTotalBonus())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + "Updated user total bonus => " + task.getResult());
                         }
                     })
@@ -298,11 +298,11 @@ public class CloudFirestoreManager {
                     });
 
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_FONDED_QR_POINTS)) {
-            document.update(USER_FONDED_QR_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getFondedQrPointsIDs())
+            document.update(USER_FONDED_QR_POINTS, App.instance.getAccountManager().getUser().getFondedQrPointsIDs())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -313,11 +313,11 @@ public class CloudFirestoreManager {
                         }
                     });
 
-            document.update(USER_SUM_OF_FONDED_POINTS, ManagersFactory.getInstance().getAccountManager().getUser().getSumOfFondedPoints() + 1)
+            document.update(USER_SUM_OF_FONDED_POINTS, App.instance.getAccountManager().getUser().getSumOfFondedPoints() + 1)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            ManagersFactory.getInstance().getAccountManager().updateUserByEmail(ManagersFactory.getInstance().getAccountManager().getUser().getEmail());
+                            App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
                             Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
@@ -328,7 +328,7 @@ public class CloudFirestoreManager {
                         }
                     });
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_TOURNAMENT)) {
-            document.update(USER_TOURNAMENT_ID, ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID())
+            document.update(USER_TOURNAMENT_ID, App.instance.getAccountManager().getUser().getTournamentID())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -345,7 +345,7 @@ public class CloudFirestoreManager {
                         }
                     });
 
-            document.update(USER_TEAM_ID, ManagersFactory.getInstance().getAccountManager().getUser().getTeamID())
+            document.update(USER_TEAM_ID, App.instance.getAccountManager().getUser().getTeamID())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
@@ -367,11 +367,11 @@ public class CloudFirestoreManager {
 
     public void changeUserNetStatus(boolean status) {
 
-        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(App.instance.getAccountManager().getUser().getID());
         document.update(USER_NET_STATUS, status);
 
 
-        Log.d(LOG_TAG, "changeUserNetStatus() User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
+        Log.d(LOG_TAG, "changeUserNetStatus() User " + App.instance.getAccountManager().getUser().getID());
 
     }
 
@@ -389,7 +389,7 @@ public class CloudFirestoreManager {
 
                             if (document.exists()) {
 
-                                ManagersFactory.getInstance().getTeamManager().addTeam(
+                                App.instance.getTeamManager().addTeam(
                                         new Team(document.getString(KEY_TEAM_TOURNAMENT_ID),
                                                 (List<String>) document.get(KEY_TEAM_PLAYER_IDS),
                                                 document.getId(),
@@ -407,7 +407,7 @@ public class CloudFirestoreManager {
 
     public void updateTeams() {
 
-        ManagersFactory.getInstance().getTeamManager().clearTeams();
+        App.instance.getTeamManager().clearTeams();
 
         FirebaseFirestore.getInstance().collection(KEY_TEAMS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
@@ -418,7 +418,7 @@ public class CloudFirestoreManager {
 
                             if (document.exists()) {
 
-                                ManagersFactory.getInstance().getTeamManager().addTeam(
+                                App.instance.getTeamManager().addTeam(
                                         new Team(document.getString(KEY_TEAM_TOURNAMENT_ID),
                                                 (List<String>) document.get(KEY_TEAM_PLAYER_IDS),
                                                 document.getId(),
@@ -447,7 +447,7 @@ public class CloudFirestoreManager {
                             if (document.exists()) {
 
 
-                                ManagersFactory.getInstance().getTournamentManager().addTournament(
+                                App.instance.getTournamentManager().addTournament(
                                         new Tournament(document.getTimestamp(TOURNAMENTS_DATE_FROM),
                                                 document.getTimestamp(TOURNAMENTS_DATE_TO),
                                                 document.getString(TOURNAMENTS_DESCRIBE),
@@ -504,7 +504,7 @@ public class CloudFirestoreManager {
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
                     public void onSuccess(DocumentReference documentReference) {
-                        ManagersFactory.getInstance().getAccountManager().updateUserByEmail(email);
+                        App.instance.getAccountManager().updateUserByEmail(email);
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
@@ -538,7 +538,7 @@ public class CloudFirestoreManager {
                             if (!document.getString(USER_EMAIL).equalsIgnoreCase(email)) {
                                 continue;
                             } else {
-                                ManagersFactory.getInstance().getAccountManager().initUser(new User(document.getString(USER_PHONE),
+                                App.instance.getAccountManager().initUser(new User(document.getString(USER_PHONE),
                                         document.getString(USER_NAME),
                                         document.getId(),
                                         document.getString(USER_EMAIL),
@@ -557,7 +557,7 @@ public class CloudFirestoreManager {
                                 ));
 
 
-                                Log.d(LOG_TAG, "initUser() User " + ManagersFactory.getInstance().getAccountManager().getUser().getID());
+                                Log.d(LOG_TAG, "initUser() User " + App.instance.getAccountManager().getUser().getID());
 
 
                                 break;
@@ -585,12 +585,12 @@ public class CloudFirestoreManager {
                             GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
 
                             // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
-                            if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                            if (document.getId().equalsIgnoreCase(App.instance.getAccountManager().getUser().getID()))
                                 continue;
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-                            ManagersFactory.getInstance().getPlayersManager().addPlayer(new Player(
+                            App.instance.getPlayersManager().addPlayer(new Player(
                                     document.getLong(USER_BONUS),
                                     document.getString(USER_NAME),
                                     document.getString(USER_PHOTO),
@@ -619,25 +619,26 @@ public class CloudFirestoreManager {
     public void updatePlayers() {
 
 
-        ManagersFactory.getInstance().getPlayersManager().clearPlayers();
-
         mFirebaseFirestore.collection(KEY_USERS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
+
+                        App.instance.getPlayersManager().clearPlayers();
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
 
                             GeoPoint geoPoint = document.getGeoPoint(USER_LOCATION);
 
                             // Ставим ограничение, если ID равен нашему аккаунту, то игнорим
-                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                                if (document.getId().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+                            if (App.instance.getAccountManager().getUser() != null)
+                                if (document.getId().equalsIgnoreCase(App.instance.getAccountManager().getUser().getID()))
                                     continue;
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-                            ManagersFactory.getInstance().getPlayersManager().addPlayer(new Player(
+                            App.instance.getPlayersManager().addPlayer(new Player(
                                     document.getLong(USER_BONUS),
                                     document.getString(USER_NAME),
                                     document.getString(USER_PHOTO),
@@ -680,26 +681,27 @@ public class CloudFirestoreManager {
 
     public void getQrPlaces() {
 
-        ManagersFactory.getInstance().getQrPointManager().clearQrPoints();
-
 
         mFirebaseFirestore.collection(KEY_QRPOINTS_PATH).get()
                 .addOnFailureListener(e -> Log.w(LOG_TAG, "Error getting documents. Failure"))
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
+
+                        App.instance.getQrPointManager().clearQrPoints();
+
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
 
                             // Ставим ограничение, если не равна нашему турниру, то откллоняем
-                            if (ManagersFactory.getInstance().getAccountManager().getUser() != null)
-                                if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID()))
+                            if (App.instance.getAccountManager().getUser() != null)
+                                if (!document.getString(QRPOINT_TOURNAMENT_ID).equalsIgnoreCase(App.instance.getAccountManager().getUser().getTournamentID()))
                                     continue;
 
                             GeoPoint geoPoint = document.getGeoPoint(QRPOINT_LOCATION);
 
                             // Обновляем значение по ID что эти точки уже нашли другие пользователи
                             // Карта при обновлени автоматически подхватит измененения
-                            ManagersFactory.getInstance().getQrPointManager().addQrPoint(new QrPoint(
+                            App.instance.getQrPointManager().addQrPoint(new QrPoint(
                                     document.getLong(QRPOINT_BONUS),
                                     document.getBoolean(QRPOINT_TYPE),
                                     document.getString(QRPOINT_MARK),
@@ -740,7 +742,7 @@ public class CloudFirestoreManager {
         document = mFirebaseFirestore.collection(KEY_TOURNAMENTS_PATH).document(id);
 
 
-        document.update(TOURNAMENTS_PLAYERS_IDS, ManagersFactory.getInstance().getTournamentManager().getTournament(id).getPlayersIDs())
+        document.update(TOURNAMENTS_PLAYERS_IDS, App.instance.getTournamentManager().getTournament(id).getPlayersIDs())
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {

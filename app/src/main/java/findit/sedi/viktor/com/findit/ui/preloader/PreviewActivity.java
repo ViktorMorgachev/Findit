@@ -11,8 +11,8 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.ProgressLoder;
@@ -104,7 +104,7 @@ public class PreviewActivity extends AppCompatActivity {
                     user.setEmail(email);
                     user.setPhotoUrl(photoUrl);
 
-                    ManagersFactory.getInstance().getGoogleStore().initUser(new User());
+                    App.instance.getGoogleStore().initUser(new User());
 
                     ServerManager.getInstance().createNewUser(email, "byGoogle", name, photoUrl);
                 } else {
@@ -136,7 +136,7 @@ public class PreviewActivity extends AppCompatActivity {
 
     private void initUserObserver() {
 
-        mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
+        mUserObserver =  App.instance.getAccountManager().getChanges()
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<User>() {
                     @Override
@@ -166,7 +166,7 @@ public class PreviewActivity extends AppCompatActivity {
 
                     @Override
                     public void onComplete() {
-                        Log.d(LOG_TAG, "RegisterActivity onComplete  " + ManagersFactory.getInstance().getAccountManager().getUser());
+                        Log.d(LOG_TAG, "RegisterActivity onComplete  " + App.instance.getAccountManager().getUser());
                     }
                 });
 

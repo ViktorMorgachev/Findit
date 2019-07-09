@@ -12,8 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
@@ -55,7 +55,7 @@ public class TipTainikFragment extends Fragment implements View.OnClickListener 
         View view = inflater.inflate(R.layout.tip_for_tainik, null);
 
 
-        mQrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(getArguments().getString(KEY_QR_POINT_ID));
+        mQrPoint = App.instance.getQrPointManager().getQrPlaceByID(getArguments().getString(KEY_QR_POINT_ID));
 
         mImageView = view.findViewById(R.id.iv_tip_photo);
         mButton = view.findViewById(R.id.btn_ok);

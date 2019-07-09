@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.Calendar;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
@@ -39,7 +40,6 @@ public class MyService extends Service implements ILocationListener {
     private NotificatorManager mNotificatorManager;
     private LocationManager mLocationManager;
     private LatLng mLatLng;
-    private QrPointManager mQrPointManager;
     private final Calendar tournamentCalendarBegin = Calendar.getInstance();
     private final Calendar tournamentCalendarEnd = Calendar.getInstance();
     private final Calendar systemCalendar = Calendar.getInstance();
@@ -61,7 +61,7 @@ public class MyService extends Service implements ILocationListener {
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setAutoCancel(true);
 
-        mQrPointManager = ManagersFactory.getInstance().getQrPointManager();
+
 
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -217,8 +217,8 @@ public class MyService extends Service implements ILocationListener {
                     ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
                     !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
 
-                String nearbyQrPointID = mQrPointManager.getNearbyOfQrPlaced(latLng);
-                mQrPointManager.checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
+                String nearbyQrPointID = App.instance.getQrPointManager().getNearbyOfQrPlaced(latLng);
+                App.instance.getQrPointManager().checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
             }
 
 

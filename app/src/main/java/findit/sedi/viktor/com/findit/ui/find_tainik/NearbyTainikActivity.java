@@ -7,8 +7,8 @@ import android.view.View;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
 
 // Сюда передадим обьект QrPlace или QrPlace и будем использовать либо инстансы либо интерфейсы необходимые
@@ -56,7 +56,7 @@ public class NearbyTainikActivity extends AppCompatActivity {
     private void readIntentExtras() {
         if (getIntent().getExtras() != null) {
             String mQrPointID = getIntent().getExtras().getString(POINT_ID);
-            mQrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(mQrPointID);
+            mQrPoint = App.instance.getQrPointManager().getQrPlaceByID(mQrPointID);
         }
 
     }

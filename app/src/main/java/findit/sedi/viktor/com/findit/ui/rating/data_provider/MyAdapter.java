@@ -19,7 +19,6 @@ import java.util.Collections;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
 
@@ -33,7 +32,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         mPlayers = data;
 
         // Добавляем в список себя чтобы видеть ещё свой рейтинг
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        User user = App.instance.getAccountManager().getUser();
 
         // Добавляем пользователя только  тогда, если его почта не существует в списке
         boolean userExists = false;
@@ -143,7 +142,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
                     (App.instance.getResources().getString(R.string.bonus) + ": " + mPlayer.getTotalBonus());
 
 
-            if (mPlayer.getID().equalsIgnoreCase(ManagersFactory.getInstance().getAccountManager().getUser().getID()))
+            if (mPlayer.getID().equalsIgnoreCase(App.instance.getAccountManager().getUser().getID()))
                 ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_online_24dp);
             else if (mPlayer.isNet_status()) {
                 ((ImageView) view.findViewById(R.id.iv_status)).setImageResource(R.drawable.ic_status_online_24dp);
@@ -157,10 +156,10 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                 ((TextView) view.findViewById(R.id.tv_tournament_name))
                         .setText(App.instance.getResources().getString(R.string.tounament_name) + ": " +
-                                ManagersFactory.getInstance().getTournamentManager().getTournament(mPlayer.getTournamentID().trim()).getDescribe());
+                                App.instance.getTournamentManager().getTournament(mPlayer.getTournamentID().trim()).getDescribe());
 
                 ((TextView) view.findViewById(R.id.tv_team_name)).setText(App.instance.getResources().getString(R.string.team) + ": " +
-                        ManagersFactory.getInstance().getTeamManager().getTeam(mPlayer.getTeamID().trim()).getName());
+                        App.instance.getTeamManager().getTeam(mPlayer.getTeamID().trim()).getName());
             }
 
             ((TextView) view.findViewById(R.id.tv_gender)).setText(App.instance.getResources().getTextArray(R.array.Gender)[(int) mPlayer.getGender()]);

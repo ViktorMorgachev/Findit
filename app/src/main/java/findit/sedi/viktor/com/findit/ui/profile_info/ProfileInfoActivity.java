@@ -22,7 +22,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.ManagersFactory;
 import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
@@ -90,7 +89,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     // Добавить вкладки (табы) в одной он видит свой профиль, в другой видит список мест в которых он побывал
     private void initUI() {
 
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        User user =  App.instance.getAccountManager().getUser();
 
         mTextViewBonus = findViewById(R.id.tv_bonus_info);
         mSpinnerGender = findViewById(R.id.sp_gender);
@@ -121,7 +120,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
     protected void onResume() {
         super.onResume();
 
-        mUserObserver = ManagersFactory.getInstance().getAccountManager().getChanges()
+        mUserObserver =  App.instance.getAccountManager().getChanges()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableObserver<User>() {
                     @Override
@@ -162,12 +161,12 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
             stopService(new Intent(this, MyService.class));
 
             ServerManager.getInstance().changeUserNetStatus(false);
-            ManagersFactory managersFactory = ManagersFactory.getInstance();
-            managersFactory.getAccountManager().clearUser();
-            managersFactory.getTeamManager().clearTeams();
-            managersFactory.getTournamentManager().clearTournaments();
-            managersFactory.getQrPointManager().clearQrPoints();
-            managersFactory.getPlayersManager().clearPlayers();
+
+            App.instance.getAccountManager().clearUser();
+            App.instance.getTeamManager().clearTeams();
+            App.instance.getTournamentManager().clearTournaments();
+            App.instance.getQrPointManager().clearQrPoints();
+            App.instance.getPlayersManager().clearPlayers();
 
             Toast.makeText(this, "Пользователь вышел", Toast.LENGTH_LONG).show();
 
@@ -177,7 +176,7 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         if (v.getId() == R.id.btn_save) {
             // Получаем изменененияе полей которые нужно изменить на сервере
 
-            User user = ManagersFactory.getInstance().getAccountManager().getUser();
+            User user = App.instance.getAccountManager().getUser();
 
             user.setName(mEditTextName.getText().toString());
             user.setPhone(mEditTextPhone.getText().toString());
