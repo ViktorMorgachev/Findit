@@ -37,7 +37,6 @@ import com.squareup.otto.Subscribe;
 
 import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.background_services.MyService;
 import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.common.interfaces.ILocationListener;
@@ -74,7 +73,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     private TextView mNavTextViewName;
     private Context mContext;
     private ImageView mImageViewIcon;
-    private LocationManager mLocationManager;
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
 
@@ -112,8 +110,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         FinditBus.getInstance().register(this);
 
 
-        mLocationManager = LocationManager.getInstance();
-
         mFloatingActionButton = findViewById(R.id.floating_action_button);
         mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,8 +136,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         logUser();
 
-
-        getLocation();
 
         // Тут получаем значение из процесса используя LiveData, и обновляем точки
         // Показываем информацию, анимацию загрузки карты, пока карта гугл не загрузится
@@ -175,7 +169,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             }
         }
 
-        mLocationManager.unsubscribe(this);
+        App.instance.getLocationManager().unsubscribe(this);
         startService(new Intent(MainActivity.this, MyService.class));
 
     }
@@ -185,11 +179,14 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onResume() {
         super.onResume();
 
-        mLocationManager.subscribe(this);
+        App.instance.getLocationManager().subscribe(this);
+
+        getLocation();
+
 
         Log.d(LOG_TAG, "Activity was resumed");
 
-        User user =App.instance.getAccountManager().getUser();
+        User user = App.instance.getAccountManager().getUser();
 
         Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageViewIcon);
 
@@ -255,8 +252,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         }
 
-        mLocationManager.getLocation(() -> {
-            sLatLng = mLocationManager.getLatLng();
+        App.instance.getLocationManager().getLocation(() -> {
+            sLatLng = App.instance.getLocationManager().getLatLng();
             if (CommonMapManager.getInstance().getGoogleMap() != null && CommonMapManager.getInstance().getGoogleMap().getLifecycle().getCurrentState() == Lifecycle.State.RESUMED)
                 updateMap(DEFAULT_ZOOM, "");
 
@@ -291,6 +288,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             startActivity(new Intent(this, TounamentActivity.class));
         } else if (id == R.id.nav_rating) {
             startActivity(new Intent(this, RatingActivity.class));
+        } else  if (id == R.id.nav_bonus_code){
+            showBonusDialog();
         }
             /*else if (id == R.id.nav_gallery) {
 
@@ -317,6 +316,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         drawer.closeDrawer(GravityCompat.START);
 
         return false;
+    }
+
+    private void showBonusDialog() {
+
+        App.instance.getDialogManager().showBonusDialog();
+
     }
 
     @Subscribe
@@ -355,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onStop() {
         super.onStop();
-        mLocationManager.unsubscribe(this);
+        App.instance.getLocationManager().unsubscribe(this);
         Log.d(LOG_TAG, "Activity was stoped");
     }
 
@@ -387,6 +392,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             Log.d(LOG_TAG, "Google map was ready");
 
             // Изменяем координаты пользователя
+
+
             App.instance.getAccountManager().getUser().setGeopoint(sLatLng.latitude, sLatLng.longitude);
             // Отправляем на сервер
             ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_LOCATION);

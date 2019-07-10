@@ -2,6 +2,7 @@ package findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore;
 
 import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -13,6 +14,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import findit.sedi.viktor.com.findit.App;
+import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.Player;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
@@ -34,6 +37,8 @@ import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
 import io.reactivex.observers.DisposableObserver;
 
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonBonusFields.KeysField.KEY_BONUS_CODE_GIFT_BONUS;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_BONUS_CODE_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_QRPOINTS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TEAMS_PATH;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonPath.KeysField.KEY_TOURNAMENTS_PATH;
@@ -792,6 +797,48 @@ public class CloudFirestoreManager {
                     }
                 });
 
+
+    }
+
+    public void getBonusByCode(String code) {
+
+        // Получаем список всех бонусных кодов, если одна из них не найденна, то сообщаем об ошибке
+        mFirebaseFirestore.collection(KEY_BONUS_CODE_PATH).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+
+                if (task.isSuccessful() && task.getResult() != null) {
+                    for (QueryDocumentSnapshot document : task.getResult()) {
+
+                        Log.d(LOG_TAG, task + " => " + document.getString(USER_EMAIL));
+
+                        // Если совпала, то получаем информацию по бонусам, добавляем и удаляем этот код
+                        if (document.getId().equals(code)) {
+
+                            App.instance.getAccountManager().getUser().addBonus(document.getLong(KEY_BONUS_CODE_GIFT_BONUS));
+
+                            Toast.makeText(App.instance.getApplicationContext(),
+                                    App.instance.getApplicationContext().getResources().getString(R.string.bonuses_added_succes), Toast.LENGTH_LONG).show();
+
+                            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_BONUS);
+
+                            mFirebaseFirestore.collection(KEY_BONUS_CODE_PATH).document(code).delete();
+
+                        }
+
+                        return;
+
+                    }
+
+
+                } else {
+                    Log.w(LOG_TAG, "Error getting documents.", task.getException());
+                }
+
+
+            }
+        });
 
     }
 }

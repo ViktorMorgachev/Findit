@@ -72,23 +72,31 @@ public class TipTainikFragment extends Fragment implements View.OnClickListener 
         prefs.setContext(getContext());
 
 
-        if (!prefs.getStringSetByKey(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT).contains(mQrPoint.getID()))
-            Prefs.getInstance().addStringValue(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT, mQrPoint.getID());
-        else {
-            mButtonBonus.setVisibility(View.GONE);
-            mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_bonus));
-        }
-
-        if (getArguments().getBoolean(KEY_SUCCESS) == false) {
-            mTextViewTip.setText("");
-            mTextViewTip.setVisibility(View.GONE);
-            mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_some_tips));
-        } else mTextViewTip.setText(mTextViewTip.getText().toString() + ": " + mQrPoint.getTip());
+        initView();
 
         mTextViewTipForNext.setText(getResources().getString(R.string.next_tainik) + ": " + mQrPoint.getTipForNextQrPoint());
 
+        // Если уже раньше успешно отвечали на этот вопрос
+        if (prefs.getStringSetByKey(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT).contains(mQrPoint.getID())) {
+            mButtonBonus.setVisibility(View.GONE);
+            mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_bonus));
 
-        initView();
+        } else {
+
+
+            if (getArguments().getBoolean(KEY_SUCCESS) == false) {
+                mTextViewTip.setText("");
+                mTextViewTip.setVisibility(View.GONE);
+                mTextViewDiscribe.setText(getResources().getString(R.string.sorry_but_you_get_some_tips));
+            } else {
+
+                Prefs.getInstance().addStringValue(KeyPrefs.KeysField.KEY_GET_BONUS_FROM_DISCOVERED_QRPOINT, mQrPoint.getID());
+
+                mTextViewTip.setText(mTextViewTip.getText().toString() + ": " + mQrPoint.getTip());
+            }
+
+
+        }
 
 
         return view;

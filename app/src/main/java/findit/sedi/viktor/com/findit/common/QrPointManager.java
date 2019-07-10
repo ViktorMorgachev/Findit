@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
-import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.database.FirebasePlacesStorage;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.data_providers.data.QrPoint;
@@ -154,7 +154,7 @@ public class QrPointManager {
         for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
             if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
                 if (!mDiscoveredPointID.contains(qrPoint.getID())) {
-                    DialogManager.getInstance().showDialog("Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
+                    App.instance.getDialogManager().showDialog("Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
                     // Добавляем в список найденных тайников тут в активности чтобы это сообщение больше не показывать
                     mDiscoveredPointID.add(qrPoint.getID());
                 }

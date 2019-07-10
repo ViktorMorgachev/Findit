@@ -11,13 +11,15 @@ import java.lang.annotation.RetentionPolicy;
 
 public interface KeyCommonPath {
 
-    @StringDef({KeysField.KEY_QRPOINTS_PATH, KeysField.KEY_TEAMS_PATH, KeysField.KEY_TOURNAMENTS_PATH, KeysField.KEY_USERS_PATH})
+    @StringDef({KeysField.KEY_QRPOINTS_PATH, KeysField.KEY_TEAMS_PATH,
+            KeysField.KEY_TOURNAMENTS_PATH, KeysField.KEY_USERS_PATH, KeysField.KEY_BONUS_CODE_PATH})
     @Retention(RetentionPolicy.SOURCE)
     @interface KeysField {
         String KEY_QRPOINTS_PATH = "qrpoints";
         String KEY_USERS_PATH = "users";
         String KEY_TOURNAMENTS_PATH = "tournament";
         String KEY_TEAMS_PATH = "tournamentTeams";
+        String KEY_BONUS_CODE_PATH = "bonusCodes";
 
     }
 }

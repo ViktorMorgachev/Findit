@@ -79,6 +79,12 @@ public class ServerManager {
 
     }
 
+    public void getBonusByCode(String code) {
+
+        CloudFirestoreManager.getInstance().getBonusByCode(code);
+
+    }
+
     public void getQrPlaces() {
 
         CloudFirestoreManager.getInstance().getQrPlaces();

@@ -1,6 +1,9 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 
@@ -24,10 +27,6 @@ public class DialogManager {
     private DialogManager() {
     }
 
-    public Context getContext() {
-        return mContext;
-    }
-
     public void setContext(Context activity) {
         mContext = activity;
     }
@@ -35,7 +34,7 @@ public class DialogManager {
     public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
 
 
-        mAlertDialog = new AlertDialog.Builder(mContext.getApplicationContext()).create();
+        mAlertDialog = new AlertDialog.Builder(mContext).create();
 
         if (tiitle != null) {
             mAlertDialog.setTitle(tiitle);
@@ -77,4 +76,24 @@ public class DialogManager {
     }
 
 
+    public void showBonusDialog() {
+
+        mAlertDialog = new AlertDialog.Builder(mContext).create();
+
+        LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflater.inflate(R.layout.item_input_bonus, null);
+
+        v.findViewById(R.id.et_send_bonus_code).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return false;
+            }
+        });
+
+        mAlertDialog.setView(v);
+
+        mAlertDialog.show();
+
+
+    }
 }

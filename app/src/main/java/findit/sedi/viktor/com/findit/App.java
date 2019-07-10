@@ -18,6 +18,7 @@ import findit.sedi.viktor.com.findit.common.PlayersManager;
 import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.common.TeamManager;
 import findit.sedi.viktor.com.findit.common.TournamentManager;
+import findit.sedi.viktor.com.findit.common.dialogs.DialogManager;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.room.AppDatabase;
 import io.fabric.sdk.android.Fabric;
@@ -40,7 +41,7 @@ public class App extends Application {
     private PlayersManager mPlayersManager;
     private TournamentManager mTournamentManager;
     private TeamManager mTeamManager;
-
+    private DialogManager mDialogManager;
 
     private GoogleAccountStore mGoogleAccountStore;
     private ManagersFactory mManagersFactory;
@@ -90,8 +91,6 @@ public class App extends Application {
         // LeakCanary.install(this);
         // refWatcher = LeakCanary.install(this);
 
-        ManagersFactory.getInstance().setContext(this);
-
     }
 
     private void initManagers() {
@@ -104,6 +103,8 @@ public class App extends Application {
         mTeamManager = mManagersFactory.getTeamManager();
         mGoogleAccountStore = mManagersFactory.getGoogleStore();
         mTournamentManager = mManagersFactory.getTournamentManager();
+        mDialogManager = DialogManager.getInstance();
+        mDialogManager.setContext(this);
     }
 
     public NavigatorHolder getNavigationHolder() {
@@ -153,6 +154,10 @@ public class App extends Application {
 
     public GoogleAccountStore getGoogleStore() {
         return mGoogleAccountStore;
-
     }
+
+    public DialogManager getDialogManager() {
+        return mDialogManager;
+    }
+
 }
