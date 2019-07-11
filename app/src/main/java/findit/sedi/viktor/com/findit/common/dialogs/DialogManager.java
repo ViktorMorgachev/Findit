@@ -4,10 +4,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
 import findit.sedi.viktor.com.findit.R;
+import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 
@@ -83,12 +85,34 @@ public class DialogManager {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = inflater.inflate(R.layout.item_input_bonus, null);
 
-        v.findViewById(R.id.et_send_bonus_code).setOnTouchListener(new View.OnTouchListener() {
+        EditText editText = v.findViewById(R.id.et_send_bonus_code);
+        editText.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+
+
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    if (event.getRawX() >= (editText.getRight() - editText.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        // your action here
+
+                        IAction iAction = () -> mAlertDialog.dismiss();
+
+                        ServerManager.getInstance().getBonusByCode(editText.getText().toString(), iAction);
+
+
+                        return true;
+                    }
+                }
+
                 return false;
             }
         });
+
 
         mAlertDialog.setView(v);
 

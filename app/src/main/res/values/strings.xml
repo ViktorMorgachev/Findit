@@ -81,4 +81,5 @@
     <string name="the_tournament_is_already_active">Регистрация на турнир уже закрыта</string>
     <string name="input_bonus_code">Получить бонусы</string>
     <string name="bonuses_added_succes">Бонусы были получены</string>
+    <string name="bonuses_added_error">Получение бонусов по данному коду недоступно</string>
 </resources>

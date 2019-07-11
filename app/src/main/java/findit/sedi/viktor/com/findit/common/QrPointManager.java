@@ -135,16 +135,16 @@ public class QrPointManager {
             return;
 
 
-        QrPoint qrPoint = ManagersFactory.getInstance().getQrPointManager().getQrPlaceByID(ID);
+        QrPoint qrPoint = App.instance.getQrPointManager().getQrPlaceByID(ID);
 
         if (qrPoint == null)
             return;
 
-        User user = ManagersFactory.getInstance().getAccountManager().getUser();
+        User user = App.instance.getAccountManager().getUser();
 
 
         for (int i = 0; i < user.getFondedQrPointsIDs().size(); i++) {
-            if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
+            if (user.getFondedQrPointsIDs().get(i).equalsIgnoreCase(qrPoint.getID()) && qrPoint.getMark().equalsIgnoreCase("fond")) {
 
                 Toast.makeText(context, "Вы его находили ранее", Toast.LENGTH_LONG).show();
                 return;

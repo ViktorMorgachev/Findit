@@ -32,6 +32,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonSettings;
 import findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests;
 import findit.sedi.viktor.com.findit.presenter.IActionHelper;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateTournamentsEvent;
@@ -800,7 +801,7 @@ public class CloudFirestoreManager {
 
     }
 
-    public void getBonusByCode(String code) {
+    public void getBonusByCode(String code, IAction iAction) {
 
         // Получаем список всех бонусных кодов, если одна из них не найденна, то сообщаем об ошибке
         mFirebaseFirestore.collection(KEY_BONUS_CODE_PATH).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -809,12 +810,21 @@ public class CloudFirestoreManager {
 
 
                 if (task.isSuccessful() && task.getResult() != null) {
+
+                    boolean success = false;
+
                     for (QueryDocumentSnapshot document : task.getResult()) {
 
                         Log.d(LOG_TAG, task + " => " + document.getString(USER_EMAIL));
 
                         // Если совпала, то получаем информацию по бонусам, добавляем и удаляем этот код
                         if (document.getId().equals(code)) {
+
+                            if (iAction != null) {
+                                iAction.action();
+                            }
+
+                            success = true;
 
                             App.instance.getAccountManager().getUser().addBonus(document.getLong(KEY_BONUS_CODE_GIFT_BONUS));
 
@@ -825,10 +835,15 @@ public class CloudFirestoreManager {
 
                             mFirebaseFirestore.collection(KEY_BONUS_CODE_PATH).document(code).delete();
 
+                            break;
+
                         }
 
-                        return;
+                    }
 
+                    if (success == false) {
+                        Toast.makeText(App.instance.getApplicationContext(),
+                                App.instance.getApplicationContext().getResources().getString(R.string.bonuses_added_error), Toast.LENGTH_LONG).show();
                     }
 
 

@@ -6,6 +6,7 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.firebase.firestore.Clo
 import findit.sedi.viktor.com.findit.data_providers.data.Team;
 import findit.sedi.viktor.com.findit.data_providers.data.Tournament;
 import findit.sedi.viktor.com.findit.data_providers.data.User;
+import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
 import io.reactivex.observers.DisposableObserver;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_BONUS;
@@ -79,9 +80,9 @@ public class ServerManager {
 
     }
 
-    public void getBonusByCode(String code) {
+    public void getBonusByCode(String code, IAction iAction) {
 
-        CloudFirestoreManager.getInstance().getBonusByCode(code);
+        CloudFirestoreManager.getInstance().getBonusByCode(code, iAction);
 
     }
 
