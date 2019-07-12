@@ -215,7 +215,6 @@ public class MyService extends Service implements ILocationListener {
 
                 }
 
-                // Отправляем информацию о оповещении пользователя в Перференсы, Тип: Прошёл турнир, Начался, Скоро турнир, и его ID, сохраняем мапу
             }
 
 
