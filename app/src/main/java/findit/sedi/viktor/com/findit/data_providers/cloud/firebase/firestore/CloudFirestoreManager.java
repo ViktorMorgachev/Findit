@@ -329,7 +329,6 @@ public class CloudFirestoreManager {
                         public void onComplete(@NonNull Task<Void> task) {
 
 
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -362,7 +361,6 @@ public class CloudFirestoreManager {
 
         document = mFirebaseFirestore.collection(KEY_USERS_PATH).document(App.instance.getAccountManager().getUser().getID());
         document.update(USER_NET_STATUS, status);
-
 
 
     }
@@ -436,6 +434,10 @@ public class CloudFirestoreManager {
 
                             if (document.exists()) {
 
+
+                                if (Tournament.convertIntToTournamentType(document.getLong(TOURNAMENTS_TYPE)) == Tournament.TournamentType.Teams) {
+                                    continue;
+                                }
 
                                 App.instance.getTournamentManager().addTournament(
                                         new Tournament(document.getTimestamp(TOURNAMENTS_DATE_FROM),
@@ -543,8 +545,6 @@ public class CloudFirestoreManager {
                                         document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_DISCOVERED_POINTS)
 
                                 ));
-
-
 
 
                                 break;

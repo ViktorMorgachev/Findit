@@ -45,6 +45,7 @@ import findit.sedi.viktor.com.findit.data_providers.data.User;
 import findit.sedi.viktor.com.findit.presenter.otto.FinditBus;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdateAllQrPoints;
 import findit.sedi.viktor.com.findit.presenter.otto.events.UpdatePlayersLocations;
+import findit.sedi.viktor.com.findit.ui.about_application.AboutActivity;
 import findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity;
 import findit.sedi.viktor.com.findit.ui.main.common.CommonMapManager;
 import findit.sedi.viktor.com.findit.ui.main.interfaces.MapsFragmentListener;
@@ -183,7 +184,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         getLocation();
 
 
-
         User user = App.instance.getAccountManager().getUser();
 
         Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageViewIcon);
@@ -286,8 +286,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             startActivity(new Intent(this, TounamentActivity.class));
         } else if (id == R.id.nav_rating) {
             startActivity(new Intent(this, RatingActivity.class));
-        } else  if (id == R.id.nav_bonus_code){
+        } else if (id == R.id.nav_bonus_code) {
             showBonusDialog();
+        } else if (id == R.id.nav_about) {
+            startActivity(new Intent(this, AboutActivity.class));
         }
             /*else if (id == R.id.nav_gallery) {
 
@@ -302,8 +304,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         }*/
 
 
-        // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
-        //  уведомление, что активных игр нет пока и не запускать
+
         if (id == R.id.nav_scan_code) {
             startActivity(new Intent(this, QRCodeCameraActivity.class));
             // Handle the camera action
@@ -383,7 +384,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         if (sLatLng != null) {
             updateMap(DEFAULT_ZOOM, "");
-
 
 
             // Изменяем координаты пользователя

@@ -84,6 +84,7 @@
         <activity
             android:name=".ui.show_first_tips.ShowTipsActivity"
             android:launchMode="singleTask" />
+        <activity android:name=".ui.about_application.AboutActivity" />
 
 
         <service android:name=".common.background_services.MyService" />

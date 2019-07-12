@@ -136,6 +136,8 @@ public class MyService extends Service implements ILocationListener {
 
             if (true) {
 
+                // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
+                //  уведомление, что активных игр нет пока и не запускать
 
                 //  Log.d(LOG_TAG, "getDataFromServer()");
 
@@ -157,6 +159,7 @@ public class MyService extends Service implements ILocationListener {
         public void checkActiveTournaments() {
 
 
+            // Работатьс БД
             // Если пользователь в турнире, то показывать что турнир скоро начнётся
             // События: Турнир начался, турнир закончился, создан новый турнир
             // Если появился новый турнир, как-то отслеживать, то показывать оповещение, что появился новый турнир
@@ -169,7 +172,7 @@ public class MyService extends Service implements ILocationListener {
                 mNotificatorManager = new NotificatorManager();
 
 
-                // Смотрим, оповещали ли мы пользователя о турнире?
+                // Смотрим, оповещали ли мы пользователя о турнире
                 // Если нет, то оповещаем, иначе не оповещаем
                 // Привязка по преференсам будет
 
@@ -211,7 +214,7 @@ public class MyService extends Service implements ILocationListener {
 
                     //TODO Запрос на удаление турнира, очистка идентификатора турнира у пользователя? и возможный показ сколько балов кто набрал, так же очистка бонусос с поля бонуса у всех пользователе
 
-                    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED);
+                //    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED);
 
                 }
 
