@@ -9,35 +9,45 @@
     tools:openDrawer="start">
 
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
+
+
+
 
         <FrameLayout
             android:id="@+id/map_fragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/floating_action_button"
+                android:id="@+id/floating_menu_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|right"
+                android:layout_gravity="top|end"
                 android:layout_margin="16dp"
-                app:srcCompat="@drawable/ic_my_location_24dp"/>
+                app:srcCompat="@drawable/ic_menu_24dp" />
+
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_gravity="end"
+                android:layout_weight="1"></View>
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/floating_location_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_margin="16dp"
+                app:srcCompat="@drawable/ic_my_location_24dp" />
 
         </FrameLayout>
 
-
-
-        <FrameLayout
-            android:id="@+id/map_options_fragment"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:animateLayoutChanges="true">
-        </FrameLayout>
 
 
     </LinearLayout>
@@ -47,9 +57,9 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
+        android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/navigation_menu"
-        android:fitsSystemWindows="true" />
+        app:menu="@menu/navigation_menu" />
 
 
 </androidx.drawerlayout.widget.DrawerLayout>

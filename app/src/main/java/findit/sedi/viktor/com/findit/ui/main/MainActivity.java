@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
@@ -69,10 +70,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     //Widgets
     private GoogleMap mMap;
-    private FloatingActionButton mFloatingActionButton;
+    private FloatingActionButton mFloatingActionButtonLocation;
+    private FloatingActionButton mFloatingActionButtonMenu;
     // TODO снова запускаем лишь тогда когда игра активна
     private TextView mNavTextViewName;
     private Context mContext;
+    private DrawerLayout mDrawerLayout;
     private ImageView mImageViewIcon;
     private FragmentManager mFragmentManager = getSupportFragmentManager();
 
@@ -111,11 +114,22 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         FinditBus.getInstance().register(this);
 
 
-        mFloatingActionButton = findViewById(R.id.floating_action_button);
-        mFloatingActionButton.setOnClickListener(new View.OnClickListener() {
+        mFloatingActionButtonLocation = findViewById(R.id.floating_location_button);
+        mFloatingActionButtonMenu = findViewById(R.id.floating_menu_button);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+        mFloatingActionButtonLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getLocation();
+            }
+        });
+
+        mFloatingActionButtonMenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mDrawerLayout.isDrawerOpen(Gravity.LEFT)) {
+                    mDrawerLayout.closeDrawer(Gravity.LEFT);
+                } else mDrawerLayout.openDrawer(Gravity.LEFT);
             }
         });
 
