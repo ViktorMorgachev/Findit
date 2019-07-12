@@ -7,8 +7,6 @@ import android.net.ConnectivityManager;
 import androidx.multidex.MultiDex;
 
 import com.crashlytics.android.Crashlytics;
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import findit.sedi.viktor.com.findit.common.AccountManager;
 import findit.sedi.viktor.com.findit.common.GoogleAccountStore;
@@ -32,7 +30,6 @@ public class App extends Application {
         return sUser_database;
     }
 
-    private RefWatcher refWatcher;
     public static App instance;
     private Cicerone<Router> cicerone;
     private AccountManager mAccountManager;
@@ -85,11 +82,7 @@ public class App extends Application {
 
         Fabric.with(this, new Crashlytics());
 
-        if (LeakCanary.isInAnalyzerProcess(this)) {
-            // This process is dedicated to LeakCanary for heap analysis.
-            // You should not init your app in this process.
-            return;
-        }
+
         // LeakCanary.install(this);
         // refWatcher = LeakCanary.install(this);
 
@@ -119,11 +112,7 @@ public class App extends Application {
         return cicerone.getRouter();
     }
 
-    public void mustDie(Object object) {
-        if (refWatcher != null) {
-            refWatcher.watch(object);
-        }
-    }
+
 
     public boolean hasNet() {
         ConnectivityManager manager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
