@@ -33,4 +33,6 @@
     <string name="my_email">Почта:  morgachev.v.s@mail.ru</string>
     <string name="my_account">Мой аккаунт: https://vk.com/viktor.morgachev</string>
     <string name="my_qiwi">Поддержать автора: \n\t\t\ Киви кошелёк: 996554190030</string>
+    <string name="toolbar_first_tainiks">Первые тайники</string>
+    <string name="get_first_tips">Первые подсказки к тайникам</string>
 </resources>

@@ -192,7 +192,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
             IActionHelper.getInstance().setIAction(() -> {
                 DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null,
-                        () -> mContext.startActivity(new Intent(mContext, ShowTipsActivity.class)), "OK", null, null, true, false);
+                        null, "OK", null, null, true, false);
             });
 
             DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false, false);

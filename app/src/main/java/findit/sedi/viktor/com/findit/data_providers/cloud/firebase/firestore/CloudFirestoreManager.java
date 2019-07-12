@@ -435,6 +435,7 @@ public class CloudFirestoreManager {
                             if (document.exists()) {
 
 
+
                                 if (Tournament.convertIntToTournamentType(document.getLong(TOURNAMENTS_TYPE)) == Tournament.TournamentType.Teams) {
                                     continue;
                                 }

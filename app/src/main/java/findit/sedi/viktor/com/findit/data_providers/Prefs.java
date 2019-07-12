@@ -82,4 +82,14 @@ public class Prefs {
     public Integer getIntValue() {
         return null;
     }
+
+    public boolean getBooleanValue(String keyUserGetFirstTips) {
+
+        if (mSharedPreferences.contains(keyUserGetFirstTips)) {
+           return mSharedPreferences.getBoolean(keyUserGetFirstTips, false);
+        }
+
+        return false;
+
+    }
 }

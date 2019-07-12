@@ -27,6 +27,7 @@ import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager
 import findit.sedi.viktor.com.findit.interactors.KeyPrefs;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.ui.main.MainActivity;
+import findit.sedi.viktor.com.findit.ui.show_first_tips.ShowTipsActivity;
 import findit.sedi.viktor.com.findit.ui.tournament.TounamentActivity;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
@@ -41,7 +42,7 @@ public class MyService extends Service implements ILocationListener {
     private LocationManager mLocationManager;
     private LatLng mLatLng;
     private App mApp;
-    private String usersTournamentID;
+    private String mUsersTournamentID;
     private static Context mContext;
     private final Calendar tournamentCalendarBegin = Calendar.getInstance();
     private final Calendar tournamentCalendarEnd = Calendar.getInstance();
@@ -62,6 +63,8 @@ public class MyService extends Service implements ILocationListener {
 
         if (App.instance != null)
             mApp = App.instance;
+
+        mUsersTournamentID = App.instance.getAccountManager().getUser().getTournamentID();
 
         mLocationManager = LocationManager.getInstance();
         mLocationManager.subscribe(this);
@@ -109,7 +112,6 @@ public class MyService extends Service implements ILocationListener {
         @Override
         protected void onPreExecute() {
 
-            usersTournamentID = App.instance.getAccountManager().getUser().getTournamentID();
 
         }
 
@@ -134,27 +136,36 @@ public class MyService extends Service implements ILocationListener {
 
         public void getDataFromServer() {
 
-            if (true) {
 
-                // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
-                //  уведомление, что активных игр нет пока и не запускать
+            // TODO нудно будет доработать в будущем, если активной игры нет, то показывать
+            //  уведомление, что активных игр нет пока и не запускать
 
-                //  Log.d(LOG_TAG, "getDataFromServer()");
+            //  Log.d(LOG_TAG, "getDataFromServer()");
 
-                // Если турнир ещё не начался или пользователь не принадлежит турниру
-                if (App.instance.getAccountManager().getUser().getTournamentID() != null &&
-                        !App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+            // Если турнир ещё не начался или пользователь не принадлежит турниру
+
+            ServerManager.getInstance().getTournaments();
+            ServerManager.getInstance().updateTeams();
+
+            if (App.instance.getAccountManager().getUser().getTournamentID() != null &&
+                    !App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase("") && !App.instance.getTournamentManager().getTournaments().isEmpty() && !mUsersTournamentID.equals("")) {
+
+
+                tournamentCalendarBegin.setTimeInMillis(App.instance.getTournamentManager().getTournament(mUsersTournamentID).getDateFrom().getSeconds() * 1000);
+                tournamentCalendarEnd.setTimeInMillis(App.instance.getTournamentManager().getTournament(mUsersTournamentID).getDateTo().getSeconds() * 1000);
+
+                // Если турнир активный
+                if (!systemCalendar.before(tournamentCalendarBegin) && !systemCalendar.after(tournamentCalendarEnd)) {
 
                     checkActiveTournaments();
                     ServerManager.getInstance().getQrPlaces();
-
                 }
 
-                ServerManager.getInstance().getTournaments();
-                ServerManager.getInstance().updateTeams();
             }
 
+
         }
+
 
         public void checkActiveTournaments() {
 
@@ -192,13 +203,33 @@ public class MyService extends Service implements ILocationListener {
 
                 } else if ((systemCalendar.equals(tournamentCalendarBegin) || (systemCalendar.after(tournamentCalendarBegin) && systemCalendar.before(tournamentCalendarEnd)) &&
                         !Prefs.getInstance().getStringValue(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT).equalsIgnoreCase(KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT))) {
-                    // Если время в пределах времени начала и конца турнира
+                    // Если турнир начался или идёт
                     mNotificatorManager
                             .showCompatibilityNotification(getApplicationContext(),
                                     getApplicationContext().getResources().getString(R.string.now_started_tournament) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
                                     R.drawable.ic_stars_24dp, "CHANNEL_ID",
                                     null, getApplicationContext().getResources().getString(R.string.channel_name),
                                     getApplicationContext().getResources().getString(R.string.channel_descrioption), new Intent(getApplicationContext(), MainActivity.class));
+
+
+                    // Если пользователь не получил информацию о первых тайниках
+                    if (!Prefs.getInstance().getBooleanValue(KeyPrefs.KeysField.KEY_USER_GET_FIRST_TIPS)) {
+
+                        Intent intent = new Intent(getApplicationContext(), ShowTipsActivity.class);
+
+                        mNotificatorManager
+                                .showCompatibilityNotification(getApplicationContext(),
+                                        getApplicationContext().getResources().getString(R.string.get_first_tips) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
+                                        R.drawable.ic_info_24dp, "CHANNEL_ID",
+                                        null, getApplicationContext().getResources().getString(R.string.channel_name),
+                                        getApplicationContext().getResources().getString(R.string.channel_descrioption), intent);
+
+
+                        startActivity(intent);
+
+
+                    }
+
 
                     Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT);
 
