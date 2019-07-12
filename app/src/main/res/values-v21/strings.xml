@@ -27,4 +27,5 @@
     <string name="input_bonus_code">Получить бонусы</string>
     <string name="bonuses_added_succes">Бонусы были получены</string>
     <string name="bonuses_added_error">Получение бонусов по данному коду недоступно</string>
+    <string name="tournament_was_finished">Турнир закончился</string>
 </resources>
