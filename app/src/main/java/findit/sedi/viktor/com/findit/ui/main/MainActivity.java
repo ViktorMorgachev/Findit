@@ -290,6 +290,13 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             showBonusDialog();
         } else if (id == R.id.nav_about) {
             startActivity(new Intent(this, AboutActivity.class));
+        } else if (id == R.id.nav_exit) {
+            stopService(new Intent(this, MyService.class));
+            Intent startMain = new Intent(Intent.ACTION_MAIN);
+            startMain.addCategory(Intent.CATEGORY_HOME);
+            startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(startMain);
+            finish();
         }
             /*else if (id == R.id.nav_gallery) {
 
@@ -302,7 +309,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         } else if (id == R.id.nav_send) {
 
         }*/
-
 
 
         if (id == R.id.nav_scan_code) {

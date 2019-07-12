@@ -214,7 +214,7 @@ public class MyService extends Service implements ILocationListener {
 
                     //TODO Запрос на удаление турнира, очистка идентификатора турнира у пользователя? и возможный показ сколько балов кто набрал, так же очистка бонусос с поля бонуса у всех пользователе
 
-                //    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED);
+                    //    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED);
 
                 }
 
@@ -256,7 +256,7 @@ public class MyService extends Service implements ILocationListener {
                     !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
 
                 String nearbyQrPointID = App.instance.getQrPointManager().getNearbyOfQrPlaced(latLng);
-                App.instance.getQrPointManager().checkNearbyQrPlaces(MyService.getContext(), nearbyQrPointID, latLng, null);
+                App.instance.getQrPointManager().checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
             }
 
         }
