@@ -9,8 +9,9 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.IBinder;
-import androidx.core.app.NotificationCompat;
 import android.util.Log;
+
+import androidx.core.app.NotificationCompat;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -20,7 +21,6 @@ import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.common.LocationManager;
 import findit.sedi.viktor.com.findit.common.ManagersFactory;
-import findit.sedi.viktor.com.findit.common.QrPointManager;
 import findit.sedi.viktor.com.findit.common.interfaces.ILocationListener;
 import findit.sedi.viktor.com.findit.data_providers.Prefs;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
@@ -40,6 +40,9 @@ public class MyService extends Service implements ILocationListener {
     private NotificatorManager mNotificatorManager;
     private LocationManager mLocationManager;
     private LatLng mLatLng;
+    private App mApp;
+    private String usersTournamentID;
+    private static Context mContext;
     private final Calendar tournamentCalendarBegin = Calendar.getInstance();
     private final Calendar tournamentCalendarEnd = Calendar.getInstance();
     private final Calendar systemCalendar = Calendar.getInstance();
@@ -55,13 +58,16 @@ public class MyService extends Service implements ILocationListener {
         super.onCreate();
 
 
+        mContext = getApplicationContext();
+
+        if (App.instance != null)
+            mApp = App.instance;
+
         mLocationManager = LocationManager.getInstance();
         mLocationManager.subscribe(this);
         mBuilder = new NotificationCompat.Builder(getApplicationContext(), "CNANNEL_ID");
         mBuilder.setSmallIcon(R.mipmap.ic_launcher);
         mBuilder.setAutoCancel(true);
-
-
 
 
         mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -86,6 +92,10 @@ public class MyService extends Service implements ILocationListener {
     }
 
 
+    public static Context getContext() {
+        return mContext;
+    }
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
@@ -95,15 +105,22 @@ public class MyService extends Service implements ILocationListener {
 
     @SuppressLint("StaticFieldLeak")
     private final AsyncTask<Void, Void, Void> mAsyncTask = new AsyncTask<Void, Void, Void>() {
+
+        @Override
+        protected void onPreExecute() {
+
+            usersTournamentID = App.instance.getAccountManager().getUser().getTournamentID();
+
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
 
             while (true) {
-                if (isCancelled()) return null;
 
-                Log.d(LOG_TAG, "AsynkTask is working");
+
                 getDataFromServer();
-
+                if (isCancelled()) return null;
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
@@ -119,10 +136,16 @@ public class MyService extends Service implements ILocationListener {
 
             if (true) {
 
-                if (ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID() != null &&
-                        !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
-                    ServerManager.getInstance().getQrPlaces();
+
+                //  Log.d(LOG_TAG, "getDataFromServer()");
+
+                // Если турнир ещё не начался или пользователь не принадлежит турниру
+                if (App.instance.getAccountManager().getUser().getTournamentID() != null &&
+                        !App.instance.getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
+
                     checkActiveTournaments();
+                    ServerManager.getInstance().getQrPlaces();
+
                 }
 
                 ServerManager.getInstance().getTournaments();
@@ -176,10 +199,23 @@ public class MyService extends Service implements ILocationListener {
 
                     Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_BEGUN_TOURNAMENT);
 
+                } else if (systemCalendar.after(tournamentCalendarEnd) &&
+                        !Prefs.getInstance().getStringValue(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT).equalsIgnoreCase(KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED)) {
+
+                    mNotificatorManager
+                            .showCompatibilityNotification(getApplicationContext(),
+                                    getApplicationContext().getResources().getString(R.string.tournament_was_finished) + " " + ManagersFactory.getInstance().getTournamentManager().getTournaments().get(i).getDescribe(),
+                                    R.drawable.ic_stars_24dp, "CHANNEL_ID",
+                                    null, getApplicationContext().getResources().getString(R.string.channel_name),
+                                    getApplicationContext().getResources().getString(R.string.channel_descrioption), new Intent(getApplicationContext(), MainActivity.class));
+
+                    //TODO Запрос на удаление турнира, очистка идентификатора турнира у пользователя? и возможный показ сколько балов кто набрал, так же очистка бонусос с поля бонуса у всех пользователе
+
+                    Prefs.getInstance().savePrefs(KeyPrefs.KeysField.KEY_USER_NOTIFICATED_ABOUT_TOURNAMENT, KeyPrefs.KeysField.KEY_TOURNAMENT_WAS_ENDED);
+
                 }
 
                 // Отправляем информацию о оповещении пользователя в Перференсы, Тип: Прошёл турнир, Начался, Скоро турнир, и его ID, сохраняем мапу
-
             }
 
 
@@ -218,13 +254,10 @@ public class MyService extends Service implements ILocationListener {
                     !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
 
                 String nearbyQrPointID = App.instance.getQrPointManager().getNearbyOfQrPlaced(latLng);
-                App.instance.getQrPointManager().checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
+                App.instance.getQrPointManager().checkNearbyQrPlaces(MyService.getContext(), nearbyQrPointID, latLng, null);
             }
 
-
         }
-
     }
-
 
 }

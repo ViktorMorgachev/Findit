@@ -81,6 +81,8 @@ public class App extends Application {
         initManagers();
 
 
+        instance = this;
+
         Fabric.with(this, new Crashlytics());
 
         if (LeakCanary.isInAnalyzerProcess(this)) {
@@ -92,6 +94,7 @@ public class App extends Application {
         // refWatcher = LeakCanary.install(this);
 
     }
+
 
     private void initManagers() {
         mLocationManager = LocationManager.getInstance();

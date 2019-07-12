@@ -146,7 +146,6 @@ public class CloudFirestoreManager {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     succesResult[0]++;
-                                    Log.d(LOG_TAG, task + " => " + task.getResult());
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -161,7 +160,6 @@ public class CloudFirestoreManager {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     succesResult[0]++;
-                                    Log.d(LOG_TAG, task + " => " + task.getResult());
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -176,7 +174,6 @@ public class CloudFirestoreManager {
                                 @Override
                                 public void onComplete(@NonNull Task<Void> task) {
                                     succesResult[0]++;
-                                    Log.d(LOG_TAG, task + " => " + task.getResult());
                                 }
                             })
                             .addOnFailureListener(new OnFailureListener() {
@@ -211,7 +208,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
 
                         }
                     })
@@ -230,7 +226,6 @@ public class CloudFirestoreManager {
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
 
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -246,7 +241,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -261,7 +255,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -278,7 +271,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + "Updated user bonus => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -293,7 +285,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + "Updated user total bonus => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -309,7 +300,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -324,7 +314,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             App.instance.getAccountManager().updateUserByEmail(App.instance.getAccountManager().getUser().getEmail());
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -339,7 +328,6 @@ public class CloudFirestoreManager {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            Log.d(LOG_TAG, task + "Обновление турниров => " + task.getResult());
 
 
                         }
@@ -355,7 +343,6 @@ public class CloudFirestoreManager {
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.d(LOG_TAG, task + " => " + task.getResult());
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -377,7 +364,6 @@ public class CloudFirestoreManager {
         document.update(USER_NET_STATUS, status);
 
 
-        Log.d(LOG_TAG, "changeUserNetStatus() User " + App.instance.getAccountManager().getUser().getID());
 
     }
 
@@ -401,7 +387,6 @@ public class CloudFirestoreManager {
                                                 document.getId(),
                                                 document.getString(KEY_TEAM_NAME),
                                                 document.getLong(KEY_TEAM_BONUS)));
-                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                             }
                         }
                     } else {
@@ -430,7 +415,6 @@ public class CloudFirestoreManager {
                                                 document.getId(),
                                                 document.getString(KEY_TEAM_NAME),
                                                 document.getLong(KEY_TEAM_BONUS)));
-                                Log.d(LOG_TAG, document.getId() + " => " + document.getData());
                             }
                         }
                     } else {
@@ -467,7 +451,6 @@ public class CloudFirestoreManager {
                                         )
                                 );
 
-                                Log.d(LOG_TAG, document.getId() + "getTournaments() => " + document.getData());
                             }
 
                             FinditBus.getInstance().post(new UpdateTournamentsEvent());
@@ -538,7 +521,6 @@ public class CloudFirestoreManager {
                     if (task.isSuccessful() && task.getResult() != null) {
                         for (QueryDocumentSnapshot document : task.getResult()) {
 
-                            Log.d(LOG_TAG, document.getId() + " => " + document.getData());
 
                             // Если email не равен тому который нам нужен, то пропускаем, иначе инициализируем и стопаем
                             if (!document.getString(USER_EMAIL).equalsIgnoreCase(email)) {
@@ -563,7 +545,6 @@ public class CloudFirestoreManager {
                                 ));
 
 
-                                Log.d(LOG_TAG, "initUser() User " + App.instance.getAccountManager().getUser().getID());
 
 
                                 break;
@@ -611,7 +592,6 @@ public class CloudFirestoreManager {
                                     document.getLong(USER_SUM_OF_FONDED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS),
                                     document.getLong(USER_SUM_OF_DISCOVERED_POINTS) == null ? 0 : document.getLong(USER_SUM_OF_FONDED_POINTS)));
 
-                            Log.d(LOG_TAG, document.getId() + "getPlayers() => " + document.getData());
                         }
 
 
@@ -661,7 +641,6 @@ public class CloudFirestoreManager {
 
                             );
 
-                            Log.d(LOG_TAG, document.getId() + "updatePlayers() => " + document.getData());
                         }
 
 
@@ -679,7 +658,7 @@ public class CloudFirestoreManager {
         document.update(QRPOINT_MARK, mark).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                getQrPlaces();
+                //  getQrPlaces();
             }
         });
 
@@ -725,7 +704,6 @@ public class CloudFirestoreManager {
                                     document.getId())
                             );
 
-                            Log.d(LOG_TAG, document.getId() + "getQrPlaces()  => " + document.getData());
                         }
 
                         FinditBus.getInstance().post(new UpdateAllQrPoints());

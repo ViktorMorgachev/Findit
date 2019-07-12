@@ -155,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     private void showMap() {
 
-        Log.d(LOG_TAG, "showMap()");
 
         if (mCommonMapManager.getServiceType() == CommonMapManager.ServiceType.GOOGLE) {
             if (mFragmentManager.findFragmentById(R.id.map_fragment) != null) {
@@ -184,7 +183,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         getLocation();
 
 
-        Log.d(LOG_TAG, "Activity was resumed");
 
         User user = App.instance.getAccountManager().getUser();
 
@@ -353,7 +351,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(LOG_TAG, "Activity was paused");
         App.instance.getNavigationHolder().removeNavigator();
     }
 
@@ -361,14 +358,12 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     protected void onStop() {
         super.onStop();
         App.instance.getLocationManager().unsubscribe(this);
-        Log.d(LOG_TAG, "Activity was stoped");
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.d(LOG_TAG, "Activity was destroed");
         FinditBus.getInstance().unregister(this);
 
 
@@ -389,7 +384,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
         if (sLatLng != null) {
             updateMap(DEFAULT_ZOOM, "");
 
-            Log.d(LOG_TAG, "Google map was ready");
+
 
             // Изменяем координаты пользователя
 
@@ -417,7 +412,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        Log.d(LOG_TAG, "Activity on backpressed");
     }
 
 

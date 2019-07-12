@@ -221,24 +221,17 @@ public class PreviewActivity extends AppCompatActivity {
                         }
                     });
 
-                    Thread getQrPoints = new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            ServerManager.getInstance().getQrPlaces();
-                        }
-                    });
 
                     // ServerManager.getInstance().getQrPlaces();
                     // Очередь нам не важна, просто получаем значения и инициализируем пока в наши менеджеры
                     getTeams.start();
                     getTournaments.start();
-                    getQrPoints.start();
+
                     getPlayers.start();
 
 
                     try {
                         getPlayers.join();
-                        getQrPoints.join();
                         getTeams.join();
                         getTournaments.join();
                     } catch (InterruptedException e) {
