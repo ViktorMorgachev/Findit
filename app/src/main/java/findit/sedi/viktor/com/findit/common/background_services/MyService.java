@@ -87,7 +87,7 @@ public class MyService extends Service implements ILocationListener {
 
         mAsyncTask.execute();
 
-        stF
+        
         startForeground(777, mBuilder.build());
 
         Intent intent = new Intent(this, HideNotificationService.class);

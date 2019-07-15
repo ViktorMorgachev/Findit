@@ -100,7 +100,7 @@ public class App extends Application {
         mGoogleAccountStore = mManagersFactory.getGoogleStore();
         mTournamentManager = mManagersFactory.getTournamentManager();
         mDialogManager = DialogManager.getInstance();
-        mDialogManager.setContext(this);
+        mDialogManager.setContext(getApplicationContext());
     }
 
     public NavigatorHolder getNavigationHolder() {
@@ -111,7 +111,6 @@ public class App extends Application {
     public Router getRouter() {
         return cicerone.getRouter();
     }
-
 
 
     public boolean hasNet() {
