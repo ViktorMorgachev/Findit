@@ -19,20 +19,34 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 28
+    signingConfigs {
+        release_config {
+            storeFile file('C:\\WorkFolder\\SeDi\\Findit\\findit.jks')
+            storePassword '996550660828'
+            keyAlias = 'fndit'
+            keyPassword '996550660828'
+        }
+
+    }
+    compileSdkVersion 29
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         applicationId "findit.sedi.viktor.com.findit"
         minSdkVersion 19
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+        //signingConfig signingConfigs.release_config
     }
     buildTypes {
         release {
-         //   shrinkResources true
+            debuggable = true
+            signingConfig signingConfigs.release_config
+            versionNameSuffix = '1.0'
+
+            //   shrinkResources true
           //  minifyEnabled true
             //proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -42,8 +56,8 @@ android {
         }
     }
     compileOptions {
-        targetCompatibility JavaVersion.VERSION_1_8
-        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility '1.8'
+        sourceCompatibility '1.8'
     }
 
     dataBinding {

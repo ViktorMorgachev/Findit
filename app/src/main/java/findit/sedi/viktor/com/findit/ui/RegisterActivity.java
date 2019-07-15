@@ -4,12 +4,13 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -143,7 +144,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
 
             if (!App.instance.hasNet()) {
                 DialogManager.getInstance().showDialog(getResources().getString(R.string.interternet_not_available_message),
-                        getResources().getString(R.string.interternet_not_available_tittle),  () -> {
+                        getResources().getString(R.string.interternet_not_available_tittle), () -> {
                             startActivity(restartIntent);
                         }, "OK", null, null, false, false);
                 return;
@@ -226,7 +227,10 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
-            Toast.makeText(getApplicationContext(), R.string.registration_error, Toast.LENGTH_SHORT).show();
+
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.registration_error) + " CODE: " + e.getStatusCode(), Toast.LENGTH_SHORT).show();
+
+
         }
     }
 

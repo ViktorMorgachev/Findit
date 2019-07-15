@@ -88,7 +88,7 @@ public class GoogleMapFragment extends Fragment implements GoogleMap.OnCameraMov
                     mMap.setOnMarkerClickListener(GoogleMapFragment.this);
                     mMap.setMapStyle(
                             MapStyleOptions.loadRawResourceStyle(
-                                    Objects.requireNonNull(getContext().getApplicationContext()), R.raw.google_map_style));
+                                    Objects.requireNonNull(App.instance.getApplicationContext()), R.raw.google_map_style));
 
                     if (mCallBackClickListener != null)
                         mCallBackClickListener.mapReady();
