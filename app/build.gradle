@@ -20,8 +20,8 @@ android {
         applicationId "findit.sedi.viktor.com.findit"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 2
-        versionName "1.1.0"
+        versionCode 3
+        versionName "1.2.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         //signingConfig signingConfigs.release_config
