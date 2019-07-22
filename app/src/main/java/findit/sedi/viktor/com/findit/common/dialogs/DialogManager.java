@@ -1,5 +1,6 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
+import android.app.Application;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -8,6 +9,7 @@ import android.widget.EditText;
 
 import androidx.appcompat.app.AlertDialog;
 
+import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
@@ -80,6 +82,7 @@ public class DialogManager {
 
     public void showBonusDialog() {
 
+        mContext = App.instance.getApplicationContext();
         mAlertDialog = new AlertDialog.Builder(mContext).create();
 
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
