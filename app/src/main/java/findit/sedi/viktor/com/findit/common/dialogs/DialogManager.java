@@ -82,7 +82,6 @@ public class DialogManager {
 
     public void showBonusDialog() {
 
-        mContext = App.instance.getApplicationContext();
         mAlertDialog = new AlertDialog.Builder(mContext).create();
 
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);

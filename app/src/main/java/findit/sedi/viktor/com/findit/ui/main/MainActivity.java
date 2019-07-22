@@ -345,6 +345,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
     private void showBonusDialog() {
 
+        App.instance.getDialogManager().setContext(this);
         App.instance.getDialogManager().showBonusDialog();
 
     }

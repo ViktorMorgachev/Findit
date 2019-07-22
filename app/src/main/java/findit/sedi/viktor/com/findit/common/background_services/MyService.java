@@ -87,7 +87,7 @@ public class MyService extends Service implements ILocationListener {
 
         mAsyncTask.execute();
 
-        
+
         startForeground(777, mBuilder.build());
 
         Intent intent = new Intent(this, HideNotificationService.class);
@@ -288,6 +288,7 @@ public class MyService extends Service implements ILocationListener {
                     !ManagersFactory.getInstance().getAccountManager().getUser().getTournamentID().equalsIgnoreCase("")) {
 
                 String nearbyQrPointID = App.instance.getQrPointManager().getNearbyOfQrPlaced(latLng);
+                App.instance.getDialogManager().setContext(getApplicationContext());
                 App.instance.getQrPointManager().checkNearbyQrPlaces(getApplicationContext(), nearbyQrPointID, latLng, null);
             }
 

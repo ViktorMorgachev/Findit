@@ -28,7 +28,7 @@ android {
     }
     buildTypes {
         release {
-            debuggable = true
+            debuggable = false
             signingConfig signingConfigs.release_config
             versionNameSuffix = '1.0'
 
