@@ -59,6 +59,7 @@ import ru.terrakok.cicerone.commands.Command;
 
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonSettings.KeysField.LOG_TAG;
 import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_LOCATION;
+import static findit.sedi.viktor.com.findit.interactors.KeyCommonUpdateUserRequests.KeysField.KEY_UPDATE_NET_STATUS;
 import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.POINT_ID;
 
 /**
@@ -200,7 +201,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
 
         User user = App.instance.getAccountManager().getUser();
 
-        Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageViewIcon);
+        Glide.with(this)
+                .load(user.getPhotoUrl())
+                .error(getResources().getDrawable(R.drawable.ic_account_circle_24dp))
+                .apply(RequestOptions.circleCropTransform()).into(mImageViewIcon);
 
         if (App.instance.getAccountManager().getUser() != null) {
             mNavTextViewName.setText(App.instance.getAccountManager().getUser().getName());
@@ -306,6 +310,8 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
             startActivity(new Intent(this, AboutActivity.class));
         } else if (id == R.id.nav_exit) {
             stopService(new Intent(this, MyService.class));
+            App.instance.getAccountManager().getUser().setNetStatus(false);
+            ServerManager.getInstance().updateUserOnServer(KEY_UPDATE_NET_STATUS);
             Intent startMain = new Intent(Intent.ACTION_MAIN);
             startMain.addCategory(Intent.CATEGORY_HOME);
             startMain.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);

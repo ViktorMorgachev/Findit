@@ -220,7 +220,7 @@ public class CloudFirestoreManager {
 
         } else if (tag.equalsIgnoreCase(KEY_UPDATE_NET_STATUS)) {
 
-            document.update(USER_NET_STATUS, true)
+            document.update(USER_NET_STATUS, App.instance.getAccountManager().getUser().isNetStatus())
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {

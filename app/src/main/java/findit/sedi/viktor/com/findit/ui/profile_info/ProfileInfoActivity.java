@@ -108,7 +108,10 @@ public class ProfileInfoActivity extends AppCompatActivity implements View.OnCli
         mEditTextPhone.setText(user.getPhone());
         mSpinnerGender.setSelection((int) user.getGender());
 
-        Glide.with(this).load(user.getPhotoUrl()).apply(RequestOptions.circleCropTransform()).into(mImageView);
+        Glide.with(this)
+                .load(user.getPhotoUrl())
+                .error(getResources().getDrawable(R.drawable.ic_account_circle_24dp))
+                .apply(RequestOptions.circleCropTransform()).into(mImageView);
 
 
         mTextViewSignOut.setOnClickListener(this::onClick);

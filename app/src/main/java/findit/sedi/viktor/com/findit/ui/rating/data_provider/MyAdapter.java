@@ -133,6 +133,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             Glide
                     .with(layoutInflater.getContext())
                     .load(mPlayer.getPhotoUrl())
+                    .error(App.instance.getResources().getDrawable(R.drawable.ic_account_circle_24dp))
                     .apply(RequestOptions.circleCropTransform())
                     .into((ImageView) view.findViewById(R.id.iv_photo));
 
