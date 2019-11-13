@@ -191,11 +191,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
             IAction iAction = () -> App.instance.getAccountManager().joinToTournament(tournamentID, teamID);
 
             IActionHelper.getInstance().setIAction(() -> {
-                DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.success_joining_to_tournament), null,
+                DialogManager.getInstance().showDialog(mContext, mContext.getResources().getString(R.string.success_joining_to_tournament), null,
                         null, "OK", null, null, true, false);
             });
 
-            DialogManager.getInstance().showDialog(null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false, false);
+            DialogManager.getInstance().showDialog(mContext,null, mContext.getResources().getString(R.string.join_to_tournament_question), iAction, "OК", "Отмена", null, false, false);
 
 
         }
@@ -223,7 +223,7 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
 
                     if (systemCalendar.equals(tournamentCalendarBegin) || systemCalendar.after(tournamentCalendarBegin) ) {
 
-                        DialogManager.getInstance().showDialog(mContext.getResources().getString(R.string.the_tournament_is_already_active),
+                        DialogManager.getInstance().showDialog(mContext, mContext.getResources().getString(R.string.the_tournament_is_already_active),
                                 null, null, "OK", null, null, true, false);
                         return;
                     }

@@ -69,13 +69,15 @@ import static findit.sedi.viktor.com.findit.ui.find_tainik.NearbyTainikActivity.
 public class MainActivity extends AppCompatActivity implements LocationListener, NavigationView.OnNavigationItemSelectedListener, MapsFragmentListener, ILocationListener {
 
 
+
     //Widgets
     private GoogleMap mMap;
     private FloatingActionButton mFloatingActionButtonLocation;
     private FloatingActionButton mFloatingActionButtonMenu;
     // TODO снова запускаем лишь тогда когда игра активна
     private TextView mNavTextViewName;
-    private Context mContext;
+
+    private static Context mContext;
     private DrawerLayout mDrawerLayout;
     private ImageView mImageViewIcon;
     private FragmentManager mFragmentManager = getSupportFragmentManager();
@@ -99,9 +101,18 @@ public class MainActivity extends AppCompatActivity implements LocationListener,
     };
 
 
+    public static Context getmContext() {
+        return mContext;
+    }
+
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,

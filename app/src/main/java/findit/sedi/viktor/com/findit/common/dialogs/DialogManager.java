@@ -1,19 +1,17 @@
 package findit.sedi.viktor.com.findit.common.dialogs;
 
-import android.app.Application;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 
-import androidx.appcompat.app.AlertDialog;
-
-import findit.sedi.viktor.com.findit.App;
 import findit.sedi.viktor.com.findit.R;
 import findit.sedi.viktor.com.findit.data_providers.cloud.myserver.ServerManager;
 import findit.sedi.viktor.com.findit.presenter.NotificatorManager;
 import findit.sedi.viktor.com.findit.presenter.interfaces.IAction;
+import findit.sedi.viktor.com.findit.ui.main.MainActivity;
 
 public class DialogManager {
 
@@ -35,10 +33,10 @@ public class DialogManager {
         mContext = activity;
     }
 
-    public void showDialog(String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
+    public void showDialog(Context context, String message, String tiitle, IAction iAction, String buttonOk, String buttonCancel, String buttonNeitral, boolean cancelable, boolean showNotification) {
 
 
-        mAlertDialog = new AlertDialog.Builder(mContext).create();
+        mAlertDialog = new AlertDialog.Builder(MainActivity.getmContext()).create();
 
         if (tiitle != null) {
             mAlertDialog.setTitle(tiitle);

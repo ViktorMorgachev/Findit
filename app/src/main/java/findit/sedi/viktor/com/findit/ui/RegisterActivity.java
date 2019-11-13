@@ -143,7 +143,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (googleSignInAccount != null) {
 
             if (!App.instance.hasNet()) {
-                DialogManager.getInstance().showDialog(getResources().getString(R.string.interternet_not_available_message),
+                DialogManager.getInstance().showDialog(getApplicationContext(), getResources().getString(R.string.interternet_not_available_message),
                         getResources().getString(R.string.interternet_not_available_tittle), () -> {
                             startActivity(restartIntent);
                         }, "OK", null, null, false, false);
@@ -180,7 +180,7 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
         if (v.getId() == R.id.iv_google_enter) {
 
             if (!App.instance.hasNet()) {
-                DialogManager.getInstance().showDialog(getResources().getString(R.string.interternet_not_available_message),
+                DialogManager.getInstance().showDialog(getApplicationContext(), getResources().getString(R.string.interternet_not_available_message),
                         getResources().getString(R.string.interternet_not_available_tittle), this::signIn, "OK", null, null, false, false);
                 return;
             } else {

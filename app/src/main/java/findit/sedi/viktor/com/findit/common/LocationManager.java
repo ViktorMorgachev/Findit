@@ -72,8 +72,7 @@ public class LocationManager {
                 Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            App.instance.getDialogManager().setContext(getContext());
-            App.instance.getDialogManager().showDialog(getContext().getResources().getString(R.string.location_permission_denied_please_grant),
+            App.instance.getDialogManager().showDialog(getContext(), getContext().getResources().getString(R.string.location_permission_denied_please_grant),
                     null, null, null, null, null, true, false);
 
             mLatLng = new LatLng(0, 0);

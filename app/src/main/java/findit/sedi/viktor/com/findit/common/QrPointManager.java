@@ -155,7 +155,7 @@ public class QrPointManager {
         for (int i = 0; i < user.getDiscoveredQrPointIDs().size(); i++) {
             if (user.getDiscoveredQrPointIDs().get(i).equalsIgnoreCase(qrPoint.getID())) {
                 if (!mDiscoveredPointID.contains(qrPoint.getID())) {
-                    App.instance.getDialogManager().showDialog("Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
+                    App.instance.getDialogManager().showDialog(context, "Вы его обнануживали ранее, можете нажать на вопрос для подсказки", null, null, null, null, null, true, false);
                     // Добавляем в список найденных тайников тут в активности чтобы это сообщение больше не показывать
                     mDiscoveredPointID.add(qrPoint.getID());
                 }
